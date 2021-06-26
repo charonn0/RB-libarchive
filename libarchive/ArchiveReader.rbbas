@@ -103,7 +103,7 @@ Protected Class ArchiveReader
 
 	#tag Method, Flags = &h1
 		Protected Sub OpenFile(File As FolderItem, BlockSize As UInt32)
-		  mLastError = archive_read_open_filename(mArchive, File.AbsolutePath, BlockSize)
+		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath, BlockSize)
 		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
 		End Sub
 	#tag EndMethod
