@@ -11,6 +11,16 @@ Inherits libarchive.ArchiveReader
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(Buffer As MemoryBlock)
+		  // Calling the overridden superclass constructor.
+		  // Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType) -- from ArchiveReader
+		  Super.Constructor(ArchiveType.Ar, CompressionType.All)
+		  OpenMemory(Buffer)
+		  
+		End Sub
+	#tag EndMethod
+
 
 	#tag ViewBehavior
 		#tag ViewProperty

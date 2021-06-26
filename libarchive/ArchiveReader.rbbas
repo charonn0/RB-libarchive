@@ -114,6 +114,15 @@ Protected Class ArchiveReader
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Sub OpenMemory(Buffer As MemoryBlock)
+		  mLastError = archive_read_open_memory(mArchive, Buffer, Buffer.Size)
+		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
+		  mBuffer = Buffer
+		  mIsOpen = True
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function ReadFileData(WriteTo As Writeable) As Boolean
 		  If WriteTo = Nil Then
 		    mLastError = archive_read_data_skip(mArchive)
@@ -237,6 +246,10 @@ Protected Class ArchiveReader
 
 	#tag Property, Flags = &h21
 		Private mArchive As Ptr
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mBuffer As MemoryBlock
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
