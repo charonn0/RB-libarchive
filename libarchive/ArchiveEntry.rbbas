@@ -62,6 +62,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  return mLastError
+			End Get
+		#tag EndGetter
+		LastError As Int32
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Return mLength
 			End Get
 		#tag EndGetter

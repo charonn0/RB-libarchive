@@ -2,7 +2,7 @@
 Protected Class ArchiveException
 Inherits RuntimeException
 	#tag Method, Flags = &h1000
-		Sub Constructor(Archive As libarchive.ArchiveReader)
+		Sub Constructor(Archive As libarchive.Archive)
 		  If Archive <> Nil And Archive.Handle <> Nil Then
 		    Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
 		    If mb <> Nil Then Me.Message = mb.CString(0)
@@ -11,10 +11,9 @@ Inherits RuntimeException
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(Archive As libarchive.ArchiveWriter)
-		  If Archive <> Nil And Archive.Handle <> Nil Then
-		    Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
-		    If mb <> Nil Then Me.Message = mb.CString(0)
+		Sub Constructor(Entry As libarchive.ArchiveEntry)
+		  If Entry <> Nil Then
+		    Me.ErrorNumber = Entry.LastError
 		  End If
 		End Sub
 	#tag EndMethod
