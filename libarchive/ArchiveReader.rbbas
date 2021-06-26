@@ -13,6 +13,15 @@ Protected Class ArchiveReader
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Close()
+		  If mIsOpen Then mLastError = archive_read_close(mArchive)
+		  mIsOpen = False
+		  mBuffer = Nil
+		  mCurrentEntry = Nil
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType)
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
