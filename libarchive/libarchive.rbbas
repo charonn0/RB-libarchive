@@ -1,5 +1,26 @@
 #tag Module
 Protected Module libarchive
+	#tag Method, Flags = &h21
+		Private Function ArchiveTypeFromName(Name As String) As libarchive.ArchiveType
+		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
+		  Select Case ext
+		  Case "zip", "docx", "xlsx", "pptx", "jar"
+		    Return ArchiveType.Zip
+		  Case "gz", "bz2"
+		    Return ArchiveTypeFromName(Right(Name, Name.Len - (ext.Len + 1)))
+		  Case "tar"
+		    Return ArchiveType.TAR
+		  Case "rar"
+		    Return ArchiveType.RAR
+		  Case "iso"
+		    Return ArchiveType.ISO9660
+		    
+		  Else
+		    Return ArchiveType.All
+		  End Select
+		End Function
+	#tag EndMethod
+
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_bzlib_version Lib libpath () As Ptr
 	#tag EndExternalMethod
@@ -395,6 +416,57 @@ Protected Module libarchive
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_zlib_version Lib libpath () As Ptr
 	#tag EndExternalMethod
+
+	#tag Method, Flags = &h0
+		Function CreateAsArchive(Extends Archive As FolderItem, Optional Password As String, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
+		  Dim arch As ArchiveWriter
+		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
+		  
+		  Select Case Type
+		  Case ArchiveType.All ' unknown file extension
+		    Return Nil
+		    
+		  Case ArchiveType.Ar
+		    arch = New libarchive.Writers.ARWriter(Archive)
+		    
+		  Case ArchiveType.Cabinet
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    
+		  Case ArchiveType.CPIO
+		    arch = New libarchive.Writers.CPIOWriter(Archive)
+		    
+		  Case ArchiveType.ISO9660
+		    arch = New libarchive.Writers.ISO9660Writer(Archive)
+		    
+		  Case ArchiveType.LHA
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    
+		  Case ArchiveType.MTree
+		    arch = New libarchive.Writers.MTreeWriter(Archive)
+		    
+		  Case ArchiveType.RAR
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    
+		  Case ArchiveType.SevenZip
+		    arch = New libarchive.Writers.SevenZipWriter(Archive)
+		    
+		  Case ArchiveType.TAR
+		    arch = New libarchive.Writers.TARWriter(Archive)
+		    
+		  Case ArchiveType.XAR
+		    arch = New libarchive.Writers.XARWriter(Archive)
+		    
+		  Case ArchiveType.Zip
+		    arch = New libarchive.Writers.ZipWriter(Archive)
+		    
+		  Else
+		    Break
+		  End Select
+		  
+		  If arch <> Nil And Password <> "" Then arch.Password = Password
+		  Return arch
+		End Function
+	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
