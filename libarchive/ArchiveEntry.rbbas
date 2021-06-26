@@ -44,6 +44,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  Return mEntry
+			End Get
+		#tag EndGetter
+		Handle As Ptr
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Return mIsEncrypted
 			End Get
 		#tag EndGetter
