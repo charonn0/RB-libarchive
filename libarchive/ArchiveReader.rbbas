@@ -84,7 +84,11 @@ Protected Class ArchiveReader
 
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
-		  If mArchive <> Nil Then Call archive_read_free(mArchive)
+		  If mArchive <> Nil Then
+		    mLastError = archive_read_free(mArchive) ' free() calls close()
+		    If Archives <> Nil And Archives.HasKey(mArchive) Then Archives.Remove(mArchive)
+		    If Archives.Count = 0 Then Archives = Nil
+		  End If
 		  mArchive = Nil
 		End Sub
 	#tag EndMethod
