@@ -10,6 +10,15 @@ Inherits RuntimeException
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(Archive As libarchive.ArchiveWriter)
+		  If Archive <> Nil And Archive.Handle <> Nil Then
+		    Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
+		    If mb <> Nil Then Me.Message = mb.CString(0)
+		  End If
+		End Sub
+	#tag EndMethod
+
 
 	#tag ViewBehavior
 		#tag ViewProperty

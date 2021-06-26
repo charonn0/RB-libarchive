@@ -22,6 +22,7 @@ Class=MTreeReader;libarchive/Readers/MTreeReader.rbbas;&h6643F7FF;&h9E817FF;fals
 Class=RARReader;libarchive/Readers/RARReader.rbbas;&h15106FFF;&h9E817FF;false
 Class=XARReader;libarchive/Readers/XARReader.rbbas;&h23763FFF;&h9E817FF;false
 FileTypeSet=ArchiveFileTypes;ArchiveFileTypes.rbbas;&h117F1FFF;&h0;false
+Class=ArchiveWriter;libarchive/ArchiveWriter.rbbas;&h44B1E7FF;&h43B5AFFF;false
 MajorVersion=1
 MinorVersion=0
 SubVersion=0
