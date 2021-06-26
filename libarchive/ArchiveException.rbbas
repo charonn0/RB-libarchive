@@ -2,6 +2,13 @@
 Protected Class ArchiveException
 Inherits RuntimeException
 	#tag Method, Flags = &h1000
+		Sub Constructor(ErrorCode As Integer)
+		  Me.ErrorNumber = ErrorCode
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
 		Sub Constructor(Archive As libarchive.Archive)
 		  If Archive <> Nil And Archive.Handle <> Nil Then
 		    Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
