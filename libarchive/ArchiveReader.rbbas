@@ -1,5 +1,6 @@
 #tag Class
 Protected Class ArchiveReader
+Inherits libarchive.Archive
 	#tag Method, Flags = &h21
 		Private Shared Function archive_passphrase_callback(Archive As Ptr, Opaque As Ptr) As CString
 		  #pragma Unused Archive

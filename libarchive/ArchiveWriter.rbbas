@@ -1,5 +1,6 @@
 #tag Class
 Protected Class ArchiveWriter
+Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
@@ -110,40 +111,6 @@ Protected Class ArchiveWriter
 		End Sub
 	#tag EndMethod
 
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mArchive
-			End Get
-		#tag EndGetter
-		Handle As Ptr
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mIsOpen
-			End Get
-		#tag EndGetter
-		IsOpen As Boolean
-	#tag EndComputedProperty
-
-	#tag Property, Flags = &h1
-		Protected mArchive As Ptr
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mBuffer As MemoryBlock
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mIsOpen As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h1
-		Protected mLastError As Int32
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mPassword As String
