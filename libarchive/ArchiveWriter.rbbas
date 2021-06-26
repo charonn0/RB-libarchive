@@ -74,10 +74,39 @@ Protected Class ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Sub CreateMemory(Buffer As MemoryBlock)
+		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mBuffer = Buffer
+		  mIsOpen = True
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
 		  If mArchive <> Nil Then mLastError = archive_write_free(mArchive) ' free() calls close()
 		  mArchive = Nil
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
+		  Try
+		    mLastError = archive_write_header(mArchive, Entry.Handle)
+		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		    
+		    Do Until Source.EOF
+		      Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
+		      If block = Nil Or block.Size = 0 Then Continue
+		      mLastError = archive_write_data(mArchive, block, block.Size)
+		      If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		    Loop
+		    
+		  Finally
+		    mLastError = archive_write_finish_entry(mArchive)
+		  End Try
 		End Sub
 	#tag EndMethod
 
@@ -115,6 +144,31 @@ Protected Class ArchiveWriter
 	#tag Property, Flags = &h1
 		Protected mLastError As Int32
 	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mPassword As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mUsed As UInt32
+	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return mPassword
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If IsOpen And mArchive <> Nil Then
+			    mLastError = archive_write_set_passphrase(mArchive, value)
+			    If mLastError = ARCHIVE_OK Then mPassword = value
+			  End If
+			End Set
+		#tag EndSetter
+		Password As String
+	#tag EndComputedProperty
 
 
 	#tag ViewBehavior
