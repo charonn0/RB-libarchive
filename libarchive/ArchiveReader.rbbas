@@ -188,50 +188,53 @@ Protected Class ArchiveReader
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Const ARCHIVE_FORMAT_CPIO = &h10000
-			  Const ARCHIVE_FORMAT_SHAR = &h20000
-			  Const ARCHIVE_FORMAT_TAR = &h30000
-			  Const ARCHIVE_FORMAT_ISO9660 = &h40000
-			  Const ARCHIVE_FORMAT_ZIP = &h50000
-			  Const ARCHIVE_FORMAT_EMPTY = &h60000
-			  Const ARCHIVE_FORMAT_AR = &h70000
-			  Const ARCHIVE_FORMAT_MTREE = &h80000
-			  Const ARCHIVE_FORMAT_RAW = &h90000
-			  Const ARCHIVE_FORMAT_XAR = &hA0000
-			  Const ARCHIVE_FORMAT_LHA = &hB0000
-			  Const ARCHIVE_FORMAT_CAB = &hC0000
-			  Const ARCHIVE_FORMAT_RAR = &hD0000
-			  Const ARCHIVE_FORMAT_7ZIP = &hE0000
-			  Const ARCHIVE_FORMAT_WARC = &hF0000
-			  Const ARCHIVE_FORMAT_RAR_V5 = &h100000
+			  Const ARCHIVE_FORMAT_CPIO = &h
+			  Const ARCHIVE_FORMAT_SHAR = &h2
+			  Const ARCHIVE_FORMAT_TAR = &h3
+			  Const ARCHIVE_FORMAT_ISO9660 = &h4
+			  Const ARCHIVE_FORMAT_ZIP = &h5
+			  Const ARCHIVE_FORMAT_EMPTY = &h6
+			  Const ARCHIVE_FORMAT_AR = &h7
+			  Const ARCHIVE_FORMAT_MTREE = &h8
+			  Const ARCHIVE_FORMAT_RAW = &h9
+			  Const ARCHIVE_FORMAT_XAR = &hA
+			  Const ARCHIVE_FORMAT_LHA = &hB
+			  Const ARCHIVE_FORMAT_CAB = &hC
+			  Const ARCHIVE_FORMAT_RAR = &hD
+			  Const ARCHIVE_FORMAT_7ZIP = &hE
+			  Const ARCHIVE_FORMAT_WARC = &hF
+			  Const ARCHIVE_FORMAT_RAR_V5 = &h10
 			  
 			  If mArchive = Nil Then Return ArchiveType.All
-			  If mFormat = 0 Then mFormat = archive_format(mArchive)
+			  If mFormatFamily = ArchiveType.All Then
+			    Dim frmat As Int32 = archive_format(mArchive)
+			    Select Case ShiftRight(frmat, 16)
+			    Case ARCHIVE_FORMAT_CPIO
+			      mFormatFamily = ArchiveType.CPIO
+			    Case ARCHIVE_FORMAT_CAB
+			      mFormatFamily = ArchiveType.Cabinet
+			    Case ARCHIVE_FORMAT_ISO9660
+			      mFormatFamily = ArchiveType.ISO9660
+			    Case ARCHIVE_FORMAT_LHA
+			      mFormatFamily = ArchiveType.LHA
+			    Case ARCHIVE_FORMAT_MTREE
+			      mFormatFamily = ArchiveType.MTree
+			    Case ARCHIVE_FORMAT_RAR, ARCHIVE_FORMAT_RAR_V5
+			      mFormatFamily = ArchiveType.RAR
+			    Case ARCHIVE_FORMAT_TAR
+			      mFormatFamily = ArchiveType.TAR
+			    Case ARCHIVE_FORMAT_XAR
+			      mFormatFamily = ArchiveType.XAR
+			    Case ARCHIVE_FORMAT_7ZIP
+			      mFormatFamily = ArchiveType.SevenZip
+			    Case ARCHIVE_FORMAT_ZIP
+			      mFormatFamily = ArchiveType.Zip
+			    Else
+			      mFormatFamily = ArchiveType.All
+			    End Select
+			  End If
 			  
-			  Select Case True
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_CPIO) = ARCHIVE_FORMAT_CPIO
-			    Return ArchiveType.CPIO
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_CAB) = ARCHIVE_FORMAT_CAB
-			    Return ArchiveType.Cabinet
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_ISO9660) = ARCHIVE_FORMAT_ISO9660
-			    Return ArchiveType.ISO9660
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_LHA) = ARCHIVE_FORMAT_LHA
-			    Return ArchiveType.LHA
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_MTREE) = ARCHIVE_FORMAT_MTREE
-			    Return ArchiveType.MTree
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_RAR) = ARCHIVE_FORMAT_RAR, BitAnd(mFormat, ARCHIVE_FORMAT_RAR_V5) = ARCHIVE_FORMAT_RAR_V5
-			    Return ArchiveType.RAR
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_TAR) = ARCHIVE_FORMAT_TAR
-			    Return ArchiveType.TAR
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_XAR) = ARCHIVE_FORMAT_XAR
-			    Return ArchiveType.XAR
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_7ZIP) = ARCHIVE_FORMAT_7ZIP
-			    Return ArchiveType.SevenZip
-			  Case BitAnd(mFormat, ARCHIVE_FORMAT_ZIP) = ARCHIVE_FORMAT_ZIP
-			    Return ArchiveType.Zip
-			  Else
-			    Return ArchiveType.All
-			  End Select
+			  Return mFormatFamily
 			End Get
 		#tag EndGetter
 		Format As libarchive.ArchiveType
@@ -240,43 +243,32 @@ Protected Class ArchiveReader
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mArchive
+			  If mArchive = Nil Then Return 0
+			  If mFormatVariant = 0 Then
+			    Dim frmat As Int32 = archive_format(mArchive)
+			    mFormatVariant = ShiftLeft(frmat, 16)
+			  End If
+			  
+			  Return mFormatVariant
 			End Get
 		#tag EndGetter
-		Handle As Ptr
+		FormatVariant As Int32
 	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mIsOpen
-			End Get
-		#tag EndGetter
-		IsOpen As Boolean
-	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private mArchive As Ptr
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mBuffer As MemoryBlock
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mCurrentEntry As libarchive.ArchiveEntry
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mFormat As Int32
+		Private mFormatFamily As libarchive.ArchiveType = ArchiveType.All
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mIsOpen As Boolean
+		Private mFormatVariant As Int32
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected mLastError As Int32
+	#tag Property, Flags = &h0
+		Password As String
 	#tag EndProperty
 
 
