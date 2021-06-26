@@ -1,11 +1,27 @@
 #tag Module
 Protected Module libarchive
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_bzlib_version Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_atime Lib libpath (ArchiveEntry As Ptr) As UInt32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_atime_is_set Lib libpath (ArchiveEntry As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_clone Lib libpath (ArchiveEntry As Ptr) As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_copy_pathname_w Lib libpath (ArchiveEntry As Ptr, Pathname As WString)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_free Lib libpath (ArchiveEntry As Ptr)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -25,6 +41,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_new Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_pathname Lib libpath (ArchiveEntry As Ptr) As Ptr
 	#tag EndExternalMethod
 
@@ -37,11 +57,39 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_atime Lib libpath (ArchiveEntry As Ptr, UnixTime As UInt32, NanoSeconds As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_mode Lib libpath (ArchiveEntry As Ptr, Perms As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_mtime Lib libpath (ArchiveEntry As Ptr, UnixTime As UInt32, NanoSeconds As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_size Lib libpath (ArchiveEntry As Ptr, Size As Int64)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_size Lib libpath (ArchiveEntry As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_size_is_set Lib libpath (ArchiveEntry As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_unset_atime Lib libpath (ArchiveEntry As Ptr)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_unset_mtime Lib libpath (ArchiveEntry As Ptr)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_unset_size Lib libpath (ArchiveEntry As Ptr)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -54,6 +102,18 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_format Lib libpath (ArchiveEntry As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_liblz4_version Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_liblzma_version Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_libzstd_version Lib libpath () As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -332,6 +392,10 @@ Protected Module libarchive
 		Private Soft Declare Function archive_write_zip_set_compression_deflate Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_zlib_version Lib libpath () As Ptr
+	#tag EndExternalMethod
+
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  Static avail As Boolean
@@ -341,47 +405,90 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OpenAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveReader
+		Function OpenAsArchive(Extends Archive As FolderItem, Optional Password As String, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveReader
+		  Dim arch As ArchiveReader
 		  Select Case Type
 		  Case ArchiveType.All ' detect
-		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
+		    arch = New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
 		    
 		  Case ArchiveType.Ar
-		    Return New libarchive.Readers.ARReader(Archive)
+		    arch = New libarchive.Readers.ARReader(Archive)
 		    
 		  Case ArchiveType.Cabinet
-		    Return New libarchive.Readers.CabinetReader(Archive)
+		    arch = New libarchive.Readers.CabinetReader(Archive)
 		    
 		  Case ArchiveType.CPIO
-		    Return New libarchive.Readers.CPIOReader(Archive)
+		    arch = New libarchive.Readers.CPIOReader(Archive)
 		    
 		  Case ArchiveType.ISO9660
-		    Return New libarchive.Readers.ISO9660Reader(Archive)
+		    arch = New libarchive.Readers.ISO9660Reader(Archive)
 		    
 		  Case ArchiveType.LHA
-		    Return New libarchive.Readers.LHAReader(Archive)
+		    arch = New libarchive.Readers.LHAReader(Archive)
 		    
 		  Case ArchiveType.MTree
-		    Return New libarchive.Readers.MTreeReader(Archive)
+		    arch = New libarchive.Readers.MTreeReader(Archive)
 		    
 		  Case ArchiveType.RAR
-		    Return New libarchive.Readers.RARReader(Archive)
+		    arch = New libarchive.Readers.RARReader(Archive)
 		    
 		  Case ArchiveType.SevenZip
-		    Return New libarchive.Readers.SevenZipReader(Archive)
+		    arch = New libarchive.Readers.SevenZipReader(Archive)
 		    
 		  Case ArchiveType.TAR
-		    Return New libarchive.Readers.TARReader(Archive)
+		    arch = New libarchive.Readers.TARReader(Archive)
 		    
 		  Case ArchiveType.XAR
-		    Return New libarchive.Readers.XARReader(Archive)
+		    arch = New libarchive.Readers.XARReader(Archive)
 		    
 		  Case ArchiveType.Zip
-		    Return New libarchive.Readers.ZipReader(Archive)
+		    arch = New libarchive.Readers.ZipReader(Archive)
 		    
 		  Else
 		    Break
 		  End Select
+		  
+		  If arch <> Nil And Password <> "" Then arch.Password = Password
+		  Return arch
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function PermissionsToMode(p As Permissions) As UInt32
+		  Const TGEXEC = &o00010
+		  Const TGREAD = &o00040
+		  Const TGWRITE = &o00020
+		  Const TOEXEC = &o00001
+		  Const TOREAD = &o00004
+		  Const TOWRITE = &o00002
+		  Const TSGID = &o02000
+		  Const TSUID = &o04000
+		  Const TSVTX = &o01000
+		  Const TUEXEC = &o00100
+		  Const TUREAD = &o00400
+		  Const TUWRITE = &o00200
+		  
+		  Dim mask As UInt32
+		  If p.GroupExecute Then mask = mask Or TGEXEC
+		  If p.GroupRead Then mask = mask Or TGREAD
+		  If p.GroupWrite Then mask = mask Or TGWRITE
+		  
+		  If p.OwnerExecute Then mask = mask Or TUEXEC
+		  If p.OwnerRead Then mask = mask Or TUREAD
+		  If p.OwnerWrite Then mask = mask Or TUWRITE
+		  
+		  If p.OthersExecute Then mask = mask Or TOEXEC
+		  If p.OthersRead Then mask = mask Or TOREAD
+		  If p.OthersWrite Then mask = mask Or TOWRITE
+		  
+		  Return mask
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function time_t(d As Date) As Integer
+		  Static epoch As Double = time_t(0).TotalSeconds
+		  Return d.TotalSeconds - epoch
 		End Function
 	#tag EndMethod
 
@@ -415,10 +522,10 @@ Protected Module libarchive
 	#tag Constant, Name = CHUNK_SIZE, Type = Double, Dynamic = False, Default = \"16384", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected
+	#tag Constant, Name = ERR_INIT_FAILED, Type = Double, Dynamic = False, Default = \"-102", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = ERR_UNFINISHED, Type = Double, Dynamic = False, Default = \"-102", Scope = Protected
+	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = ERR_UNSUPPORTED_COMPRESSION, Type = Double, Dynamic = False, Default = \"-100", Scope = Protected

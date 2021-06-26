@@ -1,5 +1,29 @@
 #tag Class
 Protected Class ArchiveEntry
+	#tag Method, Flags = &h0
+		Sub Constructor()
+		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
+		  mEntry = archive_entry_new()
+		  If mEntry = Nil Then
+		    mLastError = ERR_INIT_FAILED
+		    Raise New ArchiveException(Me)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
+		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
+		  If e = Nil Then
+		    mLastError = ERR_INIT_FAILED
+		    Raise New ArchiveException(Me)
+		  End If
+		  Me.Constructor(CloneFrom.mOwner, e)
+		  
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Sub Constructor(Owner As libarchive.ArchiveReader, Entry As Ptr)
 		  mEntry = Entry
@@ -31,6 +55,13 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub Destructor()
+		  If mEntry <> Nil Then archive_entry_free(mEntry)
+		  mEntry = Nil
+		End Sub
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -38,6 +69,19 @@ Protected Class ArchiveEntry
 			  Return mAccessTime
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value = Nil Then
+			    archive_entry_unset_atime(mEntry)
+			    mAccessTime = Nil
+			  Else
+			    Dim count As UInt32 = time_t(value)
+			    archive_entry_set_atime(mEntry, count, 0)
+			    mAccessTime = value
+			  End If
+			End Set
+		#tag EndSetter
 		AccessTime As Date
 	#tag EndComputedProperty
 
@@ -74,6 +118,18 @@ Protected Class ArchiveEntry
 			  Return mLength
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value < 0 Then
+			    archive_entry_unset_size(mEntry)
+			    mLength = 0
+			  Else
+			    archive_entry_set_size(mEntry, value)
+			    mLength = value
+			  End If
+			End Set
+		#tag EndSetter
 		Length As Int64
 	#tag EndComputedProperty
 
@@ -89,8 +145,8 @@ Protected Class ArchiveEntry
 		Private mIsEncrypted As Boolean
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected mLastError As Int32
+	#tag Property, Flags = &h21
+		Private mLastError As Int32
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -111,6 +167,15 @@ Protected Class ArchiveEntry
 			  Return mMode
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Or value = Nil Then Return
+			  Dim p As Int32 = PermissionsToMode(value)
+			  archive_entry_set_mode(mEntry, p)
+			  mMode = value
+			  
+			End Set
+		#tag EndSetter
 		Mode As Permissions
 	#tag EndComputedProperty
 
@@ -120,6 +185,19 @@ Protected Class ArchiveEntry
 			  Return mModificationTime
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value = Nil Then
+			    archive_entry_unset_mtime(mEntry)
+			    mModificationTime = Nil
+			  Else
+			    Dim count As UInt32 = time_t(value)
+			    archive_entry_set_mtime(mEntry, count, 0)
+			    mModificationTime = value
+			  End If
+			End Set
+		#tag EndSetter
 		ModificationTime As Date
 	#tag EndComputedProperty
 
@@ -137,6 +215,15 @@ Protected Class ArchiveEntry
 			  Return mPathName
 			End Get
 		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value <> "" Then
+			    archive_entry_copy_pathname_w(mEntry, value)
+			    mPathName = value
+			  End If
+			End Set
+		#tag EndSetter
 		PathName As String
 	#tag EndComputedProperty
 
