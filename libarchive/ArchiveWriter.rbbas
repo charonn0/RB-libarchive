@@ -13,6 +13,7 @@ Protected Class ArchiveWriter
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		  mArchive = archive_write_new()
 		  If mArchive = Nil Then Raise New ArchiveException(Me)
+		  
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
 		    mLastError = archive_write_set_format_7zip(mArchive)
@@ -38,8 +39,6 @@ Protected Class ArchiveWriter
 		  Select Case CompressionType
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_write_add_filter_compress(mArchive)
-		    ' Case libarchive.CompressionType.Deflate
-		    ' mLastError = archive_write_zip_set_compression_deflate(mArchive)
 		  Case libarchive.CompressionType.GRZip
 		    mLastError = archive_write_add_filter_grzip(mArchive)
 		  Case libarchive.CompressionType.GZip
