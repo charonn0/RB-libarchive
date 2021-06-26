@@ -107,7 +107,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Function GetPassword(ByRef ArchivePassword As String) As Boolean
-		  Return RaiseEvent GetPassword(ArchivePassword)
+		  If Me.Password <> "" Then
+		    ArchivePassword = Me.Password
+		    Return True
+		  Else
+		    Return RaiseEvent GetPassword(ArchivePassword)
+		  End If
 		End Function
 	#tag EndMethod
 
