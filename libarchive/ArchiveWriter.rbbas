@@ -129,8 +129,8 @@ Protected Class ArchiveWriter
 		IsOpen As Boolean
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h21
-		Private mArchive As Ptr
+	#tag Property, Flags = &h1
+		Protected mArchive As Ptr
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
