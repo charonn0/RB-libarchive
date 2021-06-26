@@ -77,6 +77,8 @@ Protected Class ArchiveReader
 		    mLastError = archive_read_support_filter_uu(mArchive)
 		  Case libarchive.CompressionType.XZ
 		    mLastError = archive_read_support_filter_xz(mArchive)
+		  Case libarchive.CompressionType.ZStd
+		    mLastError = archive_read_support_filter_zstd(mArchive)
 		  Case libarchive.CompressionType.All
 		    mLastError = archive_read_support_filter_all(mArchive)
 		  Else
