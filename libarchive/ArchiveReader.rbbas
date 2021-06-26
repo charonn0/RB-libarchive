@@ -105,6 +105,7 @@ Protected Class ArchiveReader
 		Protected Sub OpenFile(File As FolderItem, BlockSize As UInt32)
 		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath, BlockSize)
 		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
+		  mIsOpen = True
 		End Sub
 	#tag EndMethod
 
@@ -221,6 +222,15 @@ Protected Class ArchiveReader
 		Handle As Ptr
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mIsOpen
+			End Get
+		#tag EndGetter
+		IsOpen As Boolean
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private mArchive As Ptr
 	#tag EndProperty
@@ -231,6 +241,10 @@ Protected Class ArchiveReader
 
 	#tag Property, Flags = &h21
 		Private mFormat As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mIsOpen As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
