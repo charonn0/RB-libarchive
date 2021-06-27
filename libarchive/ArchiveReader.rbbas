@@ -124,7 +124,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub OpenFile(File As FolderItem, BlockSize As UInt32)
-		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath, BlockSize)
+		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, BlockSize)
 		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
 		  mIsOpen = True
 		End Sub

@@ -69,7 +69,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub CreateFile(File As FolderItem)
-		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath)
+		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  
 		End Sub

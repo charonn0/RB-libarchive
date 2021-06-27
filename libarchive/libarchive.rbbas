@@ -1,6 +1,16 @@
 #tag Module
 Protected Module libarchive
 	#tag Method, Flags = &h21
+		Private Function AbsolutePath_(Extends f As FolderItem) As String
+		  #If RBVersion > 2019 Then
+		    Return f.NativePath
+		  #Else
+		    Return f.AbsolutePath
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function ArchiveTypeFromName(Name As String) As libarchive.ArchiveType
 		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
 		  Select Case ext
