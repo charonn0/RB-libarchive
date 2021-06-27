@@ -456,7 +456,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h0
-		Function CreateAsArchive(Extends Archive As FolderItem, Optional Password As String, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
+		Function CreateAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
 		  Dim arch As ArchiveWriter
 		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
 		  
@@ -501,7 +501,6 @@ Protected Module libarchive
 		    Break
 		  End Select
 		  
-		  If arch <> Nil And Password <> "" Then arch.Password = Password
 		  Return arch
 		End Function
 	#tag EndMethod
