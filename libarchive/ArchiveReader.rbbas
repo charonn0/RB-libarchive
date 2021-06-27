@@ -141,11 +141,17 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function ReadFileData(WriteTo As Int32) As Boolean
+		  If WriteTo = 0 Then Return SkipFileData()
+		  
+		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
+		  Return mLastError = ARCHIVE_EOF
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function ReadFileData(WriteTo As Writeable) As Boolean
-		  If WriteTo = Nil Then
-		    mLastError = archive_read_data_skip(mArchive)
-		    Return mLastError = ARCHIVE_OK
-		  End If
+		  If WriteTo = Nil Then Return SkipFileData()
 		  
 		  Do Until mLastError <> ARCHIVE_OK
 		    Dim buffer As Ptr
