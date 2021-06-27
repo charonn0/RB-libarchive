@@ -10,7 +10,7 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType)
+		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		  mArchive = archive_write_new()
 		  If mArchive = Nil Then Raise New ArchiveException(Me)
@@ -26,6 +26,8 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_set_format_iso9660(mArchive)
 		  Case libarchive.ArchiveType.MTree
 		    mLastError = archive_write_set_format_mtree(mArchive)
+		  Case libarchive.ArchiveType.Shar
+		    mLastError = archive_write_set_format_shar(mArchive)
 		  Case libarchive.ArchiveType.TAR
 		    mLastError = archive_write_set_format_ustar(mArchive)
 		  Case libarchive.ArchiveType.XAR
@@ -37,7 +39,7 @@ Inherits libarchive.Archive
 		    Raise New ArchiveException(Me)
 		  End Select
 		  
-		  Select Case CompressionType
+		  Select Case Compressor
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_write_add_filter_compress(mArchive)
 		  Case libarchive.CompressionType.GRZip

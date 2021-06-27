@@ -2,20 +2,19 @@
 Protected Class ISO9660Writer
 Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h1000
-		Sub Constructor(File As FolderItem)
+		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType) -- from ArchiveWriter
-		  Super.Constructor(ArchiveType.ISO9660, CompressionType.All)
+		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveWriter
+		  Super.Constructor(ArchiveType.ISO9660, Compressor)
 		  CreateFile(File)
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(Buffer As MemoryBlock)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType) -- from ArchiveWriter
-		  Super.Constructor(ArchiveType.ISO9660, CompressionType.All)
+		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveWriter
+		  Super.Constructor(ArchiveType.ISO9660, Compressor)
 		  CreateMemory(Buffer)
 		  
 		End Sub

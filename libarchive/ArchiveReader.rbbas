@@ -24,7 +24,7 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType)
+		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		  mArchive = archive_read_new()
 		  If mArchive = Nil Then Raise New ArchiveException(Me)
@@ -57,7 +57,7 @@ Inherits libarchive.Archive
 		    Raise New ArchiveException(Me)
 		  End Select
 		  
-		  Select Case CompressionType
+		  Select Case Compressor
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_read_support_filter_compress(mArchive)
 		  Case libarchive.CompressionType.GRZip

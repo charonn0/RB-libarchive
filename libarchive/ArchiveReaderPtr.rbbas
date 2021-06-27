@@ -2,10 +2,10 @@
 Private Class ArchiveReaderPtr
 Inherits libarchive.ArchiveReader
 	#tag Method, Flags = &h1000
-		Sub Constructor(File As FolderItem, ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType)
+		Sub Constructor(File As FolderItem, ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, CompressionType As libarchive.CompressionType) -- from ArchiveReader
-		  Super.Constructor(ArchiveType, CompressionType)
+		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
+		  Super.Constructor(ArchiveType, Compressor)
 		  OpenFile(File, CHUNK_SIZE)
 		  
 		End Sub
