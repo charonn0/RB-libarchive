@@ -172,6 +172,12 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Function SeekWithinCurrentEntry(Offset As Int64) As Int64
+		  Return archive_seek_data(mArchive, Offset)
+		End Function
+	#tag EndMethod
+
 
 	#tag Hook, Flags = &h0
 		Event GetPassword(ByRef ArchivePassword As String) As Boolean
@@ -181,6 +187,30 @@ Inherits libarchive.Archive
 	#tag Property, Flags = &h21
 		Private Shared Archives As Dictionary
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mArchive <> Nil Then
+			    mLastError = archive_read_format_capabilities(mArchive)
+			    Return BitAnd(mLastError, ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA) = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA
+			  End If
+			End Get
+		#tag EndGetter
+		CanDecryptData As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mArchive <> Nil Then
+			    mLastError = archive_read_format_capabilities(mArchive)
+			    Return BitAnd(mLastError, ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA) = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA
+			  End If
+			End Get
+		#tag EndGetter
+		CanDecryptMetadata As Boolean
+	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -261,6 +291,27 @@ Inherits libarchive.Archive
 		FormatVariant As Int32
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mArchive = Nil Then Return False
+			  
+			  mLastError = archive_read_has_encrypted_entries(mArchive)
+			  Select Case mLastError
+			  Case 0 ' decryption supported but no encrypted entries detected
+			    Return False
+			  Case Is > 0 ' decryption supported and encrypted entries detected
+			    Return True
+			  Else
+			    ' either decryption is not supported or we don't know (yet) whether there are encrypted entries
+			    Return False
+			  End Select
+			  
+			End Get
+		#tag EndGetter
+		HasEncryptedEntries As Boolean
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private mCurrentEntry As libarchive.ArchiveEntry
 	#tag EndProperty
@@ -276,6 +327,33 @@ Inherits libarchive.Archive
 	#tag Property, Flags = &h0
 		Password As String
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Retrieve the byte offset in UNCOMPRESSED data where last-read header started.
+			  
+			  If mArchive <> Nil Then Return archive_read_header_position(mArchive)
+			End Get
+		#tag EndGetter
+		Position As Int64
+	#tag EndComputedProperty
+
+
+	#tag Constant, Name = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA, Type = Double, Dynamic = False, Default = \"2", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_READ_FORMAT_CAPS_NONE, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_READ_FORMAT_ENCRYPTION_DONT_KNOW, Type = Double, Dynamic = False, Default = \"-1", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_READ_FORMAT_ENCRYPTION_UNSUPPORTED, Type = Double, Dynamic = False, Default = \"-2", Scope = Protected
+	#tag EndConstant
 
 
 	#tag ViewBehavior
