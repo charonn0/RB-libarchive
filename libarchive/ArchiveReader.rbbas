@@ -54,6 +54,7 @@ Inherits libarchive.Archive
 		  Case libarchive.ArchiveType.All
 		    mLastError = archive_read_support_format_all(mArchive)
 		  Else
+		    mLastError = ERR_WRITE_ONLY_FORMAT
 		    Raise New ArchiveException(Me)
 		  End Select
 		  
