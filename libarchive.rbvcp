@@ -33,6 +33,7 @@ Class=CPIOWriter;libarchive/Writers/CPIOWriter.rbbas;&h632B27FF;&h5DF5FFF;false
 Class=ISO9660Writer;libarchive/Writers/ISO9660Writer.rbbas;&h45E00FFF;&h5DF5FFF;false
 Class=MTreeWriter;libarchive/Writers/MTreeWriter.rbbas;&h40A3EFFF;&h5DF5FFF;false
 Class=XARWriter;libarchive/Writers/XARWriter.rbbas;&h25612FFF;&h5DF5FFF;false
+Class=SharWriter;libarchive/Writers/SharWriter.rbbas;&h1C96AFFF;&h5DF5FFF;false
 MajorVersion=1
 MinorVersion=0
 SubVersion=0

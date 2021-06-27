@@ -456,8 +456,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h0
-		Function CreateAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
-		  Dim arch As ArchiveWriter
+		Function CreateArchive(Archive As FolderItem, Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
 		  
 		  Select Case Type
@@ -465,43 +464,78 @@ Protected Module libarchive
 		    Return Nil
 		    
 		  Case ArchiveType.Ar
-		    arch = New libarchive.Writers.ARWriter(Archive)
-		    
-		  Case ArchiveType.Cabinet
-		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    Return New libarchive.Writers.ARWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.CPIO
-		    arch = New libarchive.Writers.CPIOWriter(Archive)
+		    Return New libarchive.Writers.CPIOWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.ISO9660
-		    arch = New libarchive.Writers.ISO9660Writer(Archive)
-		    
-		  Case ArchiveType.LHA
-		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    Return New libarchive.Writers.ISO9660Writer(Archive, Compressor)
 		    
 		  Case ArchiveType.MTree
-		    arch = New libarchive.Writers.MTreeWriter(Archive)
-		    
-		  Case ArchiveType.RAR
-		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		    Return New libarchive.Writers.MTreeWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.SevenZip
-		    arch = New libarchive.Writers.SevenZipWriter(Archive)
+		    Return New libarchive.Writers.SevenZipWriter(Archive, Compressor)
+		    
+		  Case ArchiveType.Shar
+		    Return New libarchive.Writers.SharWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.TAR
-		    arch = New libarchive.Writers.TARWriter(Archive)
+		    Return New libarchive.Writers.TARWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
-		    arch = New libarchive.Writers.XARWriter(Archive)
+		    Return New libarchive.Writers.XARWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.Zip
-		    arch = New libarchive.Writers.ZipWriter(Archive)
+		    Return New libarchive.Writers.ZipWriter(Archive, Compressor)
 		    
 		  Else
-		    Break
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
 		  End Select
 		  
-		  Return arch
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CreateAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
+		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
+		  
+		  Select Case Type
+		  Case ArchiveType.All ' unknown file extension
+		    Return Nil
+		    
+		  Case ArchiveType.Ar
+		    Return New libarchive.Writers.ARWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.CPIO
+		    Return New libarchive.Writers.CPIOWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.ISO9660
+		    Return New libarchive.Writers.ISO9660Writer(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.MTree
+		    Return New libarchive.Writers.MTreeWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.SevenZip
+		    Return New libarchive.Writers.SevenZipWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.Shar
+		    Return New libarchive.Writers.SharWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.TAR
+		    Return New libarchive.Writers.TARWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.XAR
+		    Return New libarchive.Writers.XARWriter(Archive, CompressionType.All)
+		    
+		  Case ArchiveType.Zip
+		    Return New libarchive.Writers.ZipWriter(Archive, CompressionType.All)
+		    
+		  Else
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		  End Select
+		  
 		End Function
 	#tag EndMethod
 
@@ -514,51 +548,47 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OpenAsArchive(Extends Archive As FolderItem, Optional Password As String, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveReader
-		  Dim arch As ArchiveReader
+		Function OpenAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveReader
 		  Select Case Type
 		  Case ArchiveType.All ' detect
-		    arch = New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
+		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
 		    
 		  Case ArchiveType.Ar
-		    arch = New libarchive.Readers.ARReader(Archive)
+		    Return New libarchive.Readers.ARReader(Archive)
 		    
 		  Case ArchiveType.Cabinet
-		    arch = New libarchive.Readers.CabinetReader(Archive)
+		    Return New libarchive.Readers.CabinetReader(Archive)
 		    
 		  Case ArchiveType.CPIO
-		    arch = New libarchive.Readers.CPIOReader(Archive)
+		    Return New libarchive.Readers.CPIOReader(Archive)
 		    
 		  Case ArchiveType.ISO9660
-		    arch = New libarchive.Readers.ISO9660Reader(Archive)
+		    Return New libarchive.Readers.ISO9660Reader(Archive)
 		    
 		  Case ArchiveType.LHA
-		    arch = New libarchive.Readers.LHAReader(Archive)
+		    Return New libarchive.Readers.LHAReader(Archive)
 		    
 		  Case ArchiveType.MTree
-		    arch = New libarchive.Readers.MTreeReader(Archive)
+		    Return New libarchive.Readers.MTreeReader(Archive)
 		    
 		  Case ArchiveType.RAR
-		    arch = New libarchive.Readers.RARReader(Archive)
+		    Return New libarchive.Readers.RARReader(Archive)
 		    
 		  Case ArchiveType.SevenZip
-		    arch = New libarchive.Readers.SevenZipReader(Archive)
+		    Return New libarchive.Readers.SevenZipReader(Archive)
 		    
 		  Case ArchiveType.TAR
-		    arch = New libarchive.Readers.TARReader(Archive)
+		    Return New libarchive.Readers.TARReader(Archive)
 		    
 		  Case ArchiveType.XAR
-		    arch = New libarchive.Readers.XARReader(Archive)
+		    Return New libarchive.Readers.XARReader(Archive)
 		    
 		  Case ArchiveType.Zip
-		    arch = New libarchive.Readers.ZipReader(Archive)
+		    Return New libarchive.Readers.ZipReader(Archive)
 		    
 		  Else
-		    Break
+		    Raise New ArchiveException(ERR_WRITE_ONLY_FORMAT)
 		  End Select
-		  
-		  If arch <> Nil And Password <> "" Then arch.Password = Password
-		  Return arch
 		End Function
 	#tag EndMethod
 
@@ -640,6 +670,9 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_UNSUPPORTED_COMPRESSION, Type = Double, Dynamic = False, Default = \"-100", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = ERR_WRITE_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-103", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive.dll", Scope = Private
 	#tag EndConstant
 
@@ -656,6 +689,7 @@ Protected Module libarchive
 		  MTree
 		  RAR
 		  Raw
+		  Shar
 		  TAR
 		  XAR
 		Zip
