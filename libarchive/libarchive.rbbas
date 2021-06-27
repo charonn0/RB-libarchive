@@ -590,37 +590,37 @@ Protected Module libarchive
 		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
 		    
 		  Case ArchiveType.Ar
-		    Return New libarchive.Readers.ARReader(Archive)
+		    Return New libarchive.Readers.ARReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.Cabinet
-		    Return New libarchive.Readers.CabinetReader(Archive)
+		    Return New libarchive.Readers.CabinetReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.CPIO
-		    Return New libarchive.Readers.CPIOReader(Archive)
+		    Return New libarchive.Readers.CPIOReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.ISO9660
-		    Return New libarchive.Readers.ISO9660Reader(Archive)
+		    Return New libarchive.Readers.ISO9660Reader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.LHA
-		    Return New libarchive.Readers.LHAReader(Archive)
+		    Return New libarchive.Readers.LHAReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.MTree
-		    Return New libarchive.Readers.MTreeReader(Archive)
+		    Return New libarchive.Readers.MTreeReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.RAR
-		    Return New libarchive.Readers.RARReader(Archive)
+		    Return New libarchive.Readers.RARReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.SevenZip
-		    Return New libarchive.Readers.SevenZipReader(Archive)
+		    Return New libarchive.Readers.SevenZipReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.TAR
-		    Return New libarchive.Readers.TARReader(Archive)
+		    Return New libarchive.Readers.TARReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.XAR
-		    Return New libarchive.Readers.XARReader(Archive)
+		    Return New libarchive.Readers.XARReader(Archive, CompressionType.All)
 		    
 		  Case ArchiveType.Zip
-		    Return New libarchive.Readers.ZipReader(Archive)
+		    Return New libarchive.Readers.ZipReader(Archive, CompressionType.All)
 		    
 		  Else
 		    Raise New ArchiveException(ERR_WRITE_ONLY_FORMAT)

@@ -2,7 +2,7 @@
 Protected Class TARReader
 Inherits libarchive.ArchiveReader
 	#tag Method, Flags = &h1000
-		Sub Constructor(File As FolderItem)
+		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
 		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
 		  Super.Constructor(ArchiveType.TAR, Compressor)
@@ -12,7 +12,7 @@ Inherits libarchive.ArchiveReader
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(Buffer As MemoryBlock)
+		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
 		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
 		  Super.Constructor(ArchiveType.TAR, Compressor)

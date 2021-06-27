@@ -2,20 +2,20 @@
 Protected Class ISO9660Reader
 Inherits libarchive.ArchiveReader
 	#tag Method, Flags = &h1000
-		Sub Constructor(File As FolderItem)
+		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
 		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
-		  Super.Constructor(ArchiveType.ISO9660, CompressionType.All)
+		  Super.Constructor(ArchiveType.ISO9660, Compressor)
 		  OpenFile(File, CHUNK_SIZE)
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(Buffer As MemoryBlock)
+		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
 		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
-		  Super.Constructor(ArchiveType.ISO9660, CompressionType.All)
+		  Super.Constructor(ArchiveType.ISO9660, Compressor)
 		  OpenMemory(Buffer)
 		  
 		End Sub
