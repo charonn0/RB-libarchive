@@ -51,7 +51,8 @@ Protected Class ArchiveEntry
 		  Dim p As Int32 = archive_entry_mode(mEntry)
 		  If p <> 0 Then mMode = New Permissions(p)
 		  
-		  
+		  mType = archive_entry_filetype(mEntry)
+		  mLinkType = archive_entry_symlink_type(mEntry)
 		End Sub
 	#tag EndMethod
 
@@ -154,6 +155,10 @@ Protected Class ArchiveEntry
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mLinkType As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mMode As Permissions
 	#tag EndProperty
 
@@ -209,6 +214,10 @@ Protected Class ArchiveEntry
 		Private mPathName As String
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mType As UInt32
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -226,6 +235,114 @@ Protected Class ArchiveEntry
 		#tag EndSetter
 		PathName As String
 	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Select Case mType
+			  Case AE_IFBLK
+			    Return EntryType.BlockSpecial
+			    
+			  Case AE_IFCHR
+			    Return EntryType.CharacterSpecial
+			    
+			  Case AE_IFDIR
+			    Return EntryType.Directory
+			    
+			  Case AE_IFIFO
+			    Return EntryType.FIFO
+			    
+			  Case AE_IFREG
+			    Return EntryType.File
+			    
+			  Case AE_IFLINK
+			    Select Case mLinkType
+			    Case AE_SYMLINK_TYPE_DIRECTORY
+			      Return EntryType.DirectoryLink
+			    Case AE_SYMLINK_TYPE_FILE
+			      Return EntryType.FileLink
+			    Case AE_SYMLINK_TYPE_UNDEFINED
+			      Return EntryType.UndefinedLink
+			    End Select
+			    
+			  Case AE_IFSOCK
+			    Return EntryType.Socket
+			    
+			  Else
+			    Return EntryType.Unknown
+			  End Select
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  Dim t As UInt32
+			  Select Case value
+			  Case EntryType.BlockSpecial
+			    t = AE_IFBLK
+			    
+			  Case EntryType.CharacterSpecial
+			    t = AE_IFCHR
+			    
+			  Case EntryType.Directory
+			    t = AE_IFDIR
+			    
+			  Case EntryType.FIFO
+			    t = AE_IFIFO
+			    
+			  Case EntryType.File
+			    t = AE_IFREG
+			    
+			  Case EntryType.DirectoryLink, EntryType.FileLink, EntryType.UndefinedLink
+			    t = AE_IFLINK
+			    
+			  Case EntryType.Socket
+			    t = AE_IFSOCK
+			    
+			  Else
+			    Return
+			  End Select
+			  
+			  archive_entry_set_filetype(mEntry, t)
+			  mType = t
+			End Set
+		#tag EndSetter
+		Type As libarchive.EntryType
+	#tag EndComputedProperty
+
+
+	#tag Constant, Name = AE_IFBLK, Type = Double, Dynamic = False, Default = \"&o0060000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFCHR, Type = Double, Dynamic = False, Default = \"&o0020000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFDIR, Type = Double, Dynamic = False, Default = \"&o0040000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFIFO, Type = Double, Dynamic = False, Default = \"&o0010000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFLINK, Type = Double, Dynamic = False, Default = \"&o0120000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFMT, Type = Double, Dynamic = False, Default = \"&o0170000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFREG, Type = Double, Dynamic = False, Default = \"&o0100000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_IFSOCK, Type = Double, Dynamic = False, Default = \"&o0140000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_SYMLINK_TYPE_DIRECTORY, Type = Double, Dynamic = False, Default = \"2", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_SYMLINK_TYPE_FILE, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = AE_SYMLINK_TYPE_UNDEFINED, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag EndConstant
 
 
 	#tag ViewBehavior

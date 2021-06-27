@@ -42,6 +42,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_filetype Lib libpath (ArchiveEntry As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_free Lib libpath (ArchiveEntry As Ptr)
 	#tag EndExternalMethod
 
@@ -82,6 +86,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_filetype Lib libpath (ArchiveEntry As Ptr, Type As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_set_mode Lib libpath (ArchiveEntry As Ptr, Perms As Int32)
 	#tag EndExternalMethod
 
@@ -99,6 +107,10 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_size_is_set Lib libpath (ArchiveEntry As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_symlink_type Lib libpath (ArchiveEntry As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -154,7 +166,19 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_format_capabilities Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_free Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_has_encrypted_entries Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_header_position Lib libpath (Archive As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -638,6 +662,19 @@ Protected Module libarchive
 		  UUEncoded
 		  XZ
 		ZStd
+	#tag EndEnum
+
+	#tag Enum, Name = EntryType, Type = Integer, Flags = &h1
+		File
+		  Directory
+		  FileLink
+		  DirectoryLink
+		  Socket
+		  CharacterSpecial
+		  BlockSpecial
+		  FIFO
+		  UndefinedLink
+		Unknown
 	#tag EndEnum
 
 
