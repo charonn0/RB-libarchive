@@ -12,6 +12,7 @@ Inherits libarchive.ArchiveWriter
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
+		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
 		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveWriter
 		  Super.Constructor(ArchiveType.ISO9660, Compressor)
