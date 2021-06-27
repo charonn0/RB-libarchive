@@ -59,6 +59,8 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_add_filter_xz(mArchive)
 		  Case libarchive.CompressionType.ZStd
 		    mLastError = archive_write_add_filter_zstd(mArchive)
+		    
+		  Case libarchive.CompressionType.All
 		  Else
 		    mLastError = ERR_UNSUPPORTED_COMPRESSION
 		    Raise New ArchiveException(Me)
@@ -102,7 +104,7 @@ Inherits libarchive.Archive
 		      Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
 		      If block = Nil Or block.Size = 0 Then Continue
 		      mLastError = archive_write_data(mArchive, block, block.Size)
-		      If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		      If mLastError < 0 Then Raise New ArchiveException(Me)
 		    Loop
 		    
 		  Finally
