@@ -12,6 +12,20 @@ Protected Class ArchiveEntry
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Constructor(FromFile As FolderItem)
+		  Me.Constructor()
+		  Me.PathName = FromFile.Name
+		  Me.Length = FromFile.Length
+		  Me.Mode = New Permissions(FromFile.Permissions)
+		  If FromFile.Directory Then
+		    Me.Type = libarchive.EntryType.Directory
+		  ElseIf FromFile.Exists Then
+		    Me.Type = libarchive.EntryType.File
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
 		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
 		  If e = Nil Then
