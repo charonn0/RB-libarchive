@@ -709,6 +709,27 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_WRITE_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-103", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = FORMAT_OPT_CHECKFS, Type = String, Dynamic = False, Default = \"checkfs", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPAT2X, Type = String, Dynamic = False, Default = \"compat-2x", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_JOLIET, Type = String, Dynamic = False, Default = \"joliet", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_MACEXT, Type = String, Dynamic = False, Default = \"mac-ext", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_READCONCATENATED, Type = String, Dynamic = False, Default = \"read_concatenated_archives", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_ROCKRIDGE, Type = String, Dynamic = False, Default = \"rockridge", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive.dll", Scope = Private
 	#tag EndConstant
 

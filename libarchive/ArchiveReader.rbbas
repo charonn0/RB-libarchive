@@ -185,6 +185,42 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_read_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_read_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_read_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOptions(Options() As String) As Boolean
+		  Dim opts As String = Join(Options, ",")
+		  mLastError = archive_read_set_options(mArchive, opts)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SkipFileData() As Boolean
+		  mLastError = archive_read_data_skip(mArchive)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
 
 	#tag Hook, Flags = &h0
 		Event GetPassword(ByRef ArchivePassword As String) As Boolean

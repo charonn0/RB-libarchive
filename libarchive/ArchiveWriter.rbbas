@@ -97,6 +97,35 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_write_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_write_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_write_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOptions(Options() As String) As Boolean
+		  Dim opts As String = Join(Options, ",")
+		  mLastError = archive_write_set_options(mArchive, opts)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
 		  Try
 		    mLastError = archive_write_header(mArchive, Entry.Handle)
