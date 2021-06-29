@@ -131,6 +131,18 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function ReadEntryDataBlock(Count As UInt32) As MemoryBlock
+		  Dim buffer As New MemoryBlock(Count)
+		  mLastError = archive_read_data(mArchive, buffer, Buffer.Size)
+		  If mLastError >= 0 Then
+		    buffer.Size = mLastError
+		    Return buffer
+		  End If
+		  Raise New ArchiveException(Me)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function ReadEntryHeader() As Boolean
 		  Dim entry As Ptr
 		  mLastError = archive_read_next_header(mArchive, entry)
