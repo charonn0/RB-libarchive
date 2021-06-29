@@ -32,6 +32,15 @@ Protected Class Archive
 		IsOpen As Boolean
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mLastError
+			End Get
+		#tag EndGetter
+		LastError As Int32
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h1
 		Protected mArchive As Ptr
 	#tag EndProperty
