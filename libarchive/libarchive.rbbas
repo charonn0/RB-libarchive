@@ -576,6 +576,40 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function FormatError(ErrorCode As Int32) As String
+		  Dim msg As String
+		  Select Case ErrorCode
+		  Case ERR_INIT_FAILED
+		    msg = "Unknown error while initializing libarchive."
+		  Case ERR_UNSUPPORTED_COMPRESSION
+		    msg = "Unknown or unsupported compressor."
+		  Case ERR_READ_ONLY_FORMAT
+		    msg = "Creating an archive of this type is not supported."
+		  Case ERR_WRITE_ONLY_FORMAT
+		    msg = "Extracting an archive of this type is not supported."
+		  Case ARCHIVE_OK
+		    msg = "Operation succeeded."
+		  Case ARCHIVE_EOF
+		    msg = "No further data to read."
+		  Case ARCHIVE_FAILED
+		    msg = "The operation failed but it may be possible to continue."
+		  Case ARCHIVE_FATAL
+		    msg = "The operation failed and it is not possible to continue."
+		  Case ARCHIVE_RETRY
+		    msg = "The operation failed but it may succeed if retried."
+		  Case ARCHIVE_WARN
+		    msg = "The operation was partially successful."
+		    
+		  Else
+		    msg = "Unknown error number: " + Str(ErrorCode, "-000")
+		    
+		  End Select
+		  
+		  Return msg
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  Static avail As Boolean
 		  If Not avail Then avail = System.IsFunctionAvailable("archive_read_new", libpath)

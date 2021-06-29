@@ -4,7 +4,7 @@ Inherits RuntimeException
 	#tag Method, Flags = &h1000
 		Sub Constructor(ErrorCode As Integer)
 		  Me.ErrorNumber = ErrorCode
-		  
+		  Me.Message = FormatError(ErrorCode)
 		End Sub
 	#tag EndMethod
 
@@ -13,15 +13,15 @@ Inherits RuntimeException
 		  If Archive <> Nil And Archive.Handle <> Nil Then
 		    Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
 		    If mb <> Nil Then Me.Message = mb.CString(0)
+		    Me.ErrorNumber = Archive.LastError
 		  End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
 		Sub Constructor(Entry As libarchive.ArchiveEntry)
-		  If Entry <> Nil Then
-		    Me.ErrorNumber = Entry.LastError
-		  End If
+		  If Entry <> Nil Then Me.Constructor(Entry.LastError)
+		  
 		End Sub
 	#tag EndMethod
 
