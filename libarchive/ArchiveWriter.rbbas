@@ -10,35 +10,43 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
-		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
+		Protected Sub Constructor()
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- From Archive
+		  Super.Constructor()
+		  
 		  mArchive = archive_write_new()
 		  If mArchive = Nil Then Raise New ArchiveException(Me)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub CreateFile(File As FolderItem)
+		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  
-		  Select Case ArchiveType
-		  Case libarchive.ArchiveType.SevenZip
-		    mLastError = archive_write_set_format_7zip(mArchive)
-		  Case libarchive.ArchiveType.Ar
-		    mLastError = archive_write_set_format_ar_bsd(mArchive)
-		  Case libarchive.ArchiveType.CPIO
-		    mLastError = archive_write_set_format_cpio(mArchive)
-		  Case libarchive.ArchiveType.ISO9660
-		    mLastError = archive_write_set_format_iso9660(mArchive)
-		  Case libarchive.ArchiveType.MTree
-		    mLastError = archive_write_set_format_mtree(mArchive)
-		  Case libarchive.ArchiveType.Shar
-		    mLastError = archive_write_set_format_shar(mArchive)
-		  Case libarchive.ArchiveType.TAR
-		    mLastError = archive_write_set_format_ustar(mArchive)
-		  Case libarchive.ArchiveType.XAR
-		    mLastError = archive_write_set_format_xar(mArchive)
-		  Case libarchive.ArchiveType.Zip
-		    mLastError = archive_write_set_format_zip(mArchive)
-		  Else
-		    mLastError = ERR_READ_ONLY_FORMAT
-		    Raise New ArchiveException(Me)
-		  End Select
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub CreateMemory(Buffer As MemoryBlock)
+		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mBuffer = Buffer
+		  mIsOpen = True
 		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub Destructor()
+		  If mArchive <> Nil Then mLastError = archive_write_free(mArchive) ' free() calls close()
+		  mArchive = Nil
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
 		  Select Case Compressor
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_write_add_filter_compress(mArchive)
@@ -67,32 +75,41 @@ Inherits libarchive.Archive
 		    mLastError = ERR_UNSUPPORTED_COMPRESSION
 		    Raise New ArchiveException(Me)
 		  End Select
-		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub CreateFile(File As FolderItem)
-		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
-		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		  
-		End Sub
+		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  mLastError = archive_write_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
+		  Return mLastError = ARCHIVE_OK
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub CreateMemory(Buffer As MemoryBlock)
-		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
-		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		  mBuffer = Buffer
-		  mIsOpen = True
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub Destructor()
-		  If mArchive <> Nil Then mLastError = archive_write_free(mArchive) ' free() calls close()
-		  mArchive = Nil
+		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  Select Case ArchiveType
+		  Case libarchive.ArchiveType.SevenZip
+		    mLastError = archive_write_set_format_7zip(mArchive)
+		  Case libarchive.ArchiveType.Ar
+		    mLastError = archive_write_set_format_ar_bsd(mArchive)
+		  Case libarchive.ArchiveType.CPIO
+		    mLastError = archive_write_set_format_cpio(mArchive)
+		  Case libarchive.ArchiveType.ISO9660
+		    mLastError = archive_write_set_format_iso9660(mArchive)
+		  Case libarchive.ArchiveType.MTree
+		    mLastError = archive_write_set_format_mtree(mArchive)
+		  Case libarchive.ArchiveType.Shar
+		    mLastError = archive_write_set_format_shar(mArchive)
+		  Case libarchive.ArchiveType.TAR
+		    mLastError = archive_write_set_format_ustar(mArchive)
+		  Case libarchive.ArchiveType.XAR
+		    mLastError = archive_write_set_format_xar(mArchive)
+		  Case libarchive.ArchiveType.Zip
+		    mLastError = archive_write_set_format_zip(mArchive)
+		  Else
+		    mLastError = ERR_READ_ONLY_FORMAT
+		    Raise New ArchiveException(Me)
+		  End Select
 		End Sub
 	#tag EndMethod
 

@@ -4,8 +4,10 @@ Inherits libarchive.ArchiveReader
 	#tag Method, Flags = &h1000
 		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
-		  Super.Constructor(ArchiveType.TAR, Compressor)
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType.TAR)
+		  SetFilter(Compressor)
 		  OpenFile(File, CHUNK_SIZE)
 		  
 		End Sub
@@ -14,8 +16,9 @@ Inherits libarchive.ArchiveReader
 	#tag Method, Flags = &h1000
 		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveReader
-		  Super.Constructor(ArchiveType.TAR, Compressor)
+		  // Constructor() -- from ArchiveReader
+		  SetFormat(ArchiveType.TAR)
+		  SetFilter(Compressor)
 		  OpenMemory(Buffer)
 		  
 		End Sub

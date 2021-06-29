@@ -1,8 +1,15 @@
 #tag Class
 Protected Class Archive
-	#tag Method, Flags = &h21
-		Private Sub Constructor()
-		  // empty constructor
+	#tag Method, Flags = &h0
+		Sub Close()
+		  mIsOpen = False
+		  mBuffer = Nil
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub Constructor()
+		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		End Sub
 	#tag EndMethod
 

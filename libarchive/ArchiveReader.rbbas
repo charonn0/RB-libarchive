@@ -24,68 +24,15 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
-		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
+		Protected Sub Constructor()
+		  ' Constructs a generic ArchiveReader. Format-specific subclasses call this Constructor.
+		  
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- From Archive
+		  Super.Constructor()
+		  
 		  mArchive = archive_read_new()
 		  If mArchive = Nil Then Raise New ArchiveException(Me)
-		  Select Case ArchiveType
-		  Case libarchive.ArchiveType.SevenZip
-		    mLastError = archive_read_support_format_7zip(mArchive)
-		  Case libarchive.ArchiveType.Ar
-		    mLastError = archive_read_support_format_ar(mArchive)
-		  Case libarchive.ArchiveType.Cabinet
-		    mLastError = archive_read_support_format_cab(mArchive)
-		  Case libarchive.ArchiveType.CPIO
-		    mLastError = archive_read_support_format_cpio(mArchive)
-		  Case libarchive.ArchiveType.ISO9660
-		    mLastError = archive_read_support_format_iso9660(mArchive)
-		  Case libarchive.ArchiveType.LHA
-		    mLastError = archive_read_support_format_lha(mArchive)
-		  Case libarchive.ArchiveType.MTree
-		    mLastError = archive_read_support_format_mtree(mArchive)
-		  Case libarchive.ArchiveType.RAR
-		    mLastError = archive_read_support_format_rar(mArchive)
-		  Case libarchive.ArchiveType.TAR
-		    mLastError = archive_read_support_format_tar(mArchive)
-		  Case libarchive.ArchiveType.XAR
-		    mLastError = archive_read_support_format_xar(mArchive)
-		  Case libarchive.ArchiveType.Zip
-		    mLastError = archive_read_support_format_zip(mArchive)
-		  Case libarchive.ArchiveType.All
-		    mLastError = archive_read_support_format_all(mArchive)
-		  Else
-		    mLastError = ERR_WRITE_ONLY_FORMAT
-		    Raise New ArchiveException(Me)
-		  End Select
-		  
-		  Select Case Compressor
-		  Case libarchive.CompressionType.Compress
-		    mLastError = archive_read_support_filter_compress(mArchive)
-		  Case libarchive.CompressionType.GRZip
-		    mLastError = archive_read_support_filter_grzip(mArchive)
-		  Case libarchive.CompressionType.GZip
-		    mLastError = archive_read_support_filter_gzip(mArchive)
-		  Case libarchive.CompressionType.LRZip
-		    mLastError = archive_read_support_filter_lrzip(mArchive)
-		  Case libarchive.CompressionType.LZ4
-		    mLastError = archive_read_support_filter_lz4(mArchive)
-		  Case libarchive.CompressionType.LZMA
-		    mLastError = archive_read_support_filter_lzma(mArchive)
-		  Case libarchive.CompressionType.None
-		    mLastError = archive_read_support_filter_none(mArchive)
-		  Case libarchive.CompressionType.RPM
-		    mLastError = archive_read_support_filter_rpm(mArchive)
-		  Case libarchive.CompressionType.UUEncoded
-		    mLastError = archive_read_support_filter_uu(mArchive)
-		  Case libarchive.CompressionType.XZ
-		    mLastError = archive_read_support_filter_xz(mArchive)
-		  Case libarchive.CompressionType.ZStd
-		    mLastError = archive_read_support_filter_zstd(mArchive)
-		  Case libarchive.CompressionType.All
-		    mLastError = archive_read_support_filter_all(mArchive)
-		  Else
-		    Raise New ArchiveException(Me)
-		  End Select
 		  
 		  If Archives = Nil Then Archives = New Dictionary
 		  Archives.Value(mArchive) = New WeakRef(Me)
@@ -180,9 +127,40 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function SeekWithinCurrentEntry(Offset As Int64) As Int64
-		  Return archive_seek_data(mArchive, Offset)
-		End Function
+		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  Select Case Compressor
+		  Case libarchive.CompressionType.Compress
+		    mLastError = archive_read_support_filter_compress(mArchive)
+		  Case libarchive.CompressionType.GRZip
+		    mLastError = archive_read_support_filter_grzip(mArchive)
+		  Case libarchive.CompressionType.GZip
+		    mLastError = archive_read_support_filter_gzip(mArchive)
+		  Case libarchive.CompressionType.LRZip
+		    mLastError = archive_read_support_filter_lrzip(mArchive)
+		  Case libarchive.CompressionType.LZ4
+		    mLastError = archive_read_support_filter_lz4(mArchive)
+		  Case libarchive.CompressionType.LZip
+		    mLastError = archive_read_support_filter_lzip(mArchive)
+		  Case libarchive.CompressionType.LZMA
+		    mLastError = archive_read_support_filter_lzma(mArchive)
+		  Case libarchive.CompressionType.LZOP
+		    mLastError = archive_read_support_filter_lzop(mArchive)
+		  Case libarchive.CompressionType.None
+		    mLastError = archive_read_support_filter_none(mArchive)
+		  Case libarchive.CompressionType.RPM
+		    mLastError = archive_read_support_filter_rpm(mArchive)
+		  Case libarchive.CompressionType.UUEncoded
+		    mLastError = archive_read_support_filter_uu(mArchive)
+		  Case libarchive.CompressionType.XZ
+		    mLastError = archive_read_support_filter_xz(mArchive)
+		  Case libarchive.CompressionType.ZStd
+		    mLastError = archive_read_support_filter_zstd(mArchive)
+		  Case libarchive.CompressionType.All
+		    mLastError = archive_read_support_filter_all(mArchive)
+		  Else
+		    Raise New ArchiveException(Me)
+		  End Select
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -192,8 +170,54 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  Select Case ArchiveType
+		  Case libarchive.ArchiveType.All
+		    mLastError = archive_read_support_format_all(mArchive)
+		  Case libarchive.ArchiveType.SevenZip
+		    mLastError = archive_read_support_format_7zip(mArchive)
+		  Case libarchive.ArchiveType.Ar
+		    mLastError = archive_read_support_format_ar(mArchive)
+		  Case libarchive.ArchiveType.Cabinet
+		    mLastError = archive_read_support_format_cab(mArchive)
+		  Case libarchive.ArchiveType.CPIO
+		    mLastError = archive_read_support_format_cpio(mArchive)
+		  Case libarchive.ArchiveType.Empty
+		    mLastError = archive_read_support_format_empty(mArchive)
+		  Case libarchive.ArchiveType.ISO9660
+		    mLastError = archive_read_support_format_iso9660(mArchive)
+		  Case libarchive.ArchiveType.LHA
+		    mLastError = archive_read_support_format_lha(mArchive)
+		  Case libarchive.ArchiveType.MTree
+		    mLastError = archive_read_support_format_mtree(mArchive)
+		  Case libarchive.ArchiveType.RAR
+		    mLastError = archive_read_support_format_rar(mArchive)
+		  Case libarchive.ArchiveType.RAR5
+		    mLastError = archive_read_support_format_rar5(mArchive)
+		  Case libarchive.ArchiveType.Raw
+		    mLastError = archive_read_support_format_raw(mArchive)
+		  Case libarchive.ArchiveType.TAR
+		    mLastError = archive_read_support_format_tar(mArchive)
+		  Case libarchive.ArchiveType.WArc
+		    mLastError = archive_read_support_format_warc(mArchive)
+		  Case libarchive.ArchiveType.XAR
+		    mLastError = archive_read_support_format_xar(mArchive)
+		  Case libarchive.ArchiveType.Zip
+		    mLastError = archive_read_support_format_zip(mArchive)
+		  Case libarchive.ArchiveType.ZipStreamable
+		    mLastError = archive_read_support_format_zip_streamable(mArchive)
+		  Case libarchive.ArchiveType.ZipSeekable
+		    mLastError = archive_read_support_format_zip_seekable(mArchive)
+		  Else
+		    mLastError = ERR_WRITE_ONLY_FORMAT
+		    Raise New ArchiveException(Me)
+		  End Select
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  mLastError = archive_read_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -262,6 +286,20 @@ Inherits libarchive.Archive
 			End Get
 		#tag EndGetter
 		CurrentEntry As libarchive.ArchiveEntry
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h1
+		#tag Getter
+			Get
+			  If mArchive <> Nil Then Return archive_read_header_position(mArchive)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mArchive <> Nil Then Call archive_seek_data(mArchive, value)
+			End Set
+		#tag EndSetter
+		Protected FileDataPosition As UInt64
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -370,17 +408,6 @@ Inherits libarchive.Archive
 	#tag Property, Flags = &h0
 		Password As String
 	#tag EndProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  ' Retrieve the byte offset in UNCOMPRESSED data where last-read header started.
-			  
-			  If mArchive <> Nil Then Return archive_read_header_position(mArchive)
-			End Get
-		#tag EndGetter
-		Position As Int64
-	#tag EndComputedProperty
 
 
 	#tag Constant, Name = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA, Type = Double, Dynamic = False, Default = \"1", Scope = Protected

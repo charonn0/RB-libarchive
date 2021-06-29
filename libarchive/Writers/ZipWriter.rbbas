@@ -4,8 +4,10 @@ Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h1000
 		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveWriter
-		  Super.Constructor(ArchiveType.Zip, Compressor)
+		  // Constructor() -- from ArchiveWriter
+		  Super.Constructor()
+		  SetFormat(ArchiveType.Zip)
+		  SetFilter(Compressor)
 		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
 		  CreateFile(File)
 		  
@@ -15,8 +17,10 @@ Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h1000
 		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
-		  // Constructor(ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType) -- from ArchiveWriter
-		  Super.Constructor(ArchiveType.Zip, Compressor)
+		  // Constructor() -- from ArchiveWriter
+		  Super.Constructor()
+		  SetFormat(ArchiveType.Zip)
+		  SetFilter(Compressor)
 		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
 		  CreateMemory(Buffer)
 		  
