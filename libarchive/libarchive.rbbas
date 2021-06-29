@@ -36,6 +36,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_bzlib_version Lib libpath () As WString
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_atime Lib libpath (ArchiveEntry As Ptr) As UInt32
 	#tag EndExternalMethod
 
@@ -152,11 +156,23 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_liblz4_version Lib libpath () As WString
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_liblzma_version Lib libpath () As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_liblzma_version Lib libpath () As WString
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_libzstd_version Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_libzstd_version Lib libpath () As WString
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -173,6 +189,14 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_data_skip Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_extract Lib libpath (Archive As Ptr, Entry As Ptr, Flags As Int32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_extract2 Lib libpath (Archive As Ptr, Entry As Ptr, Destination As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -220,6 +244,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_format Lib libpath (Archive As Ptr, Format As Int32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_set_format_option Lib libpath (Archive As Ptr, FilterOrReaderModule As WString, Option As WString, Value As WString) As Int32
 	#tag EndExternalMethod
 
@@ -261,6 +289,10 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_support_filter_lz4 Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_filter_lzip Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -320,6 +352,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_format_gnutar Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_support_format_iso9660 Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
@@ -336,11 +372,19 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_format_rar5 Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_support_format_raw Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_support_format_tar Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_format_warc Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -352,7 +396,27 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_format_zip_seekable Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_support_format_zip_streamable Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_seek_data Lib libpath (Archive As Ptr, Offset As Int64) As Int64
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_version_details Lib libpath () As WString
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_version_number Lib libpath () As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_version_string Lib libpath () As WString
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -401,6 +465,14 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_write_data Lib libpath (Archive As Ptr, Buffer As Ptr, BufferSize As UInt32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_disk_new Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_disk_set_options Lib libpath (Archive As Ptr, Flags As Int32) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -488,7 +560,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_zlib_version Lib libpath () As Ptr
+		Private Soft Declare Function archive_zlib_version Lib libpath () As WString
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h0
@@ -743,25 +815,85 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_WRITE_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-103", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_CHECKFS, Type = String, Dynamic = False, Default = \"checkfs", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_BASE64, Type = String, Dynamic = False, Default = \"b64encode", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_COMPAT2X, Type = String, Dynamic = False, Default = \"compat-2x", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_BZIP2, Type = String, Dynamic = False, Default = \"bzip2", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_GZIP, Type = String, Dynamic = False, Default = \"gzip", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_JOLIET, Type = String, Dynamic = False, Default = \"joliet", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_LRZIP, Type = String, Dynamic = False, Default = \"lrzip", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_MACEXT, Type = String, Dynamic = False, Default = \"mac-ext", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_LZ4, Type = String, Dynamic = False, Default = \"lz4", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_READCONCATENATED, Type = String, Dynamic = False, Default = \"read_concatenated_archives", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_LZOP, Type = String, Dynamic = False, Default = \"lzop", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = FORMAT_OPT_ROCKRIDGE, Type = String, Dynamic = False, Default = \"rockridge", Scope = Protected
+	#tag Constant, Name = FILTER_MODULE_UUENCODE, Type = String, Dynamic = False, Default = \"uuencode", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_XZ, Type = String, Dynamic = False, Default = \"xz", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_ZSTD, Type = String, Dynamic = False, Default = \"zstd", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_7ZIP, Type = String, Dynamic = False, Default = \"7zip", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_CPIO, Type = String, Dynamic = False, Default = \"cpio", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_GNUTAR, Type = String, Dynamic = False, Default = \"gnutar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_ISO9660, Type = String, Dynamic = False, Default = \"iso9660", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_MTREE, Type = String, Dynamic = False, Default = \"mtree", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_PAX, Type = String, Dynamic = False, Default = \"pax", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_USTAR, Type = String, Dynamic = False, Default = \"ustar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_V7TAR, Type = String, Dynamic = False, Default = \"v7tar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_WARC, Type = String, Dynamic = False, Default = \"warc", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_XAR, Type = String, Dynamic = False, Default = \"xar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_ZIP, Type = String, Dynamic = False, Default = \"zip", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_CHECKFS, Type = String, Dynamic = False, Default = \"checkfs", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPAT2X, Type = String, Dynamic = False, Default = \"compat-2x", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_JOLIET, Type = String, Dynamic = False, Default = \"joliet", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_MACEXT, Type = String, Dynamic = False, Default = \"mac-ext", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_READCONCATENATED, Type = String, Dynamic = False, Default = \"read_concatenated_archives", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_ROCKRIDGE, Type = String, Dynamic = False, Default = \"rockridge", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive.dll", Scope = Private
@@ -775,15 +907,20 @@ Protected Module libarchive
 		  Cabinet
 		  CPIO
 		  Empty
+		  GnuTar
 		  ISO9660
 		  LHA
 		  MTree
 		  RAR
+		  RAR5
 		  Raw
 		  Shar
 		  TAR
+		  WArc
 		  XAR
-		Zip
+		  Zip
+		  ZipStreamable
+		ZipSeekable
 	#tag EndEnum
 
 	#tag Enum, Name = CompressionType, Type = Integer, Flags = &h1
@@ -794,7 +931,9 @@ Protected Module libarchive
 		  GZip
 		  LRZip
 		  LZ4
+		  LZip
 		  LZMA
+		  LZOP
 		  None
 		  RPM
 		  UUEncoded
