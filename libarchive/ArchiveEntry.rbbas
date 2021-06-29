@@ -2,6 +2,8 @@
 Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
 		Sub Constructor()
+		  ' Create a new empty ArchiveEntry.
+		  
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		  mEntry = archive_entry_new()
 		  If mEntry = Nil Then
@@ -12,9 +14,17 @@ Protected Class ArchiveEntry
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(FromFile As FolderItem)
+		Sub Constructor(FromFile As FolderItem, Optional RelativeRoot As FolderItem)
+		  ' Create a new ArchiveEntry and copy the metadata of the FromFile FolderItem
+		  ' into the entry. RelativeRoot is the root of the directory tree being archived;
+		  ' the PathName property will be the relative path between the root and the entry.
+		  
 		  Me.Constructor()
-		  Me.PathName = FromFile.Name
+		  If RelativeRoot <> Nil Then
+		    Me.PathName = GetRelativePath(RelativeRoot, FromFile)
+		  Else
+		    Me.PathName = FromFile.Name
+		  End If
 		  Me.Length = FromFile.Length
 		  Me.Mode = New Permissions(FromFile.Permissions)
 		  If FromFile.Directory Then
@@ -27,6 +37,8 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h0
 		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
+		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
+		  
 		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
 		  If e = Nil Then
 		    mLastError = ERR_INIT_FAILED
@@ -77,15 +89,39 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Extract(Output As FolderItem) As Boolean
+		  ' Extract the entry into the specified FolderItem.
+		  
+		  Dim disk As New libarchive.Writers.DiskWriter(Output, 0)
+		  mLastError = archive_read_extract2(mOwner.Handle, Me.Handle, disk.Handle)
+		  disk.Close()
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Extract(Flags As Int32) As Boolean
+		  ' Extract the entry into the current working directory using the specified Flags.
+		  
+		  mLastError = archive_read_extract(mOwner.Handle, Me.Handle, Flags)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Gets the last access time of the entry, or Nil if not available.
+			  
 			  Return mAccessTime
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Sets the last access time of the entry. Set this to Nil to remove the access time.
+			  
 			  If mEntry = Nil Then Return
 			  If value = Nil Then
 			    archive_entry_unset_atime(mEntry)
@@ -112,6 +148,64 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Gets whether the entry is a directory or directory link.
+			  
+			  Return Me.Type = EntryType.Directory Or Me.Type = EntryType.DirectoryLink
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets whether the entry is a directory.
+			  
+			  Dim link As Boolean = IsALink
+			  Select Case True
+			  Case value And link
+			    Me.Type = EntryType.DirectoryLink
+			  Case value And Not link
+			    Me.Type = EntryType.Directory
+			  Case Not value And link
+			    Me.Type = EntryType.FileLink
+			  Case Not value And Not link
+			    Me.Type = EntryType.File
+			  End Select
+			End Set
+		#tag EndSetter
+		IsADirectory As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets whether the entry is a symlink.
+			  
+			  Return Me.Type = EntryType.FileLink Or Me.Type = EntryType.DirectoryLink
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets whether the entry is a symlink.
+			  
+			  Dim dir As Boolean = IsADirectory
+			  Select Case True
+			  Case value And dir
+			    Me.Type = EntryType.DirectoryLink
+			  Case value And Not dir
+			    Me.Type = EntryType.FileLink
+			  Case Not value And dir
+			    Me.Type = EntryType.Directory
+			  Case Not value And Not dir
+			    Me.Type = EntryType.File
+			  End Select
+			End Set
+		#tag EndSetter
+		IsALink As Boolean
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Returns True if the entry is encrypted, if that information is available.
+			  
 			  Return mIsEncrypted
 			End Get
 		#tag EndGetter
@@ -130,11 +224,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Get the uncompressed size of the entry, if available.
+			  
 			  Return mLength
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Set the uncompressed size of the entry. Set this to a value <0 to clear the size.
+			  
 			  If mEntry = Nil Then Return
 			  If value < 0 Then
 			    archive_entry_unset_size(mEntry)
@@ -183,11 +281,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Get the Unix-style permissions of the entry, if available.
+			  
 			  Return mMode
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Set the Unix-style permissions of the entry. 
+			  
 			  If mEntry = Nil Or value = Nil Then Return
 			  Dim p As Int32 = PermissionsToMode(value)
 			  archive_entry_set_mode(mEntry, p)
@@ -201,11 +303,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Get the last-modified time of the entry, if available.
+			  
 			  Return mModificationTime
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Sets the last-modified time of the entry. Set this to Nil to remove the last-modified time.
+			  
 			  If mEntry = Nil Then Return
 			  If value = Nil Then
 			    archive_entry_unset_mtime(mEntry)
@@ -235,11 +341,15 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Get the relative path and filename of the entry, if available.
+			  
 			  Return mPathName
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Set the relative path and filename of the entry.
+			  
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
 			    archive_entry_copy_pathname_w(mEntry, value)
@@ -253,6 +363,8 @@ Protected Class ArchiveEntry
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Get the EntryType of the entry, if available.
+			  
 			  Select Case mType
 			  Case AE_IFBLK
 			    Return EntryType.BlockSpecial
@@ -289,6 +401,8 @@ Protected Class ArchiveEntry
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Set the EntryType of the entry.
+			  
 			  If mEntry = Nil Then Return
 			  Dim t As UInt32
 			  Select Case value
