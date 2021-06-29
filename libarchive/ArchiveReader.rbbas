@@ -16,10 +16,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Sub Close()
+		  ' Close the archive and free system resources. 
+		  
 		  If mIsOpen Then mLastError = archive_read_close(mArchive)
-		  mIsOpen = False
-		  mBuffer = Nil
 		  mCurrentEntry = Nil
+		  Super.Close()
 		End Sub
 	#tag EndMethod
 
@@ -44,7 +45,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
+		  ' Free all resources.
+		  
 		  If mArchive <> Nil Then
+		    Super.Close()
 		    mLastError = archive_read_free(mArchive) ' free() calls close()
 		    If Archives <> Nil And Archives.HasKey(mArchive) Then Archives.Remove(mArchive)
 		    If Archives.Count = 0 Then Archives = Nil
@@ -66,14 +70,14 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Function MoveNext(WriteTo As Writeable) As Boolean
-		  Return ReadFileData(WriteTo) And ReadHeader()
+		  Return ReadEntryData(WriteTo) And ReadEntryHeader()
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub OpenFile(File As FolderItem, BlockSize As UInt32)
 		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, BlockSize)
-		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
+		  If mLastError <> ARCHIVE_OK Or Not ReadEntryHeader() Then Raise New ArchiveException(Me)
 		  mIsOpen = True
 		End Sub
 	#tag EndMethod
@@ -81,15 +85,15 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Sub OpenMemory(Buffer As MemoryBlock)
 		  mLastError = archive_read_open_memory(mArchive, Buffer, Buffer.Size)
-		  If mLastError <> ARCHIVE_OK Or Not ReadHeader() Then Raise New ArchiveException(Me)
+		  If mLastError <> ARCHIVE_OK Or Not ReadEntryHeader() Then Raise New ArchiveException(Me)
 		  mBuffer = Buffer
 		  mIsOpen = True
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadFileData(WriteTo As Int32) As Boolean
-		  If WriteTo = 0 Then Return SkipFileData()
+		Protected Function ReadEntryData(WriteTo As Int32) As Boolean
+		  If WriteTo = 0 Then Return SkipEntryData()
 		  
 		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
 		  Return mLastError = ARCHIVE_EOF
@@ -97,17 +101,17 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadFileData(WriteTo As Writeable) As Boolean
-		  If WriteTo = Nil Then Return SkipFileData()
+		Protected Function ReadEntryData(WriteTo As Writeable) As Boolean
+		  If WriteTo = Nil Then Return SkipEntryData()
+		  mLastError = 0
 		  
 		  Do Until mLastError <> ARCHIVE_OK
-		    Dim buffer As Ptr
-		    Dim size As UInt32
+		    Dim buffer As MemoryBlock
 		    Dim offset As UInt64
-		    mLastError = archive_read_data_block(mArchive, buffer, size, offset)
-		    If buffer <> Nil Then
-		      Dim mb As MemoryBlock = buffer
-		      WriteTo.Write(mb.StringValue(0, size))
+		    Dim size As UInt32 = ReadEntryDataBlock(buffer, offset)
+		    If size > 0 Then
+		      WriteTo.Write(buffer.StringValue(0, size))
+		      If RaiseEvent ExtractProgress(CurrentEntry, Me.FileDataPosition) Then Exit Do
 		    End If
 		  Loop
 		  
@@ -116,7 +120,18 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadHeader() As Boolean
+		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
+		  Dim size As UInt32
+		  Dim buffer As Ptr
+		  mLastError = archive_read_data_block(mArchive, buffer, size, Offset)
+		  If buffer <> Nil Then Block = buffer
+		  Return size
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ReadEntryHeader() As Boolean
 		  Dim entry As Ptr
 		  mLastError = archive_read_next_header(mArchive, entry)
 		  If mLastError <> ARCHIVE_OK Then Return False
@@ -163,8 +178,8 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
 		  mLastError = archive_read_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -223,15 +238,15 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  mLastError = archive_read_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetOptions(Options() As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetOptions(Options() As String) As Boolean
 		  Dim opts As String = Join(Options, ",")
 		  mLastError = archive_read_set_options(mArchive, opts)
 		  Return mLastError = ARCHIVE_OK
@@ -239,12 +254,16 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function SkipFileData() As Boolean
+		Protected Function SkipEntryData() As Boolean
 		  mLastError = archive_read_data_skip(mArchive)
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
 
+
+	#tag Hook, Flags = &h0
+		Event ExtractProgress(Item As libarchive.ArchiveEntry, Position As Int64) As Boolean
+	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event GetPassword(ByRef ArchivePassword As String) As Boolean
@@ -428,11 +447,32 @@ Inherits libarchive.Archive
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="CanDecryptData"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CanDecryptMetadata"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HasEncryptedEntries"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsOpen"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.Archive"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -446,6 +486,12 @@ Inherits libarchive.Archive
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Password"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

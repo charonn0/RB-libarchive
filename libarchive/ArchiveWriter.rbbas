@@ -4,8 +4,7 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
-		  mIsOpen = False
-		  mBuffer = Nil
+		  Super.Close()
 		End Sub
 	#tag EndMethod
 
@@ -113,29 +112,22 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
-		  mLastError = archive_write_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
-		  Return mLastError = ARCHIVE_OK
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  mLastError = archive_write_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  mLastError = archive_write_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function SetOptions(Options() As String) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function SetOptions(Options() As String) As Boolean
 		  Dim opts As String = Join(Options, ",")
 		  mLastError = archive_write_set_options(mArchive, opts)
 		  Return mLastError = ARCHIVE_OK
@@ -145,19 +137,37 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
 		  Try
-		    mLastError = archive_write_header(mArchive, Entry.Handle)
-		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		    WriteEntryHeader(Entry)
 		    
 		    Do Until Source.EOF
 		      Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
-		      If block = Nil Or block.Size = 0 Then Continue
-		      mLastError = archive_write_data(mArchive, block, block.Size)
-		      If mLastError < 0 Then Raise New ArchiveException(Me)
+		      WriteEntryDataBlock(block)
 		    Loop
 		    
 		  Finally
-		    mLastError = archive_write_finish_entry(mArchive)
+		    WriteEntryFinished()
 		  End Try
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub WriteEntryDataBlock(Block As MemoryBlock)
+		  If Block = Nil Or Block.Size = 0 Then Return
+		  mLastError = archive_write_data(mArchive, Block, Block.Size)
+		  If mLastError < 0 Then Raise New ArchiveException(Me)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub WriteEntryFinished()
+		  mLastError = archive_write_finish_entry(mArchive)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
+		  mLastError = archive_write_header(mArchive, Entry.Handle)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		End Sub
 	#tag EndMethod
 
@@ -200,6 +210,7 @@ Inherits libarchive.Archive
 			Name="IsOpen"
 			Group="Behavior"
 			Type="Boolean"
+			InheritedFrom="libarchive.Archive"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -213,6 +224,12 @@ Inherits libarchive.Archive
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Password"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
