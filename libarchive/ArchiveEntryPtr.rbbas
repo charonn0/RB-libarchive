@@ -2,7 +2,8 @@
 Private Class ArchiveEntryPtr
 Inherits libarchive.ArchiveEntry
 	#tag Method, Flags = &h0
-		Sub Constructor(Owner As libarchive.ArchiveReader, Entry As Ptr)
+		Sub Constructor(Owner As libarchive.Archive, Entry As Ptr)
+		  mFreeable = False
 		  Super.Constructor(Owner, Entry)
 		End Sub
 	#tag EndMethod

@@ -35,23 +35,8 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
-		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
-		  
-		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
-		  If e = Nil Then
-		    mLastError = ERR_INIT_FAILED
-		    Raise New ArchiveException(Me)
-		  End If
-		  Me.Constructor(CloneFrom.mOwner, e)
-		  
-		  
-		End Sub
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(Owner As libarchive.ArchiveReader, Entry As Ptr)
+		Protected Sub Constructor(Owner As libarchive.Archive, Entry As Ptr)
 		  mEntry = Entry
 		  mOwner = Owner
 		  
@@ -82,9 +67,24 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
+		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
+		  
+		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
+		  If e = Nil Then
+		    mLastError = ERR_INIT_FAILED
+		    Raise New ArchiveException(Me)
+		  End If
+		  Me.Constructor(CloneFrom.mOwner, e)
+		  
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
-		  If mEntry <> Nil Then archive_entry_free(mEntry)
+		  If mEntry <> Nil And mFreeable Then archive_entry_free(mEntry)
 		  mEntry = Nil
 		End Sub
 	#tag EndMethod
@@ -267,6 +267,10 @@ Protected Class ArchiveEntry
 		Private mEntry As Ptr
 	#tag EndProperty
 
+	#tag Property, Flags = &h1
+		Protected mFreeable As Boolean = True
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private mIsEncrypted As Boolean
 	#tag EndProperty
@@ -340,7 +344,7 @@ Protected Class ArchiveEntry
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
-		Private mOwner As libarchive.ArchiveReader
+		Private mOwner As libarchive.Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
