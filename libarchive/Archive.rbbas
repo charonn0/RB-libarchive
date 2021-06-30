@@ -50,6 +50,14 @@ Protected Class Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
+		Protected mFilterName As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mFormatName As String = """raw"""
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
 		Protected mIsOpen As Boolean
 	#tag EndProperty
 

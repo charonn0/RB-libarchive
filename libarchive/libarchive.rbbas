@@ -829,6 +829,12 @@ Protected Module libarchive
 	#tag Constant, Name = FILTER_MODULE_BZIP2, Type = String, Dynamic = False, Default = \"bzip2", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FILTER_MODULE_COMPRESS, Type = String, Dynamic = False, Default = \"compress", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_GRZIP, Type = String, Dynamic = False, Default = \"grzip", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FILTER_MODULE_GZIP, Type = String, Dynamic = False, Default = \"gzip", Scope = Private
 	#tag EndConstant
 
@@ -838,7 +844,13 @@ Protected Module libarchive
 	#tag Constant, Name = FILTER_MODULE_LZ4, Type = String, Dynamic = False, Default = \"lz4", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FILTER_MODULE_LZMA, Type = String, Dynamic = False, Default = \"lzma", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FILTER_MODULE_LZOP, Type = String, Dynamic = False, Default = \"lzop", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_NONE, Type = String, Dynamic = False, Default = \"", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FILTER_MODULE_UUENCODE, Type = String, Dynamic = False, Default = \"uuencode", Scope = Private
@@ -851,6 +863,9 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_7ZIP, Type = String, Dynamic = False, Default = \"7zip", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_AR, Type = String, Dynamic = False, Default = \"ar", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_CPIO, Type = String, Dynamic = False, Default = \"cpio", Scope = Private
@@ -866,6 +881,12 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_PAX, Type = String, Dynamic = False, Default = \"pax", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAW, Type = String, Dynamic = False, Default = \"raw", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_SHAR, Type = String, Dynamic = False, Default = \"shar", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_USTAR, Type = String, Dynamic = False, Default = \"ustar", Scope = Private
@@ -887,6 +908,12 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_COMPAT2X, Type = String, Dynamic = False, Default = \"compat-2x", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPRESSION, Type = String, Dynamic = False, Default = \"compression", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPRESSIONLEVEL, Type = String, Dynamic = False, Default = \"compression-level", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Private

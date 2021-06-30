@@ -34,6 +34,7 @@ Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		 Shared Function Create(Output As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As UInt32) As libarchive.CompressedStream
 		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor)
+		  writer.CompressionLevel = CompressionLevel
 		  Dim meta As New libarchive.ArchiveEntry()
 		  meta.Type = EntryType.File
 		  Return New CompressedStream(writer, meta)
