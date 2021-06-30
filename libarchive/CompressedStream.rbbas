@@ -9,30 +9,35 @@ Implements Readable,Writeable
 		    Catch
 		    End Try
 		  End If
-		  mSource = Nil
-		  mDestination = Nil
+		  
 		  mCompressor = Nil
 		  mDecompressor = Nil
 		  
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub Constructor(Engine As libarchive.Readers.RawReader, Source As Readable)
-		  ' Construct a decompression stream using the Engine and Source parameters
+	#tag Method, Flags = &h1
+		Protected Sub Constructor(Engine As libarchive.Readers.RawReader)
+		  ' Construct a decompression stream
 		  mDecompressor = Engine
-		  mSource = Source
-		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub Constructor(Engine As libarchive.Writers.RawWriter, MetaData As libarchive.ArchiveEntry)
+		  ' Construct a compression stream
+		  mCompressor = Engine
+		  mCompressor.WriteEntryHeader(MetaData)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(Engine As libarchive.Writers.RawWriter, Destination As Writeable)
-		  ' Construct a compression stream using the Engine and Destination parameters
-		  mCompressor = Engine
-		  mDestination = Destination
-		  
-		End Sub
+		 Shared Function Create(Output As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As UInt32) As libarchive.CompressedStream
+		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor)
+		  Dim meta As New libarchive.ArchiveEntry()
+		  meta.Type = EntryType.File
+		  Return New CompressedStream(writer, meta)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -52,7 +57,7 @@ Implements Readable,Writeable
 		Function EOF() As Boolean
 		  // Part of the Readable interface.
 		  ' Returns True if there is no more output to read (decompression only)
-		  Return mSource <> Nil And mSource.EOF And mDecompressor <> Nil And mDecompressor.EOF
+		  Return mDecompressor <> Nil And mDecompressor.EOF
 		End Function
 	#tag EndMethod
 
@@ -60,6 +65,13 @@ Implements Readable,Writeable
 		Sub Flush()
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function Open(Input As FolderItem, Compressor As libarchive.CompressionType) As libarchive.CompressedStream
+		  Dim reader As New libarchive.Readers.RawReader(Input, Compressor)
+		  Return New CompressedStream(reader)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -75,7 +87,7 @@ Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Function ReadError() As Boolean
 		  // Part of the Readable interface.
-		  If mSource <> Nil Then Return mSource.ReadError Or (mDecompressor <> Nil And mDecompressor.LastError <> 0)
+		  If IsReadable Then Return mDecompressor <> Nil And mDecompressor.LastError <> ARCHIVE_OK
 		End Function
 	#tag EndMethod
 
@@ -92,7 +104,7 @@ Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Function WriteError() As Boolean
 		  // Part of the Writeable interface.
-		  If mDestination <> Nil Then Return mDestination.WriteError Or (mCompressor <> Nil And mCompressor.LastError <> 0)
+		  If IsWriteable Then Return mCompressor <> Nil And mCompressor.LastError <> 0
 		End Function
 	#tag EndMethod
 
@@ -136,14 +148,6 @@ Implements Readable,Writeable
 
 	#tag Property, Flags = &h21
 		Private mDecompressor As libarchive.Readers.RawReader
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mDestination As Writeable
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mSource As Readable
 	#tag EndProperty
 
 
