@@ -420,7 +420,11 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_version_string Lib libpath () As WString
+		Private Soft Declare Function archive_version_string Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_bzip2 Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -786,6 +790,26 @@ Protected Module libarchive
 		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
 		  d.TotalSeconds = d.TotalSeconds + Count
 		  Return d
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionNumber() As Int32
+		  If Not IsAvailable Then Return 0
+		  Return archive_version_number()
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionString(LongForm As Boolean = False) As String
+		  If Not IsAvailable Then Return ""
+		  Dim w As MemoryBlock
+		  If Not LongForm Then
+		    w = archive_version_string()
+		  Else
+		    w = archive_version_details()
+		  End If
+		  If w <> Nil Then Return w.CString(0)
 		End Function
 	#tag EndMethod
 
