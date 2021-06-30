@@ -27,7 +27,6 @@ Implements Readable,Writeable
 		Protected Sub Constructor(Engine As libarchive.Writers.RawWriter)
 		  ' Construct a compression stream
 		  mCompressor = Engine
-		  mCompressor.WriteEntryHeader(MetaData)
 		End Sub
 	#tag EndMethod
 
