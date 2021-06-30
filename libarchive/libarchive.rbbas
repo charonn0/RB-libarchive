@@ -712,19 +712,6 @@ Protected Module libarchive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function GetRelativePath(Root As FolderItem, Item As FolderItem) As String
-		  If Root = Nil Or Root.AbsolutePath_ = Item.AbsolutePath_ Then Return Item.Name
-		  Dim s() As String
-		  Do Until Item.AbsolutePath_ = Root.AbsolutePath_
-		    s.Insert(0, Item.Name)
-		    Item = Item.Parent
-		  Loop Until Item = Nil
-		  If Item = Nil Then Return s.Pop ' not relative
-		  Return Join(s, "/")
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  Static avail As Boolean
@@ -847,7 +834,7 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem, Password As String = "", Overwrite As Boolean = False) As libarchive.ArchiveEntry()
+		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
 		  ' Extracts an archive to the ExtractTo directory
 		  
 		  Dim arc As ArchiveReader = ArchiveFile.OpenAsArchive()
@@ -856,13 +843,15 @@ Protected Module libarchive
 		  
 		  ' libarchive will extract to the app's working directory, so we
 		  ' need to change the working directory to ExtractTo
+		  Dim path As String
+		  If ExtractTo.Directory Then
+		    path = ExtractTo.AbsolutePath_
+		  Else
+		    path = ExtractTo.Parent.AbsolutePath_
+		  End If
 		  #If TargetWin32 Then
 		    Declare Function SetCurrentDirectoryW Lib "Kernel32" (PathName As WString) As Boolean
-		    If ExtractTo.Directory Then
-		      Call SetCurrentDirectoryW(ExtractTo.AbsolutePath_)
-		    Else
-		      Call SetCurrentDirectoryW(ExtractTo.Parent.AbsolutePath_)
-		    End If
+		    Call SetCurrentDirectoryW(path)
 		  #ElseIf TargetMacOS
 		    #pragma Error "IMPLEMENT ME!"
 		  #Else
@@ -871,7 +860,6 @@ Protected Module libarchive
 		  
 		  Do
 		    Dim entry As ArchiveEntry = arc.CurrentEntry
-		    Raise New ArchiveException(entry)
 		    If entry.Extract(0) Then ret.Append(entry)
 		  Loop Until Not arc.MoveNext(Nil)
 		  arc.Close
@@ -892,6 +880,26 @@ Protected Module libarchive
 		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
 		  d.TotalSeconds = d.TotalSeconds + Count
 		  Return d
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionNumber() As Int32
+		  If Not IsAvailable Then Return 0
+		  Return archive_version_number()
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionString(LongForm As Boolean = False) As String
+		  If Not IsAvailable Then Return ""
+		  Dim w As MemoryBlock
+		  If Not LongForm Then
+		    w = archive_version_string()
+		  Else
+		    w = archive_version_details()
+		  End If
+		  If w <> Nil Then Return w.CString(0)
 		End Function
 	#tag EndMethod
 
@@ -944,26 +952,6 @@ Protected Module libarchive
 		    items.Append(ToArchive)
 		  End If
 		  Return WriteArchive(Type, Compressor, items, OutputFile, ToArchive, Password, Overwrite)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function VersionNumber() As Int32
-		  If Not IsAvailable Then Return 0
-		  Return archive_version_number()
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function VersionString(LongForm As Boolean = False) As String
-		  If Not IsAvailable Then Return ""
-		  Dim w As MemoryBlock
-		  If Not LongForm Then
-		    w = archive_version_string()
-		  Else
-		    w = archive_version_details()
-		  End If
-		  If w <> Nil Then Return w.CString(0)
 		End Function
 	#tag EndMethod
 
