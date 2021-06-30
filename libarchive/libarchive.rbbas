@@ -689,11 +689,71 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub GetChildren(Root As FolderItem, ByRef Results() As FolderItem)
+		  Dim c As Integer = Root.Count
+		  For i As Integer = 1 To c
+		    Dim item As FolderItem = Root.TrueItem(i)
+		    Results.Append(item)
+		    If item.Directory Then GetChildren(item, Results)
+		  Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function GetRelativePath(Root As FolderItem, Item As FolderItem) As String
+		  If Root = Nil Or Root.AbsolutePath_ = Item.AbsolutePath_ Then Return Item.Name
+		  Dim s() As String
+		  Do Until Item.AbsolutePath_ = Root.AbsolutePath_
+		    s.Insert(0, Item.Name)
+		    Item = Item.Parent
+		  Loop Until Item = Nil
+		  If Item = Nil Then Return s.Pop ' not relative
+		  Return Join(s, "/")
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function IsAvailable() As Boolean
 		  Static avail As Boolean
 		  If Not avail Then avail = System.IsFunctionAvailable("archive_read_new", libpath)
 		  Return avail
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function NormalizeFilename(Name As String) As String
+		  ' This method takes a file name from an archive and transforms it (if necessary) to abide by
+		  ' the rules of the target system.
+		  
+		  #If TargetWin32 Then
+		    Static reservednames() As String = Array("con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", _
+		    "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9")
+		    Static reservedchars() As String = Array("<", ">", ":", """", "/", "\", "|", "?", "*")
+		  #ElseIf TargetLinux Then
+		    Static reservednames() As String = Array(".", "..")
+		    Static reservedchars() As String = Array("/", Chr(0))
+		  #ElseIf TargetMacOS Then
+		    Static reservednames() As String ' none
+		    Static reservedchars() As String = Array(":", Chr(0))
+		  #endif
+		  
+		  For Each char As String In Name.Split("")
+		    If reservedchars.IndexOf(char) > -1 Then name = ReplaceAll(name, char, "_")
+		    #If TargetWin32 Then
+		      If Asc(char) < 32 Then name = ReplaceAll(name, char, "_")
+		    #endif
+		  Next
+		  
+		  If reservednames.IndexOf(name) > -1 Then name = "_" + name
+		  #If TargetWin32 Then
+		    ' Windows doesn't like it even if the reserved name is used with an extension, e.g. 'aux.c' is illegal.
+		    If reservednames.IndexOf(NthField(name, ".", 1)) > -1 Then name = "_" + name
+		    ' nor does Windows like it if the name ends in "." or " "
+		    If Right(Name, 1) = "." Or Right(Name, 1) = " " Then Name = Left(Name, Name.Len - 1)
+		  #endif
+		  
+		  Return name
 		End Function
 	#tag EndMethod
 
@@ -774,6 +834,40 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem, Password As String = "", Overwrite As Boolean = False) As libarchive.ArchiveEntry()
+		  ' Extracts an archive to the ExtractTo directory
+		  
+		  Dim arc As ArchiveReader = ArchiveFile.OpenAsArchive()
+		  If Password <> "" Then arc.Password = Password
+		  Dim ret() As ArchiveEntry
+		  
+		  ' libarchive will extract to the app's working directory, so we
+		  ' need to change the working directory to ExtractTo
+		  #If TargetWin32 Then
+		    Declare Function SetCurrentDirectoryW Lib "Kernel32" (PathName As WString) As Boolean
+		    If ExtractTo.Directory Then
+		      Call SetCurrentDirectoryW(ExtractTo.AbsolutePath_)
+		    Else
+		      Call SetCurrentDirectoryW(ExtractTo.Parent.AbsolutePath_)
+		    End If
+		  #ElseIf TargetMacOS
+		    #pragma Error "IMPLEMENT ME!"
+		  #Else
+		    #pragma Error "IMPLEMENT ME!"
+		  #EndIf
+		  
+		  Do
+		    Dim entry As ArchiveEntry = arc.CurrentEntry
+		    Raise New ArchiveException(entry)
+		    If entry.Extract(0) Then ret.Append(entry)
+		  Loop Until Not arc.MoveNext(Nil)
+		  arc.Close
+		  Return ret
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Function time_t(d As Date) As Integer
 		  Static epoch As Double = time_t(0).TotalSeconds
@@ -786,6 +880,57 @@ Protected Module libarchive
 		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
 		  d.TotalSeconds = d.TotalSeconds + Count
 		  Return d
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function WriteArchive(Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		  If OutputFile.Exists Then
+		    If Not Overwrite Then Raise New IOException
+		    OutputFile.Delete()
+		  End If
+		  
+		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Type, Compressor)
+		  If arc = Nil Then Return False
+		  If Password <> "" Then arc.Password = Password
+		  Dim ok As Boolean
+		  Dim c As Integer = UBound(ToArchive)
+		  Try
+		    For i As Integer = 0 To c
+		      Dim item As FolderItem = ToArchive(i)
+		      Dim entry As New ArchiveEntry(item, RelativeRoot)
+		      Dim bs As BinaryStream
+		      If item.Directory Then
+		        Dim mb As New MemoryBlock(0)
+		        bs = New BinaryStream(mb)
+		        bs.Close()
+		      Else
+		        bs = BinaryStream.Open(item)
+		      End If
+		      arc.WriteEntry(entry, bs)
+		    Next
+		    ok = True
+		  Catch
+		    ok = False
+		    
+		  Finally
+		    arc.Close()
+		    
+		  End Try
+		  
+		  Return ok
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function WriteArchive(Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		  Dim items() As FolderItem
+		  If ToArchive.Directory Then
+		    GetChildren(ToArchive, items)
+		  Else
+		    items.Append(ToArchive)
+		  End If
+		  Return WriteArchive(Type, Compressor, items, OutputFile, ToArchive, Password, Overwrite)
 		End Function
 	#tag EndMethod
 
