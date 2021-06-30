@@ -46,7 +46,6 @@ Inherits libarchive.ArchiveReader
 		        mReadBuffer = mReadBuffer + block.StringValue(0, block.Size)
 		      End If
 		    Loop
-		    If mLastError = ARCHIVE_EOF Then mEOF = True
 		    Return Me.Read(Count)
 		  End If
 		  
@@ -68,21 +67,8 @@ Inherits libarchive.ArchiveReader
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mOffset As Int64
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
 		Private mReadBuffer As String
 	#tag EndProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mOffset
-			End Get
-		#tag EndGetter
-		Offset As Int64
-	#tag EndComputedProperty
 
 
 	#tag ViewBehavior
