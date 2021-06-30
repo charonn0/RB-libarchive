@@ -532,6 +532,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_set_format_raw Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_write_set_format_shar Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 

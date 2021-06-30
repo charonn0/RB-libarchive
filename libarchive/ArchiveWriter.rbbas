@@ -97,6 +97,8 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_set_format_iso9660(mArchive)
 		  Case libarchive.ArchiveType.MTree
 		    mLastError = archive_write_set_format_mtree(mArchive)
+		  Case libarchive.ArchiveType.Raw
+		    mLastError = archive_write_set_format_raw(mArchive)
 		  Case libarchive.ArchiveType.Shar
 		    mLastError = archive_write_set_format_shar(mArchive)
 		  Case libarchive.ArchiveType.TAR
