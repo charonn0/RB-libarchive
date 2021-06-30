@@ -37,7 +37,7 @@ Protected Class Archive
 		  Case libarchive.CompressionType.XZ
 		    mFilterName = FILTER_MODULE_XZ
 		  Case libarchive.CompressionType.ZStd
-		    mLastError = archive_write_add_filter_zstd(mArchive)
+		    mFilterName = FILTER_MODULE_ZSTD
 		  End Select
 		End Sub
 	#tag EndMethod
