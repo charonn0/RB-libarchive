@@ -853,6 +853,9 @@ Protected Module libarchive
 	#tag Constant, Name = FILTER_MODULE_NONE, Type = String, Dynamic = False, Default = \"", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FILTER_MODULE_RPM, Type = String, Dynamic = False, Default = \"rpm", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FILTER_MODULE_UUENCODE, Type = String, Dynamic = False, Default = \"uuencode", Scope = Private
 	#tag EndConstant
 
@@ -868,7 +871,13 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_MODULE_AR, Type = String, Dynamic = False, Default = \"ar", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FORMAT_MODULE_CAB, Type = String, Dynamic = False, Default = \"cabinet", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FORMAT_MODULE_CPIO, Type = String, Dynamic = False, Default = \"cpio", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_EMPTY, Type = String, Dynamic = False, Default = \"empty", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_GNUTAR, Type = String, Dynamic = False, Default = \"gnutar", Scope = Private
@@ -877,10 +886,19 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_MODULE_ISO9660, Type = String, Dynamic = False, Default = \"iso9660", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FORMAT_MODULE_LHA, Type = String, Dynamic = False, Default = \"lha", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FORMAT_MODULE_MTREE, Type = String, Dynamic = False, Default = \"mtree", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_PAX, Type = String, Dynamic = False, Default = \"pax", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAR, Type = String, Dynamic = False, Default = \"rar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAR5, Type = String, Dynamic = False, Default = \"rar5", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_RAW, Type = String, Dynamic = False, Default = \"raw", Scope = Private
@@ -960,6 +978,7 @@ Protected Module libarchive
 
 	#tag Enum, Name = CompressionType, Type = Integer, Flags = &h1
 		All
+		  BZip2
 		  Compress
 		  Deflate
 		  GRZip

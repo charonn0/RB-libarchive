@@ -155,7 +155,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  SetFilterName(Compressor)
 		  Select Case Compressor
+		  Case libarchive.CompressionType.BZip2
+		    mLastError = archive_read_support_filter_bzip2(mArchive)
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_read_support_filter_compress(mArchive)
 		  Case libarchive.CompressionType.GRZip
@@ -199,6 +202,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  SetFormatName(ArchiveType)
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.All
 		    mLastError = archive_read_support_format_all(mArchive)

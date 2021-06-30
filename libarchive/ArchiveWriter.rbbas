@@ -46,38 +46,30 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  SetFilterName(Compressor)
 		  Select Case Compressor
+		  Case libarchive.CompressionType.BZip2
+		    mLastError = archive_write_add_filter_bzip2(mArchive)
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_write_add_filter_compress(mArchive)
-		    mFilterName = FILTER_MODULE_COMPRESS
 		  Case libarchive.CompressionType.GRZip
 		    mLastError = archive_write_add_filter_grzip(mArchive)
-		    mFilterName = FILTER_MODULE_GRZIP
 		  Case libarchive.CompressionType.GZip
 		    mLastError = archive_write_add_filter_gzip(mArchive)
-		    mFilterName = FILTER_MODULE_GZIP
 		  Case libarchive.CompressionType.LRZip
 		    mLastError = archive_write_add_filter_lrzip(mArchive)
-		    mFilterName = FILTER_MODULE_LRZIP
 		  Case libarchive.CompressionType.LZ4
 		    mLastError = archive_write_add_filter_lz4(mArchive)
-		    mFilterName = FILTER_MODULE_LZ4
 		  Case libarchive.CompressionType.LZMA
-		    mFilterName = FILTER_MODULE_LZMA
 		    mLastError = archive_write_add_filter_lzma(mArchive)
 		  Case libarchive.CompressionType.None
 		    mLastError = archive_write_add_filter_none(mArchive)
-		    mFilterName = FILTER_MODULE_NONE
 		  Case libarchive.CompressionType.UUEncoded
 		    mLastError = archive_write_add_filter_uuencode(mArchive)
-		    mFilterName = FILTER_MODULE_UUENCODE
 		  Case libarchive.CompressionType.XZ
 		    mLastError = archive_write_add_filter_xz(mArchive)
-		    mFilterName = FILTER_MODULE_XZ
 		  Case libarchive.CompressionType.ZStd
-		    mFilterName = FILTER_MODULE_ZSTD
 		    mLastError = archive_write_add_filter_zstd(mArchive)
-		    
 		  Case libarchive.CompressionType.All
 		  Else
 		    mLastError = ERR_UNSUPPORTED_COMPRESSION
@@ -95,37 +87,28 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  SetFormatName(ArchiveType)
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
 		    mLastError = archive_write_set_format_7zip(mArchive)
-		    mFormatName = FORMAT_MODULE_7ZIP
 		  Case libarchive.ArchiveType.Ar
 		    mLastError = archive_write_set_format_ar_bsd(mArchive)
-		    mFormatName = FORMAT_MODULE_AR
 		  Case libarchive.ArchiveType.CPIO
 		    mLastError = archive_write_set_format_cpio(mArchive)
-		    mFormatName = FORMAT_MODULE_CPIO
 		  Case libarchive.ArchiveType.ISO9660
 		    mLastError = archive_write_set_format_iso9660(mArchive)
-		    mFormatName = FORMAT_MODULE_ISO9660
 		  Case libarchive.ArchiveType.MTree
 		    mLastError = archive_write_set_format_mtree(mArchive)
-		    mFormatName = FORMAT_MODULE_MTREE
 		  Case libarchive.ArchiveType.Raw
 		    mLastError = archive_write_set_format_raw(mArchive)
-		    mFormatName = FORMAT_MODULE_RAW
 		  Case libarchive.ArchiveType.Shar
 		    mLastError = archive_write_set_format_shar(mArchive)
-		    mFormatName = FORMAT_MODULE_SHAR
 		  Case libarchive.ArchiveType.TAR
 		    mLastError = archive_write_set_format_ustar(mArchive)
-		    mFormatName = FORMAT_MODULE_USTAR
 		  Case libarchive.ArchiveType.XAR
 		    mLastError = archive_write_set_format_xar(mArchive)
-		    mFormatName = FORMAT_MODULE_XAR
 		  Case libarchive.ArchiveType.Zip
 		    mLastError = archive_write_set_format_zip(mArchive)
-		    mFormatName = FORMAT_MODULE_ZIP
 		  Else
 		    mLastError = ERR_READ_ONLY_FORMAT
 		    Raise New ArchiveException(Me)
