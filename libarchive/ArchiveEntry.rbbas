@@ -32,6 +32,7 @@ Protected Class ArchiveEntry
 		  ElseIf FromFile.Exists Then
 		    Me.Type = libarchive.EntryType.File
 		  End If
+		  Me.ModificationTime = FromFile.ModificationDate
 		End Sub
 	#tag EndMethod
 
