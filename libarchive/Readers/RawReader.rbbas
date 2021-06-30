@@ -37,7 +37,14 @@ Inherits libarchive.ArchiveReader
 		    ' not enough bytes in the buffer
 		    Do Until mReadBuffer.LenB >= Count
 		      Dim block As MemoryBlock = Me.ReadEntryDataBlock(CHUNK_SIZE)
-		      If block <> Nil And block.Size > 0 Then mReadBuffer = mReadBuffer + block.StringValue(0, block.Size)
+		      If block = Nil Or block.Size <= 0 Then
+		        mEOF = True
+		        block = mReadBuffer
+		        mReadBuffer = ""
+		        Return block
+		      Else
+		        mReadBuffer = mReadBuffer + block.StringValue(0, block.Size)
+		      End If
 		    Loop
 		    If mLastError = ARCHIVE_EOF Then mEOF = True
 		    Return Me.Read(Count)
