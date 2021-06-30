@@ -37,6 +37,20 @@ Inherits libarchive.ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
+		  If Not mHeaderWritten Then
+		    Super.WriteEntryHeader(Entry)
+		    mHeaderWritten = True
+		  End If
+		End Sub
+	#tag EndMethod
+
+
+	#tag Property, Flags = &h21
+		Private mHeaderWritten As Boolean
+	#tag EndProperty
+
 
 	#tag ViewBehavior
 		#tag ViewProperty
