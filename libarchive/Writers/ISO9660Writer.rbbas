@@ -280,22 +280,6 @@ Inherits libarchive.ArchiveWriter
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mCompressionLevel
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  ' The compression level used by the deflate compressor. Ranges from 0 (least effort) to 9 (most effort). Default: 6 
-			  
-			  If Me.SetFormatOption(FORMAT_MODULE_ISO9660, "compression-level", Str(value)) Then mCompressionLevel = value
-			End Set
-		#tag EndSetter
-		CompressionLevel As Int32
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
 			  return mJoliet
 			End Get
 		#tag EndGetter
@@ -380,10 +364,6 @@ Inherits libarchive.ArchiveWriter
 
 	#tag Property, Flags = &h21
 		Private mCompressed As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mCompressionLevel As Int32
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

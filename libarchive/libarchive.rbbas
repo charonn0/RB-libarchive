@@ -420,7 +420,11 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_version_string Lib libpath () As WString
+		Private Soft Declare Function archive_version_string Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_bzip2 Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -444,7 +448,15 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_lzip Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_write_add_filter_lzma Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_lzop Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -919,6 +931,7 @@ Protected Module libarchive
 		  End Try
 		  
 		  Return ok
+		  
 		End Function
 	#tag EndMethod
 
@@ -931,6 +944,26 @@ Protected Module libarchive
 		    items.Append(ToArchive)
 		  End If
 		  Return WriteArchive(Type, Compressor, items, OutputFile, ToArchive, Password, Overwrite)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionNumber() As Int32
+		  If Not IsAvailable Then Return 0
+		  Return archive_version_number()
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function VersionString(LongForm As Boolean = False) As String
+		  If Not IsAvailable Then Return ""
+		  Dim w As MemoryBlock
+		  If Not LongForm Then
+		    w = archive_version_string()
+		  Else
+		    w = archive_version_details()
+		  End If
+		  If w <> Nil Then Return w.CString(0)
 		End Function
 	#tag EndMethod
 
@@ -974,6 +1007,12 @@ Protected Module libarchive
 	#tag Constant, Name = FILTER_MODULE_BZIP2, Type = String, Dynamic = False, Default = \"bzip2", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FILTER_MODULE_COMPRESS, Type = String, Dynamic = False, Default = \"compress", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_GRZIP, Type = String, Dynamic = False, Default = \"grzip", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FILTER_MODULE_GZIP, Type = String, Dynamic = False, Default = \"gzip", Scope = Private
 	#tag EndConstant
 
@@ -983,7 +1022,16 @@ Protected Module libarchive
 	#tag Constant, Name = FILTER_MODULE_LZ4, Type = String, Dynamic = False, Default = \"lz4", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FILTER_MODULE_LZMA, Type = String, Dynamic = False, Default = \"lzma", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FILTER_MODULE_LZOP, Type = String, Dynamic = False, Default = \"lzop", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_NONE, Type = String, Dynamic = False, Default = \"", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FILTER_MODULE_RPM, Type = String, Dynamic = False, Default = \"rpm", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FILTER_MODULE_UUENCODE, Type = String, Dynamic = False, Default = \"uuencode", Scope = Private
@@ -998,7 +1046,16 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_MODULE_7ZIP, Type = String, Dynamic = False, Default = \"7zip", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FORMAT_MODULE_AR, Type = String, Dynamic = False, Default = \"ar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_CAB, Type = String, Dynamic = False, Default = \"cabinet", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FORMAT_MODULE_CPIO, Type = String, Dynamic = False, Default = \"cpio", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_EMPTY, Type = String, Dynamic = False, Default = \"empty", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_GNUTAR, Type = String, Dynamic = False, Default = \"gnutar", Scope = Private
@@ -1007,10 +1064,25 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_MODULE_ISO9660, Type = String, Dynamic = False, Default = \"iso9660", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = FORMAT_MODULE_LHA, Type = String, Dynamic = False, Default = \"lha", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = FORMAT_MODULE_MTREE, Type = String, Dynamic = False, Default = \"mtree", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_PAX, Type = String, Dynamic = False, Default = \"pax", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAR, Type = String, Dynamic = False, Default = \"rar", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAR5, Type = String, Dynamic = False, Default = \"rar5", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_RAW, Type = String, Dynamic = False, Default = \"raw", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_MODULE_SHAR, Type = String, Dynamic = False, Default = \"shar", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MODULE_USTAR, Type = String, Dynamic = False, Default = \"ustar", Scope = Private
@@ -1032,6 +1104,12 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_COMPAT2X, Type = String, Dynamic = False, Default = \"compat-2x", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPRESSION, Type = String, Dynamic = False, Default = \"compression", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_COMPRESSIONLEVEL, Type = String, Dynamic = False, Default = \"compression-level", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Private
@@ -1078,8 +1156,8 @@ Protected Module libarchive
 
 	#tag Enum, Name = CompressionType, Type = Integer, Flags = &h1
 		All
+		  BZip2
 		  Compress
-		  Deflate
 		  GRZip
 		  GZip
 		  LRZip

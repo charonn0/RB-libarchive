@@ -46,7 +46,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  SetFilterName(Compressor)
 		  Select Case Compressor
+		  Case libarchive.CompressionType.BZip2
+		    mLastError = archive_write_add_filter_bzip2(mArchive)
 		  Case libarchive.CompressionType.Compress
 		    mLastError = archive_write_add_filter_compress(mArchive)
 		  Case libarchive.CompressionType.GRZip
@@ -57,18 +60,20 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_add_filter_lrzip(mArchive)
 		  Case libarchive.CompressionType.LZ4
 		    mLastError = archive_write_add_filter_lz4(mArchive)
+		  Case libarchive.CompressionType.LZip
+		    mLastError =archive_write_add_filter_lzip(mArchive)
+		  Case libarchive.CompressionType.LZOP
+		    mLastError =archive_write_add_filter_lzop(mArchive)
 		  Case libarchive.CompressionType.LZMA
 		    mLastError = archive_write_add_filter_lzma(mArchive)
 		  Case libarchive.CompressionType.None
 		    mLastError = archive_write_add_filter_none(mArchive)
-		    Raise New ArchiveException(Me)
 		  Case libarchive.CompressionType.UUEncoded
 		    mLastError = archive_write_add_filter_uuencode(mArchive)
 		  Case libarchive.CompressionType.XZ
 		    mLastError = archive_write_add_filter_xz(mArchive)
 		  Case libarchive.CompressionType.ZStd
 		    mLastError = archive_write_add_filter_zstd(mArchive)
-		    
 		  Case libarchive.CompressionType.All
 		  Else
 		    mLastError = ERR_UNSUPPORTED_COMPRESSION
@@ -86,6 +91,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  SetFormatName(ArchiveType)
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
 		    mLastError = archive_write_set_format_7zip(mArchive)
@@ -173,6 +179,26 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mCompressionLevel
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If SetFilterOption(mFilterName, FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Then
+			    mCompressionLevel = value
+			  End If
+			End Set
+		#tag EndSetter
+		CompressionLevel As Int32
+	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private mCompressionLevel As Int32
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mPassword As String

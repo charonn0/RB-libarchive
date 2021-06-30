@@ -39,43 +39,23 @@ Inherits libarchive.ArchiveWriter
 			  Dim ok As Boolean
 			  Select Case value
 			  Case AlgorithmType.None
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "store")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "store")
 			  Case AlgorithmType.Deflate
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "deflate")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "deflate")
 			  Case AlgorithmType.BZip2
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "bzip2")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "bzip2")
 			  Case AlgorithmType.LZMA1
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "lzma1")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "lzma1")
 			  Case AlgorithmType.LZMA2
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "lzma2")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "lzma2")
 			  Case AlgorithmType.PPMD
-			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression", "ppmd")
+			    ok = Me.SetFormatOption(FORMAT_MODULE_7ZIP, FORMAT_OPT_COMPRESSION, "ppmd")
 			  End Select
 			  If ok Then mCompressor = value
 			End Set
 		#tag EndSetter
 		CompressionAlgorithm As libarchive.Writers.SevenZipWriter.AlgorithmType
 	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mCompressionLevel
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  ' The compression level used by the deflate compressor. Ranges from 0 (least effort) to 9 (most effort). Default: 6 
-			  
-			  If Me.SetFormatOption(FORMAT_MODULE_7ZIP, "compression-level", Str(value)) Then mCompressionLevel = value
-			End Set
-		#tag EndSetter
-		CompressionLevel As Int32
-	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private mCompressionLevel As Int32
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mCompressor As libarchive.Writers.SevenZipWriter.AlgorithmType

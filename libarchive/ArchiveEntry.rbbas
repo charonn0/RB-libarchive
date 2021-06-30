@@ -109,6 +109,19 @@ Protected Class ArchiveEntry
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Shared Function GetRelativePath(Root As FolderItem, Item As FolderItem) As String
+		  If Root = Nil Or Root.AbsolutePath_ = Item.AbsolutePath_ Then Return Item.Name
+		  Dim s() As String
+		  Do Until Item.AbsolutePath_ = Root.AbsolutePath_
+		    s.Insert(0, Item.Name)
+		    Item = Item.Parent
+		  Loop Until Item = Nil
+		  If Item = Nil Then Return s.Pop ' not relative
+		  Return Join(s, "/")
+		End Function
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
