@@ -448,7 +448,15 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_lzip Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_write_add_filter_lzma Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_add_filter_lzop Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -1004,7 +1012,6 @@ Protected Module libarchive
 		All
 		  BZip2
 		  Compress
-		  Deflate
 		  GRZip
 		  GZip
 		  LRZip

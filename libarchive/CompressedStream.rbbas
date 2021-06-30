@@ -24,7 +24,7 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Constructor(Engine As libarchive.Writers.RawWriter, MetaData As libarchive.ArchiveEntry)
+		Protected Sub Constructor(Engine As libarchive.Writers.RawWriter)
 		  ' Construct a compression stream
 		  mCompressor = Engine
 		  mCompressor.WriteEntryHeader(MetaData)
@@ -34,9 +34,7 @@ Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		 Shared Function Create(Output As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As UInt32 = 6) As libarchive.CompressedStream
 		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor, CompressionLevel)
-		  Dim meta As New libarchive.ArchiveEntry()
-		  meta.Type = EntryType.File
-		  Return New CompressedStream(writer, meta)
+		  Return New CompressedStream(writer)
 		End Function
 	#tag EndMethod
 
@@ -63,7 +61,8 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		Sub Flush()
-		  
+		  // Part of the Writeable interface.
+		  // Not implemented.
 		End Sub
 	#tag EndMethod
 

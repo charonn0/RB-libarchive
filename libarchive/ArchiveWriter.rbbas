@@ -60,6 +60,10 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_add_filter_lrzip(mArchive)
 		  Case libarchive.CompressionType.LZ4
 		    mLastError = archive_write_add_filter_lz4(mArchive)
+		  Case libarchive.CompressionType.LZip
+		    mLastError =archive_write_add_filter_lzip(mArchive)
+		  Case libarchive.CompressionType.LZOP
+		    mLastError =archive_write_add_filter_lzop(mArchive)
 		  Case libarchive.CompressionType.LZMA
 		    mLastError = archive_write_add_filter_lzma(mArchive)
 		  Case libarchive.CompressionType.None
