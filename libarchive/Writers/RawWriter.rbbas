@@ -22,6 +22,10 @@ Inherits libarchive.ArchiveWriter
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- from ArchiveWriter
 		  Super.Constructor()
+		  If CompressionLevel <> 6 Then
+		    SetFilterName(Compressor)
+		    Me.CompressionLevel = CompressionLevel
+		  End If
 		  SetFormat(ArchiveType.Raw)
 		  SetFilter(Compressor)
 		  CreateMemory(Buffer)
@@ -31,6 +35,12 @@ Inherits libarchive.ArchiveWriter
 
 	#tag Method, Flags = &h0
 		Sub WriteEntryDataBlock(Block As MemoryBlock)
+		  If Not mHeaderWritten Then
+		    Dim meta As New libarchive.ArchiveEntry()
+		    meta.Type = EntryType.File
+		    WriteEntryHeader(meta)
+		    mHeaderWritten = True
+		  End If
 		  Super.WriteEntryDataBlock(Block)
 		End Sub
 	#tag EndMethod
@@ -38,15 +48,6 @@ Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h0
 		Sub WriteEntryFinished()
 		  Super.WriteEntryFinished()
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
-		  If Not mHeaderWritten Then
-		    Super.WriteEntryHeader(Entry)
-		    mHeaderWritten = True
-		  End If
 		End Sub
 	#tag EndMethod
 
