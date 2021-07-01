@@ -10,27 +10,6 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function ArchiveTypeFromName(Name As String) As libarchive.ArchiveType
-		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
-		  Select Case ext
-		  Case "zip", "docx", "xlsx", "pptx", "jar"
-		    Return ArchiveType.Zip
-		  Case "gz", "bz2"
-		    Return ArchiveTypeFromName(Right(Name, Name.Len - (ext.Len + 1)))
-		  Case "tar"
-		    Return ArchiveType.TAR
-		  Case "rar"
-		    Return ArchiveType.RAR
-		  Case "iso"
-		    Return ArchiveType.ISO9660
-		    
-		  Else
-		    Return ArchiveType.All
-		  End Select
-		End Function
-	#tag EndMethod
-
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_bzlib_version Lib libpath () As Ptr
 	#tag EndExternalMethod
@@ -585,8 +564,8 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
-		  If Archivist = ArchiveType.All Then Archivist = ArchiveTypeFromName(Archive.Name)
-		  
+		  If Archivist = ArchiveType.All Then Archivist = GuessArchiveType(Archive.Name)
+		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(Archive.Name)
 		  Select Case Archivist
 		  Case ArchiveType.All ' unknown file extension
 		    Return Nil
@@ -609,7 +588,7 @@ Protected Module libarchive
 		  Case ArchiveType.Shar
 		    Return New libarchive.Writers.SharWriter(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
 		    Return New libarchive.Writers.TARWriter(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -674,6 +653,91 @@ Protected Module libarchive
 		    If item.Directory Then GetChildren(item, Results)
 		  Next
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function GuessArchiveType(Name As String) As libarchive.ArchiveType
+		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
+		  Select Case ext
+		  Case "a", "lib", "ar", "deb"
+		    Return ArchiveType.Ar
+		    
+		  Case "cab"
+		    Return ArchiveType.Cabinet
+		    
+		  Case "cpio"
+		    Return ArchiveType.Cpio
+		    
+		  Case "iso"
+		    Return ArchiveType.ISO9660
+		    
+		  Case "lzh", "lha"
+		    Return ArchiveType.LHA
+		    
+		  Case "rar", "rev"
+		    Return ArchiveType.Rar
+		    
+		  Case "7z"
+		    Return ArchiveType.SevenZip
+		    
+		  Case "shar", "shar", "uue"
+		    Return ArchiveType.Shar
+		    
+		  Case "tar", "tgz", "tbz"
+		    Return ArchiveType.TAR
+		    
+		  Case "xar", "pkg", "xip"
+		    Return ArchiveType.Xar
+		    
+		  Case "zip", "xpi", "odt", "fodt", "ods", "fods", "odp", "fodp", "odg", "fodg", "odf", "3mf", "dwfx", _
+		    "cddx", "familyx", "fdix", "appv", "semblio", "vsix", "vsdx", "appx", "appxbundle", "cspkg", "xps", _
+		    "mmzx", "nupkg", "docx", "pptx", "xlsx", "oxps", "aasx", "jtx", "slx", "smpk", "scdoc", "jar"
+		    Return ArchiveType.Zip
+		    
+		  Case "gz"
+		    Return GuessArchiveType(Left(Name, Name.Len - 3))
+		  Case "bz2"
+		    Return GuessArchiveType(Left(Name, Name.Len - 4))
+		  Else
+		    Return ArchiveType.All
+		  End Select
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function GuessCompressionType(Name As String) As libarchive.CompressionType
+		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
+		  Select Case ext
+		  Case "bz2"
+		    Return CompressionType.BZip2
+		  Case "Z"
+		    Return CompressionType.Compress
+		  Case "grz"
+		    Return CompressionType.GRZip
+		  Case "gz", "gzip", "tgz"
+		    Return CompressionType.GZip
+		  Case "lrz"
+		    Return CompressionType.LRZip
+		  Case "lz4"
+		    Return CompressionType.LZ4
+		  Case "lzip"
+		    Return CompressionType.LZip
+		  Case "lzma"
+		    Return CompressionType.LZMA
+		  Case "lzop"
+		    Return CompressionType.LZOP
+		  Case "rpm"
+		    Return CompressionType.RPM
+		  Case "uue"
+		    Return CompressionType.UUEncoded
+		  Case "xz"
+		    Return CompressionType.XZ
+		  Case "zstd"
+		    Return CompressionType.ZStd
+		  Else
+		    Return CompressionType.All
+		  End Select
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
