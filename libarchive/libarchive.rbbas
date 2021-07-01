@@ -583,11 +583,11 @@ Protected Module libarchive
 		Private Soft Declare Function archive_zlib_version Lib libpath () As WString
 	#tag EndExternalMethod
 
-	#tag Method, Flags = &h0
-		Function CreateArchive(Archive As FolderItem, Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
-		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
+	#tag Method, Flags = &h1
+		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		  If Archivist = ArchiveType.All Then Archivist = ArchiveTypeFromName(Archive.Name)
 		  
-		  Select Case Type
+		  Select Case Archivist
 		  Case ArchiveType.All ' unknown file extension
 		    Return Nil
 		    
@@ -626,10 +626,10 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CreateAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
-		  If Type = ArchiveType.All Then Type = ArchiveTypeFromName(Archive.Name)
+		Function CreateAsArchive(Extends Archive As FolderItem, Archivist As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
+		  If Archivist = ArchiveType.All Then Archivist = ArchiveTypeFromName(Archive.Name)
 		  
-		  Select Case Type
+		  Select Case Archivist
 		  Case ArchiveType.All ' unknown file extension
 		    Return Nil
 		    
@@ -756,48 +756,103 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function OpenAsArchive(Extends Archive As FolderItem, Type As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveReader
-		  Select Case Type
-		  Case ArchiveType.All ' detect
-		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
+	#tag Method, Flags = &h1
+		Protected Function OpenArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  Select Case Archivist
+		  Case ArchiveType.All ' detect.
+		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
 		    
 		  Case ArchiveType.Ar
-		    Return New libarchive.Readers.ARReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.ARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.Cabinet
-		    Return New libarchive.Readers.CabinetReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.CabinetReader(Archive, Compressor)
 		    
 		  Case ArchiveType.CPIO
-		    Return New libarchive.Readers.CPIOReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.CPIOReader(Archive, Compressor)
 		    
 		  Case ArchiveType.ISO9660
-		    Return New libarchive.Readers.ISO9660Reader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.ISO9660Reader(Archive, Compressor)
 		    
 		  Case ArchiveType.LHA
-		    Return New libarchive.Readers.LHAReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.LHAReader(Archive, Compressor)
 		    
 		  Case ArchiveType.MTree
-		    Return New libarchive.Readers.MTreeReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.MTreeReader(Archive, Compressor)
 		    
 		  Case ArchiveType.RAR
-		    Return New libarchive.Readers.RARReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.RARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.SevenZip
-		    Return New libarchive.Readers.SevenZipReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
 		  Case ArchiveType.TAR
-		    Return New libarchive.Readers.TARReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
-		    Return New libarchive.Readers.XARReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.XARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.Zip
-		    Return New libarchive.Readers.ZipReader(Archive, CompressionType.All)
+		    Return New libarchive.Readers.ZipReader(Archive, Compressor)
 		    
 		  Else
 		    Raise New ArchiveException(ERR_WRITE_ONLY_FORMAT)
 		  End Select
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function OpenArchive(Archive As MemoryBlock, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  Select Case Archivist
+		  Case ArchiveType.All ' detect.
+		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
+		    
+		  Case ArchiveType.Ar
+		    Return New libarchive.Readers.ARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.Cabinet
+		    Return New libarchive.Readers.CabinetReader(Archive, Compressor)
+		    
+		  Case ArchiveType.CPIO
+		    Return New libarchive.Readers.CPIOReader(Archive, Compressor)
+		    
+		  Case ArchiveType.ISO9660
+		    Return New libarchive.Readers.ISO9660Reader(Archive, Compressor)
+		    
+		  Case ArchiveType.LHA
+		    Return New libarchive.Readers.LHAReader(Archive, Compressor)
+		    
+		  Case ArchiveType.MTree
+		    Return New libarchive.Readers.MTreeReader(Archive, Compressor)
+		    
+		  Case ArchiveType.RAR
+		    Return New libarchive.Readers.RARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.SevenZip
+		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
+		    
+		  Case ArchiveType.TAR
+		    Return New libarchive.Readers.TARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.XAR
+		    Return New libarchive.Readers.XARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.Zip
+		    Return New libarchive.Readers.ZipReader(Archive, Compressor)
+		    
+		  Else
+		    Raise New ArchiveException(ERR_WRITE_ONLY_FORMAT)
+		  End Select
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OpenAsArchive(Extends Archive As FolderItem) As libarchive.ArchiveReader
+		  ' Attempts to open the specified file as an archive. This may fail even on valid archives if
+		  ' libarchive guesses incorrectly.
+		  
+		  Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
+		  
 		End Function
 	#tag EndMethod
 
@@ -904,13 +959,13 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WriteArchive(Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		Protected Function WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
 		  If OutputFile.Exists Then
 		    If Not Overwrite Then Raise New IOException
 		    OutputFile.Delete()
 		  End If
 		  
-		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Type, Compressor)
+		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
 		  If arc = Nil Then Return False
 		  If Password <> "" Then arc.Password = Password
 		  Dim ok As Boolean
@@ -944,14 +999,14 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WriteArchive(Type As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		Protected Function WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
 		  Dim items() As FolderItem
-		  If ToArchive.Directory Then
-		    GetChildren(ToArchive, items)
+		  If TargetDirectory.Directory Then
+		    GetChildren(TargetDirectory, items)
 		  Else
-		    items.Append(ToArchive)
+		    items.Append(TargetDirectory)
 		  End If
-		  Return WriteArchive(Type, Compressor, items, OutputFile, ToArchive, Password, Overwrite)
+		  Return WriteArchive(Archivist, Compressor, items, OutputFile, TargetDirectory, Password, Overwrite)
 		End Function
 	#tag EndMethod
 
