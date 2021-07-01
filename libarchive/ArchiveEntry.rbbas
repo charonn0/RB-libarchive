@@ -83,6 +83,16 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Constructor(CloneFrom As libarchive.ArchiveEntry, RelativeRoot As FolderItem)
+		  ' Clone the CloneFrom entry and modify the pathname according to RelativeRoot
+		  
+		  Me.Constructor(CloneFrom)
+		  Me.PathName = GetRelativePath(RelativeRoot, New FolderItem(PathName))
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
 		  If mEntry <> Nil And mFreeable Then archive_entry_free(mEntry)
