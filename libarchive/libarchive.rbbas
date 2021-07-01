@@ -983,6 +983,12 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = ERR_TOO_EARLY, Type = Double, Dynamic = False, Default = \"-104", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ERR_TOO_LATE, Type = Double, Dynamic = False, Default = \"-103", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = ERR_UNSUPPORTED_COMPRESSION, Type = Double, Dynamic = False, Default = \"-100", Scope = Protected
 	#tag EndConstant
 

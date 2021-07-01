@@ -8,8 +8,18 @@ Inherits libarchive.ArchiveReader
 		  Super.Constructor()
 		  SetFormat(ArchiveType)
 		  SetFilter(Compressor)
-		  OpenFile(File, CHUNK_SIZE)
-		  
+		  OpenFile(File)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
+		Sub Constructor(Buffer As MemoryBlock, ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType)
+		  SetFilter(Compressor)
+		  OpenMemory(Buffer)
 		End Sub
 	#tag EndMethod
 

@@ -12,7 +12,7 @@ Inherits libarchive.ArchiveWriter
 		  End If
 		  SetFormat(ArchiveType.Raw)
 		  SetFilter(Compressor)
-		  CreateFile(File)
+		  mSourceFile = File
 		  
 		End Sub
 	#tag EndMethod
@@ -28,7 +28,7 @@ Inherits libarchive.ArchiveWriter
 		  End If
 		  SetFormat(ArchiveType.Raw)
 		  SetFilter(Compressor)
-		  CreateMemory(Buffer)
+		  mSourceBuffer = Buffer
 		  
 		End Sub
 	#tag EndMethod
@@ -39,7 +39,6 @@ Inherits libarchive.ArchiveWriter
 		    Dim meta As New libarchive.ArchiveEntry()
 		    meta.Type = EntryType.File
 		    WriteEntryHeader(meta)
-		    mHeaderWritten = True
 		  End If
 		  Super.WriteEntryDataBlock(Block)
 		End Sub
@@ -50,11 +49,6 @@ Inherits libarchive.ArchiveWriter
 		  Super.WriteEntryFinished()
 		End Sub
 	#tag EndMethod
-
-
-	#tag Property, Flags = &h21
-		Private mHeaderWritten As Boolean
-	#tag EndProperty
 
 
 	#tag ViewBehavior

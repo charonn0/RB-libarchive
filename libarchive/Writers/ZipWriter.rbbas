@@ -9,7 +9,7 @@ Inherits libarchive.ArchiveWriter
 		  SetFormat(ArchiveType.Zip)
 		  SetFilter(Compressor)
 		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
-		  CreateFile(File)
+		  mSourceFile = File
 		  
 		End Sub
 	#tag EndMethod
@@ -22,7 +22,7 @@ Inherits libarchive.ArchiveWriter
 		  SetFormat(ArchiveType.Zip)
 		  SetFilter(Compressor)
 		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
-		  CreateMemory(Buffer)
+		  mSourceBuffer = Buffer
 		  
 		End Sub
 	#tag EndMethod
@@ -129,12 +129,12 @@ Inherits libarchive.ArchiveWriter
 			  ' By default, the Zip writer selectively enables these extensions only as needed. In
 			  ' particular, if the file size is unknown, the Zip writer will include Zip64 extensions
 			  ' to guard against the possibility that the file might be larger than 4 GiB.
-			  ' 
+			  '
 			  ' Setting this option to True will force the writer to use the Zip64 extensions even
 			  ' for small files that would not otherwise require them. Setting this option to False
 			  ' will force the Zip writer to avoid Zip64 extensions: It will reject files with size
 			  ' greater than 4 GiB, it will reject any new entries once the total archive size reaches
-			  ' 4 GiB, and it will not use Zip64 extensions for files with unknown size. 
+			  ' 4 GiB, and it will not use Zip64 extensions for files with unknown size.
 			  
 			  Dim ok As Boolean
 			  If value Then
@@ -158,6 +158,11 @@ Inherits libarchive.ArchiveWriter
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="Compressed"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true
@@ -203,6 +208,16 @@ Inherits libarchive.ArchiveWriter
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="VerifyChecksums"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Zip64"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

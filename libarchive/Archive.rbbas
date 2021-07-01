@@ -3,7 +3,8 @@ Protected Class Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  mIsOpen = False
-		  mBuffer = Nil
+		  mSourceBuffer = Nil
+		  mSourceFile = Nil
 		End Sub
 	#tag EndMethod
 
@@ -118,10 +119,6 @@ Protected Class Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
-		Protected mBuffer As MemoryBlock
-	#tag EndProperty
-
-	#tag Property, Flags = &h1
 		Protected mFilterName As String
 	#tag EndProperty
 
@@ -135,6 +132,14 @@ Protected Class Archive
 
 	#tag Property, Flags = &h1
 		Protected mLastError As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mSourceBuffer As MemoryBlock
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mSourceFile As FolderItem
 	#tag EndProperty
 
 

@@ -75,24 +75,39 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub OpenFile(File As FolderItem, BlockSize As UInt32)
-		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, BlockSize)
-		  If mLastError <> ARCHIVE_OK Or Not ReadEntryHeader() Then Raise New ArchiveException(Me)
+		Protected Sub OpenFile(File As FolderItem)
+		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, CHUNK_SIZE)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mSourceFile = File
 		  mIsOpen = True
+		  If Not ReadEntryHeader() Then Raise New ArchiveException(Me)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub OpenMemory(Buffer As MemoryBlock)
 		  mLastError = archive_read_open_memory(mArchive, Buffer, Buffer.Size)
-		  If mLastError <> ARCHIVE_OK Or Not ReadEntryHeader() Then Raise New ArchiveException(Me)
-		  mBuffer = Buffer
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mSourceBuffer = Buffer
 		  mIsOpen = True
+		  If Not ReadEntryHeader() Then Raise New ArchiveException(Me)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Int32) As Boolean
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      OpenMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      OpenFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Return False
+		    End Select
+		  End If
+		  
 		  If WriteTo = 0 Then Return SkipEntryData()
 		  
 		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
@@ -102,6 +117,18 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Writeable) As Boolean
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      OpenMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      OpenFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Return False
+		    End Select
+		  End If
+		  
 		  If WriteTo = Nil Then Return SkipEntryData()
 		  mLastError = 0
 		  
@@ -121,6 +148,18 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      OpenMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      OpenFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Return 0
+		    End Select
+		  End If
+		  
 		  Dim size As UInt32
 		  Dim buffer As Ptr
 		  mLastError = archive_read_data_block(mArchive, buffer, size, Offset)
@@ -132,6 +171,18 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(Count As UInt32) As MemoryBlock
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      OpenMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      OpenFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Return Nil
+		    End Select
+		  End If
+		  
 		  Dim buffer As New MemoryBlock(Count)
 		  mLastError = archive_read_data(mArchive, buffer, Buffer.Size)
 		  If mLastError >= 0 Then
@@ -144,6 +195,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryHeader() As Boolean
+		  If Not mIsOpen Then
+		    mLastError = ERR_TOO_EARLY
+		    Return False
+		  End If
+		  
 		  Dim entry As Ptr
 		  mLastError = archive_read_next_header(mArchive, entry)
 		  If mLastError <> ARCHIVE_OK Then Return False
@@ -155,6 +211,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  SetFilterName(Compressor)
 		  Select Case Compressor
 		  Case libarchive.CompressionType.BZip2
@@ -195,6 +256,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
+		  
 		  mLastError = archive_read_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -202,6 +268,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  SetFormatName(ArchiveType)
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.All
@@ -249,6 +320,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
+		  
 		  mLastError = archive_read_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -256,6 +332,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
+		  
 		  mLastError = archive_read_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -263,6 +344,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOptions(Options() As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
+		  
 		  Dim opts As String = Join(Options, ",")
 		  mLastError = archive_read_set_options(mArchive, opts)
 		  Return mLastError = ARCHIVE_OK
@@ -271,6 +357,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SkipEntryData() As Boolean
+		  If Not mIsOpen Then
+		    mLastError = ERR_TOO_EARLY
+		    Return False
+		  End If
+		  
 		  mLastError = archive_read_data_skip(mArchive)
 		  Return mLastError = ARCHIVE_OK
 		End Function

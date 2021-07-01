@@ -23,6 +23,8 @@ Inherits libarchive.Archive
 		Protected Sub CreateFile(File As FolderItem)
 		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mSourceFile = File
+		  mIsOpen = True
 		  
 		End Sub
 	#tag EndMethod
@@ -31,7 +33,7 @@ Inherits libarchive.Archive
 		Protected Sub CreateMemory(Buffer As MemoryBlock)
 		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		  mBuffer = Buffer
+		  mSourceBuffer = Buffer
 		  mIsOpen = True
 		  
 		End Sub
@@ -46,6 +48,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
 		  SetFilterName(Compressor)
 		  Select Case Compressor
 		  Case libarchive.CompressionType.BZip2
@@ -84,6 +90,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
 		  mLastError = archive_write_set_filter_option(mArchive, FilterModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -91,6 +101,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
 		  SetFormatName(ArchiveType)
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
@@ -122,6 +136,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
 		  mLastError = archive_write_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -129,6 +147,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
 		  mLastError = archive_write_set_option(mArchive, FilterOrFormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
 		End Function
@@ -136,6 +158,10 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOptions(Options() As String) As Boolean
+		  If mIsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Return False
+		  End If
 		  Dim opts As String = Join(Options, ",")
 		  mLastError = archive_write_set_options(mArchive, opts)
 		  Return mLastError = ARCHIVE_OK
@@ -144,6 +170,22 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      CreateMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      CreateFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Raise New ArchiveException(Me)
+		    End Select
+		  End If
+		  If mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  Try
 		    WriteEntryHeader(Entry)
 		    
@@ -161,6 +203,11 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryDataBlock(Block As MemoryBlock)
 		  If Block = Nil Or Block.Size = 0 Then Return
+		  If Not mIsOpen Or Not mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  mLastError = archive_write_data(mArchive, Block, Block.Size)
 		  If mLastError < 0 Then Raise New ArchiveException(Me)
 		End Sub
@@ -168,14 +215,36 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryFinished()
+		  If Not mIsOpen Or Not mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Return
+		  End If
 		  mLastError = archive_write_finish_entry(mArchive)
+		  mHeaderWritten = False
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
+		  If Not mIsOpen Then
+		    Select Case True
+		    Case mSourceBuffer <> Nil
+		      CreateMemory(mSourceBuffer)
+		    Case mSourceFile <> Nil
+		      CreateFile(mSourceFile)
+		    Else
+		      mLastError = ERR_TOO_EARLY
+		      Raise New ArchiveException(Me)
+		    End Select
+		  End If
+		  If mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  mLastError = archive_write_header(mArchive, Entry.Handle)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mHeaderWritten = True
 		End Sub
 	#tag EndMethod
 
@@ -198,6 +267,10 @@ Inherits libarchive.Archive
 
 	#tag Property, Flags = &h21
 		Private mCompressionLevel As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mHeaderWritten As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

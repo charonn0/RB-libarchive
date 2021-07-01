@@ -8,7 +8,7 @@ Inherits libarchive.ArchiveWriter
 		  Super.Constructor()
 		  SetFormat(ArchiveType.MTree)
 		  SetFilter(Compressor)
-		  CreateFile(File)
+		  mSourceFile = File
 		  
 		End Sub
 	#tag EndMethod
@@ -20,7 +20,7 @@ Inherits libarchive.ArchiveWriter
 		  Super.Constructor()
 		  SetFormat(ArchiveType.MTree)
 		  SetFilter(Compressor)
-		  CreateMemory(Buffer)
+		  mSourceBuffer = Buffer
 		  
 		End Sub
 	#tag EndMethod
