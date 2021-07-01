@@ -13,8 +13,11 @@ This example extracts an archive into a folder. [**More examples**](https://gith
 ```
 
 ## Highlights
-* Create and extract any archive format supported by libarchive.
+* Create and extract any archive format supported by libarchive<sup>1</sup>.
 * Read and write encrypted archives.
+* Read and write any compression format supported by libarchive<sup>1</sup>.
+
+<sup>1</sup> Some formats are read-only; a few are write-only.
 
 ## Synopsis
 An archive is represented by an instance of `ArchiveReader` or `ArchiveWriter`, or a format-specific subclass of these classes.
