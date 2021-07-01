@@ -610,8 +610,8 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function FormatError(ErrorCode As Int32) As String
+	#tag Method, Flags = &h21
+		Private Function FormatError(ErrorCode As Int32) As String
 		  Dim msg As String
 		  Select Case ErrorCode
 		  Case ERR_INIT_FAILED
