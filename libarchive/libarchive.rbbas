@@ -627,43 +627,7 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h0
 		Function CreateAsArchive(Extends Archive As FolderItem, Archivist As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
-		  If Archivist = ArchiveType.All Then Archivist = ArchiveTypeFromName(Archive.Name)
-		  
-		  Select Case Archivist
-		  Case ArchiveType.All ' unknown file extension
-		    Return Nil
-		    
-		  Case ArchiveType.Ar
-		    Return New libarchive.Writers.ARWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.CPIO
-		    Return New libarchive.Writers.CPIOWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.ISO9660
-		    Return New libarchive.Writers.ISO9660Writer(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.MTree
-		    Return New libarchive.Writers.MTreeWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.SevenZip
-		    Return New libarchive.Writers.SevenZipWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.Shar
-		    Return New libarchive.Writers.SharWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.TAR
-		    Return New libarchive.Writers.TARWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.XAR
-		    Return New libarchive.Writers.XARWriter(Archive, CompressionType.All)
-		    
-		  Case ArchiveType.Zip
-		    Return New libarchive.Writers.ZipWriter(Archive, CompressionType.All)
-		    
-		  Else
-		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
-		  End Select
-		  
+		  Return CreateArchive(Archive, Archivist, CompressionType.All)
 		End Function
 	#tag EndMethod
 
