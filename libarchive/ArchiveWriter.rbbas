@@ -4,6 +4,7 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
+		  If mSourceBuffer <> Nil Then mSourceBuffer.Size = mUsed
 		  Super.Close()
 		End Sub
 	#tag EndMethod
@@ -188,11 +189,12 @@ Inherits libarchive.Archive
 		  
 		  Try
 		    WriteEntryHeader(Entry)
-		    
-		    Do Until Source.EOF
-		      Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
-		      WriteEntryDataBlock(block)
-		    Loop
+		    If Source <> Nil Then
+		      Do Until Source.EOF
+		        Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
+		        WriteEntryDataBlock(block)
+		      Loop
+		    End If
 		    
 		  Finally
 		    WriteEntryFinished()
