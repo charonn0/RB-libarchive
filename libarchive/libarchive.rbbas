@@ -155,6 +155,14 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_add_callback_data Lib libpath (Archive As Ptr, Opaque As Ptr, Index As UInt32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_append_callback_data Lib libpath (Archive As Ptr, Opaque As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_close Lib libpath (Archive As Ptr) As Int32
 	#tag EndExternalMethod
 
@@ -211,6 +219,18 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_open Lib libpath (Archive As Ptr, Opaque As Ptr, OpenCallback As Ptr, ReadCallback As Ptr, CloseCallback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_open1 Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_open2 Lib libpath (Archive As Ptr, Opaque As Ptr, OpenCallback As Ptr, ReadCallback As Ptr, SkipCallback As Ptr, CloseCallback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_open_filename Lib libpath (Archive As Ptr, FileName As CString, BlockSize As UInt32) As Int32
 	#tag EndExternalMethod
 
@@ -220,6 +240,22 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_open_memory Lib libpath (Archive As Ptr, Buffer As Ptr, BufferSize As UInt32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_prepend_callback_data Lib libpath (Archive As Ptr, Opaque As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_callback_data Lib libpath (Archive As Ptr, Opaque As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_callback_data2 Lib libpath (Archive As Ptr, Opaque As Ptr, Index As UInt32) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_close_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -235,6 +271,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_open_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_set_option Lib libpath (Archive As Ptr, FilterOrReaderModule As WString, Option As WString, Value As WString) As Int32
 	#tag EndExternalMethod
 
@@ -244,6 +284,22 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_set_passphrase_callback Lib libpath (Archive As Ptr, Opaque As Ptr, Callback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_read_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_seek_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_skip_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_set_switch_callback Lib libpath (Archive As Ptr, Callback As Ptr) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
