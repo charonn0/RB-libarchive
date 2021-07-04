@@ -1,6 +1,6 @@
 #tag Class
 Protected Class RAR5Reader
-Inherits libarchive.ArchiveReader
+Inherits libarchive.Readers.RARReader
 	#tag Method, Flags = &h1000
 		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType)
 		  // Calling the overridden superclass constructor.
@@ -21,6 +21,17 @@ Inherits libarchive.ArchiveReader
 		  SetFormat(ArchiveType.RAR5)
 		  SetFilter(Compressor)
 		  mSourceBuffer = Buffer
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
+		Sub Constructor(ReadFrom As Readable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType.RAR5)
+		  SetFilter(Compressor)
+		  mSourceStream = ReadFrom
 		End Sub
 	#tag EndMethod
 
