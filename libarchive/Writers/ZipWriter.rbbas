@@ -27,6 +27,18 @@ Inherits libarchive.ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveWriter
+		  Super.Constructor()
+		  SetFormat(ArchiveType.Zip)
+		  SetFilter(Compressor)
+		  If WriteTo IsA BinaryStream Then BinaryStream(WriteTo).LittleEndian = True
+		  mDestinationStream = WriteTo
+		End Sub
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter

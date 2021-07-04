@@ -119,6 +119,10 @@ Protected Class Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
+		Protected mDestinationStream As Writeable
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
 		Protected mFilterName As String
 	#tag EndProperty
 
@@ -144,6 +148,10 @@ Protected Class Archive
 
 	#tag Property, Flags = &h1
 		Protected mSourceStream As Readable
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mStream As MemoryStream
 	#tag EndProperty
 
 

@@ -23,6 +23,17 @@ Inherits libarchive.ArchiveReader
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(ReadFrom As Readable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType.TAR)
+		  SetFilter(Compressor)
+		  mSourceStream = ReadFrom
+		End Sub
+	#tag EndMethod
+
 
 	#tag Constant, Name = CHUNK_SIZE, Type = Double, Dynamic = False, Default = \"16384", Scope = Private
 	#tag EndConstant

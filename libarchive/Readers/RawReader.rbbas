@@ -24,6 +24,17 @@ Inherits libarchive.ArchiveReader
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(ReadFrom As Readable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType.Raw)
+		  SetFilter(Compressor)
+		  mSourceStream = ReadFrom
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Function Read(Count As Integer) As String
 		  If Count <= mReadBuffer.LenB Then

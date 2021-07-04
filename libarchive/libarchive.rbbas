@@ -543,6 +543,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_open2 Lib libpath (Archive As Ptr, Opaque As Ptr, OpenCallback As Ptr, WriteCallback As Ptr, CloseCallback As Ptr, FreeCallback As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_write_open_filename_w Lib libpath (Archive As Ptr, Path As WString) As Int32
 	#tag EndExternalMethod
 

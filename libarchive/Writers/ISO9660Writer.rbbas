@@ -25,6 +25,17 @@ Inherits libarchive.ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveWriter
+		  Super.Constructor()
+		  SetFormat(ArchiveType.ISO9660)
+		  SetFilter(Compressor)
+		  mDestinationStream = WriteTo
+		End Sub
+	#tag EndMethod
+
 
 	#tag Note, Name = Options
 		https://github.com/libarchive/libarchive/wiki/FormatISO9660#supported-options

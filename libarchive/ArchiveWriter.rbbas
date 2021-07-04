@@ -20,8 +20,30 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Sub CreateFile(File As FolderItem)
+	#tag Method, Flags = &h0
+		Sub Create()
+		  If IsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
+		  
+		  Select Case True
+		  Case mSourceBuffer <> Nil
+		    CreateMemory(mSourceBuffer)
+		  Case mSourceFile <> Nil
+		    CreateFile(mSourceFile)
+		  Case mDestinationStream <> Nil
+		    CreateStream(mDestinationStream)
+		  Else
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End Select
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub CreateFile(File As FolderItem)
 		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceFile = File
@@ -30,11 +52,20 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Sub CreateMemory(Buffer As MemoryBlock)
+	#tag Method, Flags = &h21
+		Private Sub CreateMemory(Buffer As MemoryBlock)
 		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceBuffer = Buffer
+		  mIsOpen = True
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub CreateStream(Stream As Writeable)
+		  mStream = New MemoryStream(Me, Stream)
+		  mDestinationStream = Stream
 		  mIsOpen = True
 		  
 		End Sub
@@ -171,17 +202,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      CreateMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      CreateFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Raise New ArchiveException(Me)
-		    End Select
-		  End If
+		  If Not mIsOpen Then Create()
 		  If mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
 		    Raise New ArchiveException(Me)
@@ -228,17 +249,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      CreateMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      CreateFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Raise New ArchiveException(Me)
-		    End Select
-		  End If
+		  If Not mIsOpen Then Create()
 		  If mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
 		    Raise New ArchiveException(Me)

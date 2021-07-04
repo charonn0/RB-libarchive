@@ -74,8 +74,8 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Sub Open()
+	#tag Method, Flags = &h0
+		Sub Open()
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -514,10 +514,6 @@ Inherits libarchive.Archive
 
 	#tag Property, Flags = &h21
 		Private mFormatVariant As Int32
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mStream As MemoryStream
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

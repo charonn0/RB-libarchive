@@ -25,6 +25,18 @@ Inherits libarchive.ArchiveReader
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1000
+		Sub Constructor(ReadFrom As Readable, ArchiveType As libarchive.ArchiveType, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveReader
+		  Super.Constructor()
+		  SetFormat(ArchiveType)
+		  SetFilter(Compressor)
+		  mSourceStream = ReadFrom
+		  Open()
+		End Sub
+	#tag EndMethod
+
 
 End Class
 #tag EndClass
