@@ -75,7 +75,29 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub OpenFile(File As FolderItem)
+		Protected Sub Open()
+		  If IsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
+		  
+		  Select Case True
+		  Case mSourceBuffer <> Nil
+		    OpenMemory(mSourceBuffer)
+		  Case mSourceFile <> Nil
+		    OpenFile(mSourceFile)
+		  Case mSourceStream <> Nil
+		    OpenStream(mSourceStream)
+		  Else
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End Select
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub OpenFile(File As FolderItem)
 		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, CHUNK_SIZE)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceFile = File
@@ -84,8 +106,8 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Sub OpenMemory(Buffer As MemoryBlock)
+	#tag Method, Flags = &h21
+		Private Sub OpenMemory(Buffer As MemoryBlock)
 		  mLastError = archive_read_open_memory(mArchive, Buffer, Buffer.Size)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceBuffer = Buffer
@@ -94,22 +116,20 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub OpenStream(ReadFrom As Readable)
+		  mStream = New MemoryStream(Me, ReadFrom)
+		  mLastError = archive_read_open1(mArchive)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  mIsOpen = True
+		  If Not ReadEntryHeader() Then Raise New ArchiveException(Me)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Int32) As Boolean
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      OpenMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      OpenFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Return False
-		    End Select
-		  End If
-		  
+		  If Not mIsOpen Then Open()
 		  If WriteTo = 0 Then Return SkipEntryData()
-		  
 		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
 		  Return mLastError = ARCHIVE_EOF
 		End Function
@@ -117,18 +137,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Writeable) As Boolean
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      OpenMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      OpenFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Return False
-		    End Select
-		  End If
-		  
+		  If Not mIsOpen Then Open()
 		  If WriteTo = Nil Then Return SkipEntryData()
 		  mLastError = 0
 		  
@@ -148,17 +157,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      OpenMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      OpenFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Return 0
-		    End Select
-		  End If
+		  If Not mIsOpen Then Open()
 		  
 		  Dim size As UInt32
 		  Dim buffer As Ptr
@@ -171,17 +170,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(Count As UInt32) As MemoryBlock
-		  If Not mIsOpen Then
-		    Select Case True
-		    Case mSourceBuffer <> Nil
-		      OpenMemory(mSourceBuffer)
-		    Case mSourceFile <> Nil
-		      OpenFile(mSourceFile)
-		    Else
-		      mLastError = ERR_TOO_EARLY
-		      Return Nil
-		    End Select
-		  End If
+		  If Not mIsOpen Then Open()
 		  
 		  Dim buffer As New MemoryBlock(Count)
 		  mLastError = archive_read_data(mArchive, buffer, Buffer.Size)
@@ -195,11 +184,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryHeader() As Boolean
-		  If Not mIsOpen Then
-		    mLastError = ERR_TOO_EARLY
-		    Return False
-		  End If
-		  
+		  If Not mIsOpen Then Open()
 		  Dim entry As Ptr
 		  mLastError = archive_read_next_header(mArchive, entry)
 		  If mLastError <> ARCHIVE_OK Then Return False
@@ -529,6 +514,10 @@ Inherits libarchive.Archive
 
 	#tag Property, Flags = &h21
 		Private mFormatVariant As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mStream As MemoryStream
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

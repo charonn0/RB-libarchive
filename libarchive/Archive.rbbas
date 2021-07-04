@@ -142,6 +142,10 @@ Protected Class Archive
 		Protected mSourceFile As FolderItem
 	#tag EndProperty
 
+	#tag Property, Flags = &h1
+		Protected mSourceStream As Readable
+	#tag EndProperty
+
 
 	#tag ViewBehavior
 		#tag ViewProperty

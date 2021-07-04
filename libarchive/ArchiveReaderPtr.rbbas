@@ -8,7 +8,8 @@ Inherits libarchive.ArchiveReader
 		  Super.Constructor()
 		  SetFormat(ArchiveType)
 		  SetFilter(Compressor)
-		  OpenFile(File)
+		  mSourceFile = File
+		  Open()
 		End Sub
 	#tag EndMethod
 
@@ -19,7 +20,8 @@ Inherits libarchive.ArchiveReader
 		  Super.Constructor()
 		  SetFormat(ArchiveType)
 		  SetFilter(Compressor)
-		  OpenMemory(Buffer)
+		  mSourceBuffer = Buffer
+		  Open()
 		End Sub
 	#tag EndMethod
 
