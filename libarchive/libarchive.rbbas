@@ -23,7 +23,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_atime_nsec Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_atime_nsec Lib libpath (ArchiveEntry As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -35,7 +35,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_birthtime_nsec Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_birthtime_nsec Lib libpath (ArchiveEntry As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -47,6 +47,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_copy_sourcepath_w Lib libpath (ArchiveEntry As Ptr, Pathname As WString)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_ctime Lib libpath (ArchiveEntry As Ptr) As Int32
 	#tag EndExternalMethod
 
@@ -55,7 +59,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_ctime_nsec Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_ctime_nsec Lib libpath (ArchiveEntry As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -151,7 +155,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_mtime_nsec Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_mtime_nsec Lib libpath (ArchiveEntry As Ptr) As Int64
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -195,6 +199,14 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_birthtime Lib libpath (ArchiveEntry As Ptr, UnixTime As UInt32, NanoSeconds As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_ctime Lib libpath (ArchiveEntry As Ptr, UnixTime As UInt32, NanoSeconds As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_set_filetype Lib libpath (ArchiveEntry As Ptr, Type As Int32)
 	#tag EndExternalMethod
 
@@ -204,6 +216,10 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_set_mtime Lib libpath (ArchiveEntry As Ptr, UnixTime As UInt32, NanoSeconds As Int32)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_set_nlink Lib libpath (ArchiveEntry As Ptr, Count As UInt32)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -219,11 +235,11 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_sourcepath Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_sourcepath Lib libpath (ArchiveEntry As Ptr) As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_sourcepath_w Lib libpath (ArchiveEntry As Ptr) As Int32
+		Private Soft Declare Function archive_entry_sourcepath_w Lib libpath (ArchiveEntry As Ptr) As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -264,6 +280,14 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_unset_atime Lib libpath (ArchiveEntry As Ptr)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_unset_birthtime Lib libpath (ArchiveEntry As Ptr)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_unset_ctime Lib libpath (ArchiveEntry As Ptr)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -1274,6 +1298,15 @@ Protected Module libarchive
 	#tag Method, Flags = &h21
 		Private Function time_t(Count As Integer) As Date
 		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
+		  d.TotalSeconds = d.TotalSeconds + Count
+		  Return d
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function time_tn(Count As Int64) As Date
+		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
+		  Count = Count / 1000000000
 		  d.TotalSeconds = d.TotalSeconds + Count
 		  Return d
 		End Function

@@ -47,6 +47,9 @@ Protected Class ArchiveEntry
 		  If archive_entry_atime_is_set(mEntry) = 1 Then
 		    Dim count As UInt32 = archive_entry_atime(mEntry)
 		    mAccessTime = time_t(count)
+		    
+		    Dim countn As Int64 = archive_entry_atime_nsec(mEntry)
+		    mAccessTimeNS = time_tn(countn)
 		  End If
 		  
 		  If archive_entry_mtime_is_set(mEntry) = 1 Then
@@ -54,9 +57,30 @@ Protected Class ArchiveEntry
 		    mModificationTime = time_t(count)
 		  End If
 		  
+		  If archive_entry_birthtime_is_set(mEntry) = 1 Then
+		    Dim count As UInt32 = archive_entry_birthtime(mEntry)
+		    mBirthTime = time_t(count)
+		    
+		    Dim countn As Int64 = archive_entry_birthtime_nsec(mEntry)
+		    mBirthTimeNS = time_tn(countn)
+		  End If
+		  
+		  If archive_entry_ctime_is_set(mEntry) = 1 Then
+		    Dim count As UInt32 = archive_entry_ctime(mEntry)
+		    mChangeTime = time_t(count)
+		    
+		    Dim countn As Int64 = archive_entry_ctime_nsec(mEntry)
+		    mChangeTime = time_tn(countn)
+		  End If
+		  
 		  If archive_entry_size_is_set(mEntry) = 1 Then
 		    mLength = archive_entry_size(mEntry)
 		  End If
+		  
+		  mLinkCount = archive_entry_nlink(mEntry)
+		  
+		  Dim mb As MemoryBlock = archive_entry_sourcepath_w(mEntry)
+		  If mb <> Nil Then mSourcePath = mb.WString(0)
 		  
 		  mIsEncrypted = (archive_entry_is_data_encrypted(mEntry) = 1)
 		  
@@ -158,6 +182,80 @@ Protected Class ArchiveEntry
 			End Set
 		#tag EndSetter
 		AccessTime As Date
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets the last access time of the entry, or Nil if not available.
+			  
+			  Return mAccessTimeNS
+			End Get
+		#tag EndGetter
+		AccessTimeNS As Date
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets the birth time of the entry, or Nil if not available.
+			  
+			  Return mBirthTime
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets the birth time of the entry. Set this to Nil to remove the access time.
+			  
+			  If mEntry = Nil Then Return
+			  If value = Nil Then
+			    archive_entry_unset_birthtime(mEntry)
+			    mBirthTime = Nil
+			  Else
+			    Dim count As UInt32 = time_t(value)
+			    archive_entry_set_birthtime(mEntry, count, 0)
+			    mBirthTime = value
+			  End If
+			End Set
+		#tag EndSetter
+		BirthTime As Date
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets the birth time of the entry, or Nil if not available.
+			  
+			  Return mBirthTimeNS
+			End Get
+		#tag EndGetter
+		BirthTimeNS As Date
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets the metadata changed time of the entry, or Nil if not available.
+			  
+			  Return mChangeTime
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets the metadata changed time of the entry. Set this to Nil to remove the change time.
+			  
+			  If mEntry = Nil Then Return
+			  If value = Nil Then
+			    archive_entry_unset_ctime(mEntry)
+			    mChangeTime = Nil
+			  Else
+			    Dim count As UInt32 = time_t(value)
+			    archive_entry_set_ctime(mEntry, count, 0)
+			    mChangeTime = value
+			  End If
+			End Set
+		#tag EndSetter
+		ChangeTime As Date
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -270,8 +368,49 @@ Protected Class ArchiveEntry
 		Length As Int64
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Get the number of links to this entry, if available.
+			  
+			  Return mLinkCount
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Set the number of links to the entry. Set this to a value 0 to clear the link count.
+			  
+			  If mEntry = Nil Then Return
+			  archive_entry_set_nlink(mEntry, value)
+			  mLinkCount = value
+			  
+			End Set
+		#tag EndSetter
+		LinkCount As UInt32
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private mAccessTime As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mAccessTimeNS As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mBirthTime As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mBirthTimeNS As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mChangeTime As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mChangeTimeNS As Date
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -295,6 +434,10 @@ Protected Class ArchiveEntry
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mLinkCount As UInt32
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mLinkType As Int32
 	#tag EndProperty
 
@@ -304,6 +447,10 @@ Protected Class ArchiveEntry
 
 	#tag Property, Flags = &h21
 		Private mModificationTime As Date
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mModificationTimeNS As Date
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -316,7 +463,7 @@ Protected Class ArchiveEntry
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Set the Unix-style permissions of the entry. 
+			  ' Set the Unix-style permissions of the entry.
 			  
 			  If mEntry = Nil Or value = Nil Then Return
 			  Dim p As Int32 = PermissionsToMode(value)
@@ -354,12 +501,27 @@ Protected Class ArchiveEntry
 		ModificationTime As Date
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Gets the last-modified time of the entry, or Nil if not available.
+			  
+			  Return mModificationTimeNS
+			End Get
+		#tag EndGetter
+		ModificationTimeNS As Date
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private mOwner As libarchive.Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mPathName As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mSourcePath As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -386,6 +548,26 @@ Protected Class ArchiveEntry
 			End Set
 		#tag EndSetter
 		PathName As String
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  
+			  Return mSourcePath
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  
+			  If mEntry = Nil Then Return
+			  If value <> "" Then
+			    archive_entry_copy_sourcepath_w(mEntry, value)
+			    mPathName = value
+			  End If
+			End Set
+		#tag EndSetter
+		SourcePath As String
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -508,6 +690,16 @@ Protected Class ArchiveEntry
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsADirectory"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsALink"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="IsEncrypted"
