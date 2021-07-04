@@ -75,7 +75,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_entry_fflags Lib libpath (ArchiveEntry As Ptr, archive_entry_fflags_text Lib libpath( Entry As Ptr) As Int32) As Int32
+		Private Soft Declare Function archive_entry_fflags Lib libpath (ArchiveEntry As Ptr, IsSet As Int32, IsClear As Int32) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
