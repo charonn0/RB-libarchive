@@ -33,8 +33,9 @@ Inherits libarchive.ArchiveWriter
 		  SetFormat(ArchiveType.Ar)
 		  SetFilter(Compressor)
 		  mDestinationStream = WriteTo
+		End Sub
 	#tag EndMethod
-	
+
 	#tag Method, Flags = &h0
 		Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
 		  If Entry.Type <> EntryType.File Then Return ' AR only takes files?
