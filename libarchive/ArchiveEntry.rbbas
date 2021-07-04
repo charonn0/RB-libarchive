@@ -118,6 +118,36 @@ Protected Class ArchiveEntry
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Shared Function CreateRelativePath(Root As FolderItem, Path As String) As FolderItem
+		  ' Returns a FolderItem corresponding to Root+Path, creating subdirectories as needed
+		  
+		  If Root = Nil Or Not Root.Directory Then Return Nil
+		  Dim s() As String = Split(Path, "/")
+		  Dim bound As Integer = UBound(s)
+		  
+		  For i As Integer = 0 To bound - 1
+		    Dim name As String = s(i)
+		    If name = "" Then Continue
+		    root = root.TrueChild(name)
+		    If Root.Exists Then
+		      If Not Root.Directory Then
+		        Dim err As New IOException
+		        err.Message = "'" + name + "' is not a directory!"
+		        Raise err
+		      End If
+		    Else
+		      root.CreateAsFolder
+		    End If
+		  Next
+		  
+		  Dim name As String = s(bound)
+		  If name <> "" Then Root = Root.Child(name)
+		  
+		  Return Root
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub Destructor()
 		  If mEntry <> Nil And mFreeable Then archive_entry_free(mEntry)
 		  mEntry = Nil
@@ -141,6 +171,12 @@ Protected Class ArchiveEntry
 		  
 		  mLastError = archive_read_extract(mOwner.Handle, Me.Handle, Flags)
 		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ExtractPath(RelativeRoot As FolderItem) As FolderItem
+		  Return CreateRelativePath(RelativeRoot, Me.PathName)
 		End Function
 	#tag EndMethod
 
