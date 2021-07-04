@@ -12,7 +12,19 @@ Inherits libarchive.ArchiveWriter
 		    Flags = ARCHIVE_EXTRACT_TIME Or ARCHIVE_EXTRACT_PERM Or ARCHIVE_EXTRACT_ACL Or ARCHIVE_EXTRACT_FFLAGS
 		  End If
 		  If Not SetOptions(Flags) Then Raise New ArchiveException(Me)
-		  CreateFile(Output)
+		  mSourceFile = Output
+		  Create()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
+		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType)
+		  // Calling the overridden superclass constructor.
+		  // Constructor() -- from ArchiveWriter
+		  Super.Constructor()
+		  SetFormat(ArchiveType.Raw)'?
+		  SetFilter(Compressor)
+		  mDestinationStream = WriteTo
 		End Sub
 	#tag EndMethod
 
