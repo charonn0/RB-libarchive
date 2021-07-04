@@ -664,6 +664,51 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Function CreateArchive(WriteTo As Writeable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		  If Archivist = ArchiveType.All Then Archivist = ArchiveType.Raw
+		  If Compressor = CompressionType.All Then Compressor = CompressionType.None
+		  Select Case Archivist
+		  Case ArchiveType.Ar
+		    Return New libarchive.Writers.ARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.CPIO
+		    Return New libarchive.Writers.CPIOWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ISO9660
+		    Return New libarchive.Writers.ISO9660Writer(WriteTo, Compressor)
+		    
+		  Case ArchiveType.MTree
+		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.SevenZip
+		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Shar
+		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.XAR
+		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Zip
+		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ZipSeekable
+		    Return New libarchive.Writers.ZipSeekWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ZipStreamable
+		    Return New libarchive.Writers.ZipStreamWriter(WriteTo, Compressor)
+		    
+		  Else
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		  End Select
+		  
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Function CreateAsArchive(Extends Archive As FolderItem, Archivist As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
 		  Return CreateArchive(Archive, Archivist, CompressionType.All)
@@ -934,6 +979,51 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Function OpenArchive(Archive As Readable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  Select Case Archivist
+		  Case ArchiveType.All ' detect.
+		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
+		    
+		  Case ArchiveType.Ar
+		    Return New libarchive.Readers.ARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.Cabinet
+		    Return New libarchive.Readers.CabinetReader(Archive, Compressor)
+		    
+		  Case ArchiveType.CPIO
+		    Return New libarchive.Readers.CPIOReader(Archive, Compressor)
+		    
+		  Case ArchiveType.ISO9660
+		    Return New libarchive.Readers.ISO9660Reader(Archive, Compressor)
+		    
+		  Case ArchiveType.LHA
+		    Return New libarchive.Readers.LHAReader(Archive, Compressor)
+		    
+		  Case ArchiveType.MTree
+		    Return New libarchive.Readers.MTreeReader(Archive, Compressor)
+		    
+		  Case ArchiveType.RAR
+		    Return New libarchive.Readers.RARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.SevenZip
+		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
+		    
+		  Case ArchiveType.TAR
+		    Return New libarchive.Readers.TARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.XAR
+		    Return New libarchive.Readers.XARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.Zip
+		    Return New libarchive.Readers.ZipReader(Archive, Compressor)
+		    
+		  Else
+		    Raise New ArchiveException(ERR_WRITE_ONLY_FORMAT)
+		  End Select
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Function OpenAsArchive(Extends Archive As FolderItem) As libarchive.ArchiveReader
 		  ' Attempts to open the specified file as an archive. This may fail even on valid archives if
@@ -981,7 +1071,16 @@ Protected Module libarchive
 		  ' Extracts an archive to the ExtractTo directory
 		  
 		  Dim arc As ArchiveReader = ArchiveFile.OpenAsArchive()
-		  If Password <> "" Then arc.Password = Password
+		  Return ReadArchive(arc, ExtractTo, Password)
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ReadArchive(Archive As libarchive.ArchiveReader, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
+		  ' Extracts an archive to the ExtractTo directory
+		  
+		  If Password <> "" Then Archive.Password = Password
 		  Dim ret() As ArchiveEntry
 		  
 		  ' libarchive will extract to the app's working directory, so we
@@ -1002,11 +1101,21 @@ Protected Module libarchive
 		  #EndIf
 		  
 		  Do
-		    Dim entry As ArchiveEntry = arc.CurrentEntry
+		    Dim entry As ArchiveEntry = Archive.CurrentEntry
 		    If entry.Extract(0) Then ret.Append(entry)
-		  Loop Until Not arc.MoveNext(Nil)
-		  arc.Close
+		  Loop Until Not Archive.MoveNext(Nil)
+		  Archive.Close
 		  Return ret
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ReadArchive(ArchiveStream As Readable, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
+		  ' Extracts an archive to the ExtractTo directory
+		  
+		  Dim arc As ArchiveReader = OpenArchive(ArchiveStream, ArchiveType.All, CompressionType.All)
+		  Return ReadArchive(arc, ExtractTo, Password)
 		  
 		End Function
 	#tag EndMethod
@@ -1047,56 +1156,70 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False)
 		  If OutputFile.Exists Then
 		    If Not Overwrite Then Raise New IOException
 		    OutputFile.Delete()
 		  End If
 		  
-		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
-		  If arc = Nil Then Return False
-		  If Password <> "" Then arc.Password = Password
-		  Dim ok As Boolean
-		  Dim c As Integer = UBound(ToArchive)
-		  Try
-		    For i As Integer = 0 To c
-		      Dim item As FolderItem = ToArchive(i)
-		      Dim entry As New ArchiveEntry(item, RelativeRoot)
-		      Dim bs As BinaryStream
-		      If item.Directory Then
-		        Dim mb As New MemoryBlock(0)
-		        bs = New BinaryStream(mb)
-		        bs.Close()
-		      Else
-		        bs = BinaryStream.Open(item)
-		      End If
-		      arc.WriteEntry(entry, bs)
-		    Next
-		    ok = True
-		  Catch
-		    ok = False
-		    
-		  Finally
-		    arc.Close()
-		    
-		  End Try
-		  
-		  Return ok
-		  
-		End Function
+		  WriteArchive(CreateArchive(OutputFile, Archivist, Compressor), ToArchive, RelativeRoot, Password)
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False) As Boolean
+		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "")
+		  WriteArchive(CreateArchive(OutputFile, Archivist, Compressor), TargetDirectory, Password)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, ToArchive() As FolderItem, RelativeRoot As FolderItem, Password As String = "")
+		  If Password <> "" Then Archive.Password = Password
+		  Dim c As Integer = UBound(ToArchive)
+		  
+		  For i As Integer = 0 To c
+		    Dim item As FolderItem = ToArchive(i)
+		    Dim entry As New ArchiveEntry(item, RelativeRoot)
+		    Dim bs As BinaryStream
+		    If item.Directory Then
+		      bs = DevNull
+		    Else
+		      bs = BinaryStream.Open(item)
+		    End If
+		    Archive.WriteEntry(entry, bs)
+		  Next
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, TargetDirectory As FolderItem, Password As String = "")
 		  Dim items() As FolderItem
 		  If TargetDirectory.Directory Then
 		    GetChildren(TargetDirectory, items)
 		  Else
 		    items.Append(TargetDirectory)
 		  End If
-		  Return WriteArchive(Archivist, Compressor, items, OutputFile, TargetDirectory, Password, Overwrite)
-		End Function
+		  WriteArchive(Archive, items, TargetDirectory, Password)
+		End Sub
 	#tag EndMethod
+
+
+	#tag ComputedProperty, Flags = &h21
+		#tag Getter
+			Get
+			  Static mDevNull As BinaryStream
+			  If mDevNull = Nil Then
+			    Dim mb As New MemoryBlock(0)
+			    mDevNull = New BinaryStream(mb)
+			    mDevNull.Close()
+			  End If
+			  return mDevNull
+			End Get
+		#tag EndGetter
+		Private DevNull As BinaryStream
+	#tag EndComputedProperty
 
 
 	#tag Constant, Name = ARCHIVE_EOF, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
