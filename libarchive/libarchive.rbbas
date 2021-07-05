@@ -1564,7 +1564,8 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_OPT_ROCKRIDGE, Type = String, Dynamic = False, Default = \"rockridge", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive.dll", Scope = Private
+	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive-13", Scope = Private
+		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"libarchive-13.dll"
 	#tag EndConstant
 
 
