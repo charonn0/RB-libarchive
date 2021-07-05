@@ -74,8 +74,8 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub Open()
+	#tag Method, Flags = &h1
+		Protected Sub Open()
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)

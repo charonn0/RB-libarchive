@@ -20,8 +20,8 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub Create()
+	#tag Method, Flags = &h1
+		Protected Sub Create()
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
