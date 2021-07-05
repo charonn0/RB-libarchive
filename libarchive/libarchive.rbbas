@@ -903,6 +903,10 @@ Protected Module libarchive
 		    msg = "Creating an archive of this type is not supported."
 		  Case ERR_WRITE_ONLY_FORMAT
 		    msg = "Extracting an archive of this type is not supported."
+		  Case ERR_TOO_LATE
+		    msg = "It is too late in the process to perform the requested operation."
+		  Case ERR_TOO_EARLY
+		    msg = "It is too early in the process to perform the requested operation."
 		  Case ARCHIVE_OK
 		    msg = "Operation succeeded."
 		  Case ARCHIVE_EOF
