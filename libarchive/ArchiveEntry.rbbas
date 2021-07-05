@@ -141,7 +141,7 @@ Protected Class ArchiveEntry
 		  
 		  For i As Integer = 0 To bound - 1
 		    Dim name As String = s(i)
-		    If name = "" Then Continue
+		    If name = "" Or name = "." Or name = ".." Then Continue
 		    root = root.TrueChild(name)
 		    If Root.Exists Then
 		      If Not Root.Directory Then
