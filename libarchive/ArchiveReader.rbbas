@@ -393,6 +393,7 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  If mCurrentEntry = Nil And mArchive <> Nil And Not mIsOpen Then Open()
 			  return mCurrentEntry
 			End Get
 		#tag EndGetter
