@@ -39,6 +39,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_clear Lib libpath (ArchiveEntry As Ptr) As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_clone Lib libpath (ArchiveEntry As Ptr) As Ptr
 	#tag EndExternalMethod
 
@@ -160,6 +164,10 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_entry_new Lib libpath () As Ptr
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_entry_new2 Lib libpath (Archive As Ptr) As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21

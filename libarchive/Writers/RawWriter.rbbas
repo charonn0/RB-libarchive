@@ -47,7 +47,7 @@ Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h0
 		Sub WriteEntryDataBlock(Block As MemoryBlock)
 		  If Not mHeaderWritten Then
-		    Dim meta As New libarchive.ArchiveEntry()
+		    Dim meta As New libarchive.ArchiveEntry(Me)
 		    meta.Type = EntryType.File
 		    WriteEntryHeader(meta)
 		  End If

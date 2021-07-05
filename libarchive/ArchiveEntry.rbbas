@@ -1,14 +1,10 @@
 #tag Class
 Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
-		Sub Constructor()
-		  ' Create a new empty ArchiveEntry.
-		  
-		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
-		  mEntry = archive_entry_new()
-		  If mEntry = Nil Then
-		    mLastError = ERR_INIT_FAILED
-		    Raise New ArchiveException(Me)
+		Sub Clear()
+		  If mEntry <> Nil Then
+		    mEntry = archive_entry_clear(mEntry)
+		    Me.Constructor(mOwner, mEntry)
 		  End If
 		End Sub
 	#tag EndMethod
@@ -33,6 +29,24 @@ Protected Class ArchiveEntry
 		    Me.Type = libarchive.EntryType.File
 		  End If
 		  Me.ModificationTime = FromFile.ModificationDate
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor(Optional Owner As libarchive.Archive)
+		  ' Create a new empty ArchiveEntry.
+		  
+		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
+		  If Owner = Nil Then
+		    mEntry = archive_entry_new()
+		  Else
+		    mEntry = archive_entry_new2(mOwner.Handle)
+		    mOwner = Owner
+		  End If
+		  If mEntry = Nil Then
+		    mLastError = ERR_INIT_FAILED
+		    Raise New ArchiveException(Me)
+		  End If
 		End Sub
 	#tag EndMethod
 
