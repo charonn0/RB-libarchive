@@ -1572,8 +1572,10 @@ Protected Module libarchive
 	#tag Constant, Name = FORMAT_OPT_ROCKRIDGE, Type = String, Dynamic = False, Default = \"rockridge", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive-13", Scope = Private
+	#tag Constant, Name = libpath, Type = String, Dynamic = False, Default = \"libarchive.so.13", Scope = Private
 		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"libarchive-13.dll"
+		#Tag Instance, Platform = Mac OS, Language = Default, Definition  = \"/usr/local/lib/libarchive.13.dylib"
+		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"libarchive.so.13"
 	#tag EndConstant
 
 
