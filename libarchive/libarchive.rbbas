@@ -351,6 +351,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_read_add_passphrase Lib libpath (Archive As Ptr, Password As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_read_append_callback_data Lib libpath (Archive As Ptr, Opaque As Ptr) As Int32
 	#tag EndExternalMethod
 
@@ -1575,6 +1579,9 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_COMPRESSIONLEVEL, Type = String, Dynamic = False, Default = \"compression-level", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = FORMAT_OPT_ENCRYPTION, Type = String, Dynamic = False, Default = \"encryption", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_OPT_HDRCHARSET, Type = String, Dynamic = False, Default = \"hdrcharset", Scope = Private

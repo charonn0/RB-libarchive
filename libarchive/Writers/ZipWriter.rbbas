@@ -62,39 +62,8 @@ Inherits libarchive.ArchiveWriter
 		Compressed As Boolean
 	#tag EndComputedProperty
 
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mEncryption
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  ' Enables or disables encryption on subsequently added entries.
-			  
-			  Dim ok As Boolean
-			  Select Case value
-			  Case EncryptionType.None
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "encryption", "")
-			  Case EncryptionType.ZipCrypt
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "encryption", "zipcrypt")
-			  Case EncryptionType.AES128
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "encryption", "aes128")
-			  Case EncryptionType.AES256
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "encryption", "aes256")
-			  End Select
-			  If ok Then mEncryption = value
-			End Set
-		#tag EndSetter
-		Encryption As libarchive.Writers.ZipWriter.EncryptionType
-	#tag EndComputedProperty
-
 	#tag Property, Flags = &h21
 		Private mCompressed As Boolean = True
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mEncryption As libarchive.Writers.ZipWriter.EncryptionType
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -159,14 +128,6 @@ Inherits libarchive.ArchiveWriter
 		#tag EndSetter
 		Zip64 As Boolean
 	#tag EndComputedProperty
-
-
-	#tag Enum, Name = EncryptionType, Type = Integer, Flags = &h0
-		None
-		  ZipCrypt
-		  AES128
-		AES256
-	#tag EndEnum
 
 
 	#tag ViewBehavior

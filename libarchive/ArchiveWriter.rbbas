@@ -283,6 +283,24 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  return mEncryption
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Enables or disables encryption on subsequently added entries.
+			  
+			  Dim ok As Boolean
+			  ok = Me.SetFormatOption(mFormatName, FORMAT_OPT_ENCRYPTION, value)
+			  If ok Then mEncryption = value
+			End Set
+		#tag EndSetter
+		Encryption As String
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  Const ARCHIVE_FORMAT_CPIO = &h
 			  Const ARCHIVE_FORMAT_SHAR = &h2
 			  Const ARCHIVE_FORMAT_TAR = &h3
@@ -340,6 +358,10 @@ Inherits libarchive.Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mEncryption As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mFormatFamily As libarchive.ArchiveType = ArchiveType.All
 	#tag EndProperty
 
@@ -363,7 +385,7 @@ Inherits libarchive.Archive
 		#tag EndGetter
 		#tag Setter
 			Set
-			  If IsOpen And mArchive <> Nil Then
+			  If Not IsOpen And mArchive <> Nil Then
 			    mLastError = archive_write_set_passphrase(mArchive, value)
 			    If mLastError = ARCHIVE_OK Then mPassword = value
 			  End If
@@ -371,6 +393,16 @@ Inherits libarchive.Archive
 		#tag EndSetter
 		Password As String
 	#tag EndComputedProperty
+
+
+	#tag Constant, Name = CIPHER_AES128, Type = String, Dynamic = False, Default = \"aes128", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CIPHER_AES256, Type = String, Dynamic = False, Default = \"aes256", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CIPHER_ZIPCRYPT, Type = String, Dynamic = False, Default = \"zipcrypt", Scope = Public
+	#tag EndConstant
 
 
 	#tag ViewBehavior
