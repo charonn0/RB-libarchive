@@ -407,6 +407,11 @@ Inherits libarchive.Archive
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="Encryption"
+			Group="Behavior"
+			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"

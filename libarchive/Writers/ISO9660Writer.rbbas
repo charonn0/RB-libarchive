@@ -52,7 +52,7 @@ Inherits libarchive.ArchiveWriter
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' The specified file name will be identified in the ISO9660 metadata as holding the abstract for this volume. Default: none. 
+			  ' The specified file name will be identified in the ISO9660 metadata as holding the abstract for this volume. Default: none.
 			  
 			  Dim ok As Boolean
 			  If value <> "" Then
@@ -94,7 +94,7 @@ Inherits libarchive.ArchiveWriter
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' The specified filename will be identified in the ISO9660 metadata as holding the application identifier for this volume. Default: none. 
+			  ' The specified filename will be identified in the ISO9660 metadata as holding the application identifier for this volume. Default: none.
 			  
 			  Dim ok As Boolean
 			  If value <> "" Then
@@ -116,7 +116,7 @@ Inherits libarchive.ArchiveWriter
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' The specified filename will be identified in the ISO9660 metadata as holding the bibliography for this volume. Default: none. 
+			  ' The specified filename will be identified in the ISO9660 metadata as holding the bibliography for this volume. Default: none.
 			  
 			  Dim ok As Boolean
 			  If value Then
@@ -160,7 +160,7 @@ Inherits libarchive.ArchiveWriter
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' The specified file name will be used as the El Torito boot image file. 
+			  ' The specified file name will be used as the El Torito boot image file.
 			  
 			  Dim ok As Boolean
 			  If value <> "" Then
@@ -226,7 +226,7 @@ Inherits libarchive.ArchiveWriter
 			  ' BIOSes can only load very small images, setting this value to 4 will often allow such BIOSes to load
 			  ' the first part of the boot image (which will then need to be intelligent enough to load the rest of
 			  ' itself). This should not be needed unless you are trying to support systems with very old BIOSes. This
-			  ' defaults to the full size of the image. 
+			  ' defaults to the full size of the image.
 			  
 			  If Me.SetFormatOption(FORMAT_MODULE_ISO9660, "boot-load-size", Str(value)) Then mBootLoaderSize = value
 			End Set
@@ -274,7 +274,7 @@ Inherits libarchive.ArchiveWriter
 			  ' are disabled by default. For best results, libarchive tests each file and will
 			  ' store the file uncompressed if the compression does not actually save any space.
 			  ' In particular, files under 2KB will never be compressed. Note that boot image
-			  ' files are never compressed. 
+			  ' files are never compressed.
 			  
 			  Dim ok As Boolean
 			  If value Then
@@ -298,7 +298,7 @@ Inherits libarchive.ArchiveWriter
 			Set
 			  ' Microsoft's Joliet extensions store a completely separate set of directory
 			  ' information about each file. In particular, this information includes Unicode
-			  ' filenames of up to 255 characters. Default: enabled. 
+			  ' filenames of up to 255 characters. Default: enabled.
 			  
 			  Dim ok As Boolean
 			  If value Then
@@ -404,7 +404,7 @@ Inherits libarchive.ArchiveWriter
 			  ' The Rockridge extensions store an additional set of POSIX-style file
 			  ' information with each file, including mtime, atime, ctime, permissions,
 			  ' and long filenames with arbitrary 8-bit characters. These extensions
-			  ' also support symbolic links and other POSIX file types. Default: enabled. 
+			  ' also support symbolic links and other POSIX file types. Default: enabled.
 			  
 			  Dim ok As Boolean
 			  If value Then
@@ -446,7 +446,8 @@ Inherits libarchive.ArchiveWriter
 		#tag ViewProperty
 			Name="AbstractFile"
 			Group="Behavior"
-			Type="Boolean"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="AllowVersionNumber"
@@ -491,6 +492,12 @@ Inherits libarchive.ArchiveWriter
 			Name="Compressed"
 			Group="Behavior"
 			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Encryption"
+			Group="Behavior"
+			Type="String"
+			InheritedFrom="libarchive.ArchiveWriter"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"

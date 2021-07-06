@@ -947,10 +947,8 @@ Protected Module libarchive
 		    msg = "The operation failed but it may succeed if retried."
 		  Case ARCHIVE_WARN
 		    msg = "The operation was partially successful."
-		    
 		  Else
 		    msg = "Unknown error number: " + Str(ErrorCode, "-000")
-		    
 		  End Select
 		  
 		  Return msg

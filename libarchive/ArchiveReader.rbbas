@@ -16,7 +16,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Sub Close()
-		  ' Close the archive and free system resources. 
+		  ' Close the archive and free system resources.
 		  
 		  If mIsOpen Then mLastError = archive_read_close(mArchive)
 		  mCurrentEntry = Nil

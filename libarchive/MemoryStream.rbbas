@@ -337,5 +337,7 @@ Private Class MemoryStream
 
 	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
 	#tag EndConstant
+
+
 End Class
 #tag EndClass

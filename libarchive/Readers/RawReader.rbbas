@@ -95,6 +95,11 @@ Inherits libarchive.ArchiveReader
 			InheritedFrom="libarchive.ArchiveReader"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="EOF"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="HasEncryptedEntries"
 			Group="Behavior"
 			Type="Boolean"

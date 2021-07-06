@@ -38,11 +38,35 @@ Inherits libarchive.ArchiveReader
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="CanDecryptData"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.ArchiveReader"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CanDecryptMetadata"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.ArchiveReader"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HasEncryptedEntries"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.ArchiveReader"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsOpen"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.Archive"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -56,6 +80,13 @@ Inherits libarchive.ArchiveReader
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Password"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
+			InheritedFrom="libarchive.ArchiveReader"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

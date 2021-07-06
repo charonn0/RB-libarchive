@@ -85,6 +85,12 @@ Inherits libarchive.ArchiveWriter
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="Encryption"
+			Group="Behavior"
+			Type="String"
+			InheritedFrom="libarchive.ArchiveWriter"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"

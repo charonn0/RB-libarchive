@@ -11,11 +11,29 @@ Inherits libarchive.ArchiveEntry
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="Group"
+			Group="Behavior"
+			Type="String"
+			InheritedFrom="libarchive.ArchiveEntry"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsADirectory"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.ArchiveEntry"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="IsALink"
+			Group="Behavior"
+			Type="Boolean"
+			InheritedFrom="libarchive.ArchiveEntry"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="IsEncrypted"
@@ -43,6 +61,12 @@ Inherits libarchive.ArchiveEntry
 			InheritedFrom="libarchive.ArchiveEntry"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="SourcePath"
+			Group="Behavior"
+			Type="String"
+			InheritedFrom="libarchive.ArchiveEntry"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
@@ -54,6 +78,12 @@ Inherits libarchive.ArchiveEntry
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="User"
+			Group="Behavior"
+			Type="String"
+			InheritedFrom="libarchive.ArchiveEntry"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
