@@ -1053,42 +1053,6 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function NormalizeFilename(Name As String) As String
-		  ' This method takes a file name from an archive and transforms it (if necessary) to abide by
-		  ' the rules of the target system.
-		  
-		  #If TargetWin32 Then
-		    Static reservednames() As String = Array("con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", _
-		    "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9")
-		    Static reservedchars() As String = Array("<", ">", ":", """", "/", "\", "|", "?", "*")
-		  #ElseIf TargetLinux Then
-		    Static reservednames() As String = Array(".", "..")
-		    Static reservedchars() As String = Array("/", Chr(0))
-		  #ElseIf TargetMacOS Then
-		    Static reservednames() As String ' none
-		    Static reservedchars() As String = Array(":", Chr(0))
-		  #endif
-		  
-		  For Each char As String In Name.Split("")
-		    If reservedchars.IndexOf(char) > -1 Then name = ReplaceAll(name, char, "_")
-		    #If TargetWin32 Then
-		      If Asc(char) < 32 Then name = ReplaceAll(name, char, "_")
-		    #endif
-		  Next
-		  
-		  If reservednames.IndexOf(name) > -1 Then name = "_" + name
-		  #If TargetWin32 Then
-		    ' Windows doesn't like it even if the reserved name is used with an extension, e.g. 'aux.c' is illegal.
-		    If reservednames.IndexOf(NthField(name, ".", 1)) > -1 Then name = "_" + name
-		    ' nor does Windows like it if the name ends in "." or " "
-		    If Right(Name, 1) = "." Or Right(Name, 1) = " " Then Name = Left(Name, Name.Len - 1)
-		  #endif
-		  
-		  Return name
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Function OpenArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
 		  Select Case Archivist
@@ -1231,38 +1195,6 @@ Protected Module libarchive
 		  
 		  Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
 		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function PermissionsToMode(p As Permissions) As UInt32
-		  Const TGEXEC = &o00010
-		  Const TGREAD = &o00040
-		  Const TGWRITE = &o00020
-		  Const TOEXEC = &o00001
-		  Const TOREAD = &o00004
-		  Const TOWRITE = &o00002
-		  Const TSGID = &o02000
-		  Const TSUID = &o04000
-		  Const TSVTX = &o01000
-		  Const TUEXEC = &o00100
-		  Const TUREAD = &o00400
-		  Const TUWRITE = &o00200
-		  
-		  Dim mask As UInt32
-		  If p.GroupExecute Then mask = mask Or TGEXEC
-		  If p.GroupRead Then mask = mask Or TGREAD
-		  If p.GroupWrite Then mask = mask Or TGWRITE
-		  
-		  If p.OwnerExecute Then mask = mask Or TUEXEC
-		  If p.OwnerRead Then mask = mask Or TUREAD
-		  If p.OwnerWrite Then mask = mask Or TUWRITE
-		  
-		  If p.OthersExecute Then mask = mask Or TOEXEC
-		  If p.OthersRead Then mask = mask Or TOREAD
-		  If p.OthersWrite Then mask = mask Or TOWRITE
-		  
-		  Return mask
 		End Function
 	#tag EndMethod
 
