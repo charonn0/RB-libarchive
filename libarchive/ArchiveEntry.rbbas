@@ -44,7 +44,7 @@ Protected Class ArchiveEntry
 		  If Owner = Nil Then
 		    mEntry = archive_entry_new()
 		  Else
-		    mEntry = archive_entry_new2(mOwner.Handle)
+		    mEntry = archive_entry_new2(Owner.Handle)
 		    mOwner = Owner
 		  End If
 		  If mEntry = Nil Then
