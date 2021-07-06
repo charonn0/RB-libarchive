@@ -3,14 +3,9 @@ Protected Class CompressedStream
 Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Sub Close()
-		  If mCompressor <> Nil Then
-		    Try
-		      Me.Flush()
-		    Catch
-		    End Try
-		  End If
-		  
+		  If mCompressor <> Nil Then mCompressor.Close()
 		  mCompressor = Nil
+		  If mDecompressor <> Nil Then mDecompressor.Close()
 		  mDecompressor = Nil
 		  
 		End Sub
