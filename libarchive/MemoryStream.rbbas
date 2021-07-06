@@ -88,7 +88,6 @@ Private Class MemoryStream
 		Private Function CB_Write(Buffer As Ptr, Length As UInt32) As UInt32
 		  Dim data As MemoryBlock = Buffer
 		  Dim mb As MemoryBlock = data.StringValue(0, Length)
-		  TruncateZeroes(mb) ' why is this necessary?
 		  mDestination.Write(mb)
 		  mPosition = mPosition + Length
 		  Return Length
@@ -153,6 +152,14 @@ Private Class MemoryStream
 		  Instances.Value(mArchive.Handle) = New WeakRef(Me)
 		  mDestination = WriteTo
 		  
+		  mLastError = archive_write_set_bytes_in_last_block(mArchive.Handle, 1)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  If Not USE_BUFFERING Then
+		    mLastError = archive_write_set_bytes_per_block(mArchive.Handle, 0)
+		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  End If
+		  
 		  mLastError = archive_write_open2(mArchive.Handle, mArchive.Handle, _
 		  AddressOf WriteOpenCallback, _
 		  AddressOf WriteCallback, _
@@ -160,7 +167,6 @@ Private Class MemoryStream
 		  AddressOf FreeCallback)
 		  
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		  
 		  
 		End Sub
 	#tag EndMethod
@@ -242,19 +248,6 @@ Private Class MemoryStream
 		    Return MemoryStream(w.Value).CB_Switch(Opaque2)
 		  End If
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Shared Sub TruncateZeroes(Data As MemoryBlock)
-		  Dim sz As Integer
-		  For i As Integer = Data.Size - 1 DownTo 0
-		    If Data.UInt8Value(i) <> 0 Then 
-		      sz = i
-		      Exit For
-		    End If
-		  Next
-		  If Data.Size - sz > 1024 Then Data.Size = sz
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -342,5 +335,7 @@ Private Class MemoryStream
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
+	#tag EndConstant
 End Class
 #tag EndClass

@@ -108,11 +108,9 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenMemory(Buffer As MemoryBlock)
-		  mLastError = archive_read_open_memory(mArchive, Buffer, Buffer.Size)
-		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceBuffer = Buffer
-		  mIsOpen = True
-		  If Not ReadEntryHeader() Then Raise New ArchiveException(Me)
+		  Dim stream As New BinaryStream(mSourceBuffer)
+		  OpenStream(stream)
 		End Sub
 	#tag EndMethod
 
@@ -517,9 +515,28 @@ Inherits libarchive.Archive
 		Private mFormatVariant As Int32
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
-		Password As String
+	#tag Property, Flags = &h21
+		Private mPassword As String
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mPassword
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If Not IsOpen And mArchive <> Nil Then
+			    Dim mb As MemoryBlock = value + Chr(0)
+			    mLastError = archive_read_add_passphrase(mArchive, mb)
+			    If mLastError = ARCHIVE_OK Then mPassword = value
+			  End If
+			  
+			End Set
+		#tag EndSetter
+		Password As String
+	#tag EndComputedProperty
 
 
 	#tag Constant, Name = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
