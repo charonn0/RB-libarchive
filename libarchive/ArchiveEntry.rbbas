@@ -29,6 +29,10 @@ Protected Class ArchiveEntry
 		    Me.Type = libarchive.EntryType.File
 		  End If
 		  Me.ModificationTime = FromFile.ModificationDate
+		  Me.BirthTime = FromFile.CreationDate
+		  Me.IsADirectory = FromFile.Directory
+		  Me.User = FromFile.Owner
+		  Me.Group = FromFile.Group
 		End Sub
 	#tag EndMethod
 
@@ -92,11 +96,19 @@ Protected Class ArchiveEntry
 		  End If
 		  
 		  mLinkCount = archive_entry_nlink(mEntry)
+		  mUID = archive_entry_uid(mEntry)
+		  mGID = archive_entry_gid(mEntry)
 		  
 		  Dim mb As MemoryBlock = archive_entry_sourcepath_w(mEntry)
 		  If mb <> Nil Then mSourcePath = mb.WString(0)
 		  
 		  mIsEncrypted = (archive_entry_is_data_encrypted(mEntry) = 1)
+		  
+		  mb = archive_entry_uname_utf8(mEntry)
+		  If mb <> Nil Then mUser = mb.WString(0)
+		  
+		  mb = archive_entry_gname_utf8(mEntry)
+		  If mb <> Nil Then mGroup = mb.WString(0)
 		  
 		  Dim p As Int32 = archive_entry_mode(mEntry)
 		  If p <> 0 Then mMode = New Permissions(p)
@@ -207,6 +219,38 @@ Protected Class ArchiveEntry
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Shared Function PermissionsToMode(p As Permissions) As UInt32
+		  Const TGEXEC = &o00010
+		  Const TGREAD = &o00040
+		  Const TGWRITE = &o00020
+		  Const TOEXEC = &o00001
+		  Const TOREAD = &o00004
+		  Const TOWRITE = &o00002
+		  Const TSGID = &o02000
+		  Const TSUID = &o04000
+		  Const TSVTX = &o01000
+		  Const TUEXEC = &o00100
+		  Const TUREAD = &o00400
+		  Const TUWRITE = &o00200
+		  
+		  Dim mask As UInt32
+		  If p.GroupExecute Then mask = mask Or TGEXEC
+		  If p.GroupRead Then mask = mask Or TGREAD
+		  If p.GroupWrite Then mask = mask Or TGWRITE
+		  
+		  If p.OwnerExecute Then mask = mask Or TUEXEC
+		  If p.OwnerRead Then mask = mask Or TUREAD
+		  If p.OwnerWrite Then mask = mask Or TUWRITE
+		  
+		  If p.OthersExecute Then mask = mask Or TOEXEC
+		  If p.OthersRead Then mask = mask Or TOREAD
+		  If p.OthersWrite Then mask = mask Or TOWRITE
+		  
+		  Return mask
+		End Function
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -306,6 +350,40 @@ Protected Class ArchiveEntry
 			End Set
 		#tag EndSetter
 		ChangeTime As Date
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mGID
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  archive_entry_set_gid(mEntry, value)
+			  mGID = value
+			End Set
+		#tag EndSetter
+		GID As Int64
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mGroup
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value <> "" Then
+			    archive_entry_set_gname_utf8(mEntry, value)
+			    mGroup = value
+			  End If
+			End Set
+		#tag EndSetter
+		Group As String
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -472,6 +550,14 @@ Protected Class ArchiveEntry
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mGID As Int64
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mGroup As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mIsEncrypted As Boolean
 	#tag EndProperty
 
@@ -578,6 +664,14 @@ Protected Class ArchiveEntry
 		Private mType As UInt32
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mUID As Int64
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mUser As String
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -609,7 +703,6 @@ Protected Class ArchiveEntry
 		#tag EndGetter
 		#tag Setter
 			Set
-			  
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
 			    archive_entry_copy_sourcepath_w(mEntry, value)
@@ -696,6 +789,40 @@ Protected Class ArchiveEntry
 			End Set
 		#tag EndSetter
 		Type As libarchive.EntryType
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mUID
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  archive_entry_set_uid(mEntry, value)
+			  mUID = value
+			End Set
+		#tag EndSetter
+		UID As Int64
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mUser
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  If mEntry = Nil Then Return
+			  If value <> "" Then
+			    archive_entry_set_uname_utf8(mEntry, value)
+			    mUser = value
+			  End If
+			End Set
+		#tag EndSetter
+		User As String
 	#tag EndComputedProperty
 
 
