@@ -28,7 +28,7 @@ Inherits libarchive.Archive
 		  End If
 		  
 		  Select Case True
-		  Case mSourceBuffer <> Nil
+		  Case Not (mSourceBuffer Is Nil)
 		    CreateMemory(mSourceBuffer)
 		  Case mSourceFile <> Nil
 		    CreateFile(mSourceFile)
@@ -54,10 +54,9 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub CreateMemory(Buffer As MemoryBlock)
-		  mLastError = archive_write_open_memory(mArchive, Buffer, Buffer.Size, mUsed)
-		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceBuffer = Buffer
-		  mIsOpen = True
+		  Dim stream As New BinaryStream(mSourceBuffer)
+		  CreateStream(stream)
 		  
 		End Sub
 	#tag EndMethod
