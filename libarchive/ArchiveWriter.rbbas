@@ -163,6 +163,8 @@ Inherits libarchive.Archive
 		    mLastError = ERR_READ_ONLY_FORMAT
 		    Raise New ArchiveException(Me)
 		  End Select
+		  
+		  mFormatFamily = ArchiveType
 		End Sub
 	#tag EndMethod
 
@@ -278,8 +280,67 @@ Inherits libarchive.Archive
 		CompressionLevel As Int32
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Const ARCHIVE_FORMAT_CPIO = &h
+			  Const ARCHIVE_FORMAT_SHAR = &h2
+			  Const ARCHIVE_FORMAT_TAR = &h3
+			  Const ARCHIVE_FORMAT_ISO9660 = &h4
+			  Const ARCHIVE_FORMAT_ZIP = &h5
+			  Const ARCHIVE_FORMAT_EMPTY = &h6
+			  Const ARCHIVE_FORMAT_AR = &h7
+			  Const ARCHIVE_FORMAT_MTREE = &h8
+			  Const ARCHIVE_FORMAT_RAW = &h9
+			  Const ARCHIVE_FORMAT_XAR = &hA
+			  Const ARCHIVE_FORMAT_LHA = &hB
+			  Const ARCHIVE_FORMAT_CAB = &hC
+			  Const ARCHIVE_FORMAT_RAR = &hD
+			  Const ARCHIVE_FORMAT_7ZIP = &hE
+			  Const ARCHIVE_FORMAT_WARC = &hF
+			  Const ARCHIVE_FORMAT_RAR_V5 = &h10
+			  
+			  If mArchive = Nil Then Return ArchiveType.All
+			  If mFormatFamily = ArchiveType.All Then
+			    Dim frmat As Int32 = archive_format(mArchive)
+			    Select Case ShiftRight(frmat, 16)
+			    Case ARCHIVE_FORMAT_CPIO
+			      mFormatFamily = ArchiveType.CPIO
+			    Case ARCHIVE_FORMAT_CAB
+			      mFormatFamily = ArchiveType.Cabinet
+			    Case ARCHIVE_FORMAT_ISO9660
+			      mFormatFamily = ArchiveType.ISO9660
+			    Case ARCHIVE_FORMAT_LHA
+			      mFormatFamily = ArchiveType.LHA
+			    Case ARCHIVE_FORMAT_MTREE
+			      mFormatFamily = ArchiveType.MTree
+			    Case ARCHIVE_FORMAT_RAR, ARCHIVE_FORMAT_RAR_V5
+			      mFormatFamily = ArchiveType.RAR
+			    Case ARCHIVE_FORMAT_TAR
+			      mFormatFamily = ArchiveType.TAR
+			    Case ARCHIVE_FORMAT_XAR
+			      mFormatFamily = ArchiveType.XAR
+			    Case ARCHIVE_FORMAT_7ZIP
+			      mFormatFamily = ArchiveType.SevenZip
+			    Case ARCHIVE_FORMAT_ZIP
+			      mFormatFamily = ArchiveType.Zip
+			    Else
+			      mFormatFamily = ArchiveType.All
+			    End Select
+			  End If
+			  
+			  Return mFormatFamily
+			End Get
+		#tag EndGetter
+		Format As libarchive.ArchiveType
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
 		Private mCompressionLevel As Int32
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mFormatFamily As libarchive.ArchiveType = ArchiveType.All
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
