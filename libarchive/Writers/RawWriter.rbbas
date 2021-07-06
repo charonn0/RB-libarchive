@@ -34,10 +34,14 @@ Inherits libarchive.ArchiveWriter
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType)
+		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType, CompressionLevel As Int32)
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- from ArchiveWriter
 		  Super.Constructor()
+		  If CompressionLevel <> 6 Then
+		    SetFilterName(Compressor)
+		    Me.CompressionLevel = CompressionLevel
+		  End If
 		  SetFormat(ArchiveType.Raw)
 		  SetFilter(Compressor)
 		  mDestinationStream = WriteTo
