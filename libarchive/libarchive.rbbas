@@ -1545,8 +1545,7 @@ Protected Module libarchive
 
 
 	#tag Enum, Name = ArchiveType, Type = Integer, Flags = &h1
-		SevenZip
-		  All
+		All
 		  Ar
 		  Cabinet
 		  CPIO
@@ -1558,6 +1557,7 @@ Protected Module libarchive
 		  RAR
 		  RAR5
 		  Raw
+		  SevenZip
 		  Shar
 		  TAR
 		  WArc
