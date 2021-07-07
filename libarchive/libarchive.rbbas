@@ -828,6 +828,12 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		  ' Create a new archive of the specified archive and compression types in the specified FolderItem.
+		  ' Returns an instance of ArchiveWriter to which archive entries may be written.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
+		  
 		  If Archivist = ArchiveType.All Then Archivist = GuessArchiveType(Archive.Name)
 		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(Archive.Name)
 		  Select Case Archivist
@@ -870,6 +876,14 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function CreateArchive(WriteTo As Writeable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		  ' Create a new archive of the specified archive and compression types and write the
+		  ' output to the specified Writeable object. Returns an instance of ArchiveWriter to
+		  ' which archive entries may be written.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
+		  
+		  
 		  If Archivist = ArchiveType.All Then Archivist = ArchiveType.Raw
 		  If Compressor = CompressionType.All Then Compressor = CompressionType.None
 		  Select Case Archivist
@@ -915,6 +929,13 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h0
 		Function CreateAsArchive(Extends Archive As FolderItem, Archivist As libarchive.ArchiveType = libarchive.ArchiveType.All) As libarchive.ArchiveWriter
+		  ' Create a new archive of the specified archive type and write the output to
+		  ' the specified Writeable object. Returns an instance of ArchiveWriter to which
+		  ' archive entries may be written.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateAsArchive
+		  
 		  Return CreateArchive(Archive, Archivist, CompressionType.All)
 		End Function
 	#tag EndMethod
@@ -1060,7 +1081,14 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function OpenArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		Protected Function OpenArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  ' Open the specified FolderItem as an archive using the specified archive and
+		  ' compression types.
+		  ' Returns an instance of ArchiveReader from which archive entries may be extracted.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenArchive
+		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
 		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
@@ -1105,7 +1133,14 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function OpenArchive(Archive As MemoryBlock, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		Protected Function OpenArchive(Archive As MemoryBlock, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  ' Open the specified MemoryBlock as an archive using the specified archive and
+		  ' compression types.
+		  ' Returns an instance of ArchiveReader from which archive entries may be extracted.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenArchive
+		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
 		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
@@ -1150,7 +1185,14 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function OpenArchive(Archive As Readable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		Protected Function OpenArchive(Archive As Readable, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveReader
+		  ' Open the specified Readable object as an archive using the specified archive and
+		  ' compression types.
+		  ' Returns an instance of ArchiveReader from which archive entries may be extracted.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenArchive
+		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
 		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
@@ -1196,8 +1238,13 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h0
 		Function OpenAsArchive(Extends Archive As FolderItem) As libarchive.ArchiveReader
-		  ' Attempts to open the specified file as an archive. This may fail even on valid archives if
-		  ' libarchive guesses incorrectly.
+		  ' Attempts to open the specified file as an archive. This may fail even on valid
+		  ' archives if libarchive guesses incorrectly.
+		  ' Returns an instance of ArchiveReader from which archive entries may be extracted.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenAsArchive
+		  
 		  
 		  Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
 		  
@@ -1206,7 +1253,12 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
-		  ' Extracts an archive to the ExtractTo directory
+		  ' Extracts the ArchiveFile into the ExtractTo directory.
+		  ' Returns an array of zero or more ArchiveEntry objects representing the
+		  ' extracted files/directories.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
 		  
 		  Dim arc As ArchiveReader = ArchiveFile.OpenAsArchive()
 		  Return ReadArchive(arc, ExtractTo, Password)
@@ -1216,7 +1268,13 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadArchive(Archive As libarchive.ArchiveReader, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
-		  ' Extracts an archive to the ExtractTo directory
+		  ' Extracts an already opened ArchiveReader into the ExtractTo directory.
+		  ' Returns an array of zero or more ArchiveEntry objects representing the
+		  ' extracted files/directories.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
+		  
 		  
 		  If Password <> "" Then Archive.Password = Password
 		  Dim ret() As ArchiveEntry
@@ -1250,7 +1308,12 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadArchive(ArchiveStream As Readable, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
-		  ' Extracts an archive to the ExtractTo directory
+		  ' Reads an archive from ArchiveStream and extracts it into the ExtractTo directory.
+		  ' Returns an array of zero or more ArchiveEntry objects representing the
+		  ' extracted files/directories.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
 		  
 		  Dim arc As ArchiveReader = OpenArchive(ArchiveStream, ArchiveType.All, CompressionType.All)
 		  Return ReadArchive(arc, ExtractTo, Password)
@@ -1304,6 +1367,12 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False)
+		  ' Creates an archive of the specified type and then archives the files in the
+		  ' ToArchive() parameter with paths relative to the RelativeRoot parameter.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
+		  
 		  If OutputFile.Exists Then
 		    If Not Overwrite Then Raise New IOException
 		    OutputFile.Delete()
@@ -1315,12 +1384,24 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "")
+		  ' Creates an archive of the specified type and then recursively archives
+		  ' the TargetDirectory parameter.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
+		  
 		  WriteArchive(CreateArchive(OutputFile, Archivist, Compressor), TargetDirectory, Password)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, ToArchive() As FolderItem, RelativeRoot As FolderItem, Password As String = "")
+		  ' Adds the files in the ToArchive() parameter to an existing ArchiveWriter
+		  ' with paths relative to the RelativeRoot parameter.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
+		  
 		  If Password <> "" Then Archive.Password = Password
 		  Dim c As Integer = UBound(ToArchive)
 		  
@@ -1342,6 +1423,12 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, TargetDirectory As FolderItem, Password As String = "")
+		  ' Creates an archive of the specified type and then recursively archives
+		  ' the TargetDirectory parameter.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
+		  
 		  Dim items() As FolderItem
 		  If TargetDirectory.Directory Then
 		    GetChildren(TargetDirectory, items)
