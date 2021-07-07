@@ -4,6 +4,7 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
+		  If mStream <> Nil Then mUsed = mStream.Used
 		  If mSourceBuffer <> Nil Then mSourceBuffer.Size = mUsed
 		  Super.Close()
 		End Sub

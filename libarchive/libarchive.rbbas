@@ -1396,6 +1396,9 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = ERR_SIZE_REQUIRED, Type = Double, Dynamic = False, Default = \"-105", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = ERR_TOO_EARLY, Type = Double, Dynamic = False, Default = \"-104", Scope = Protected
 	#tag EndConstant
 

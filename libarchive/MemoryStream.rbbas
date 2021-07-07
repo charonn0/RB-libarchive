@@ -24,7 +24,7 @@ Private Class MemoryStream
 		  If mSource.EOF Then Return ARCHIVE_EOF
 		  mCurrentBuffer = mSource.Read(CHUNK_SIZE)
 		  Buffer = mCurrentBuffer
-		  mPosition = mPosition + mCurrentBuffer.Size
+		  mUsed = mUsed + mCurrentBuffer.Size
 		  Return mCurrentBuffer.Size
 		End Function
 	#tag EndMethod
@@ -58,8 +58,8 @@ Private Class MemoryStream
 		  
 		  If Offset < 0 Or Offset > stream.Length Then Return ARCHIVE_FATAL
 		  stream.Position = Offset
-		  mPosition = Offset
-		  Return mPosition
+		  mUsed = Offset
+		  Return mUsed
 		End Function
 	#tag EndMethod
 
@@ -69,8 +69,8 @@ Private Class MemoryStream
 		  Dim stream As BinaryStream = BinaryStream(mSource)
 		  Dim pos As UInt64 = stream.Position
 		  stream.Position = Request
-		  mPosition = Request
-		  Return mPosition - pos
+		  mUsed = Request
+		  Return mUsed - pos
 		End Function
 	#tag EndMethod
 
@@ -89,7 +89,7 @@ Private Class MemoryStream
 		  Dim data As MemoryBlock = Buffer
 		  Dim mb As MemoryBlock = data.StringValue(0, Length)
 		  mDestination.Write(mb)
-		  mPosition = mPosition + Length
+		  mUsed = mUsed + Length
 		  Return Length
 		End Function
 	#tag EndMethod
@@ -318,20 +318,20 @@ Private Class MemoryStream
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mPosition As UInt64
+		Private mSource As Readable
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mSource As Readable
+		Private mUsed As UInt64
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mPosition
+			  return mUsed
 			End Get
 		#tag EndGetter
-		Position As UInt64
+		Used As UInt64
 	#tag EndComputedProperty
 
 
