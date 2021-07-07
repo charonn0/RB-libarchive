@@ -1386,7 +1386,11 @@ Protected Module libarchive
 		    OutputFile.Delete()
 		  End If
 		  
-		  WriteArchive(CreateArchive(OutputFile, Archivist, Compressor), ToArchive, RelativeRoot, Password)
+		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
+		  If arc <> Nil Then
+		    WriteArchive(arc, ToArchive, RelativeRoot, Password)
+		    arc.Close()
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -1398,7 +1402,11 @@ Protected Module libarchive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
 		  
-		  WriteArchive(CreateArchive(OutputFile, Archivist, Compressor), TargetDirectory, Password)
+		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
+		  If arc <> Nil Then
+		    WriteArchive(arc, TargetDirectory, Password)
+		    arc.Close()
+		  End If
 		End Sub
 	#tag EndMethod
 
