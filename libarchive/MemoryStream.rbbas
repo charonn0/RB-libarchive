@@ -10,16 +10,6 @@ Private Class MemoryStream
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function CB_Free() As Int32
-		  If Instances = Nil Or Not Instances.HasKey(mArchive.Handle) Then Return -1
-		  Instances.Remove(mArchive.Handle)
-		  If Instances.Count = 0 Then Instances = Nil
-		  Return 0
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
 		Private Function CB_Read(ByRef Buffer As Ptr) As UInt32
 		  #pragma StackOverflowChecking Off
 		  #pragma BackgroundTasks Off
@@ -190,7 +180,7 @@ Private Class MemoryStream
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
 		  Call CB_Close()
-		  Call CB_Free()
+		  ' Call CB_Free()
 		End Sub
 	#tag EndMethod
 
@@ -198,11 +188,13 @@ Private Class MemoryStream
 		Private Shared Function FreeCallback(Archive As Ptr, Opaque As Ptr) As Int32
 		  #pragma X86CallingConvention CDecl
 		  #pragma Unused Archive
-		  If Opaque = Nil Or Instances = Nil Then Return -1
-		  Dim w As WeakRef = Instances.Lookup(Opaque, Nil)
-		  If w <> Nil And w.Value IsA MemoryStream Then
-		    Return MemoryStream(w.Value).CB_Free()
+		  If Instances <> Nil And Instances.HasKey(Opaque) Then
+		    Instances.Remove(Opaque)
+		    If Instances.Count = 0 Then Instances = Nil
+		    Return 0
 		  End If
+		   Return -1
+		  
 		End Function
 	#tag EndMethod
 
