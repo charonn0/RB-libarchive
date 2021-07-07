@@ -104,10 +104,10 @@ Protected Class ArchiveEntry
 		  
 		  mIsEncrypted = (archive_entry_is_data_encrypted(mEntry) = 1)
 		  
-		  mb = archive_entry_uname_utf8(mEntry)
+		  mb = archive_entry_uname_w(mEntry)
 		  If mb <> Nil Then mUser = mb.WString(0)
 		  
-		  mb = archive_entry_gname_utf8(mEntry)
+		  mb = archive_entry_gname_w(mEntry)
 		  If mb <> Nil Then mGroup = mb.WString(0)
 		  
 		  Dim p As Int32 = archive_entry_mode(mEntry)
@@ -378,7 +378,7 @@ Protected Class ArchiveEntry
 			Set
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
-			    archive_entry_set_gname_utf8(mEntry, value)
+			    archive_entry_set_gname_w(mEntry, value)
 			    mGroup = value
 			  End If
 			End Set
@@ -817,7 +817,7 @@ Protected Class ArchiveEntry
 			Set
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
-			    archive_entry_set_uname_utf8(mEntry, value)
+			    archive_entry_set_uname_w(mEntry, value)
 			    mUser = value
 			  End If
 			End Set
