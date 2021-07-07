@@ -5,6 +5,8 @@ Protected Class Archive
 		  mIsOpen = False
 		  mSourceBuffer = Nil
 		  mSourceFile = Nil
+		  mSourceStream = Nil
+		  mStream = Nil
 		End Sub
 	#tag EndMethod
 
