@@ -11,6 +11,23 @@ Implements Readable,Writeable
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Constructor(Source As BinaryStream, Compressor As libarchive.CompressionType, CompressionLevel As Integer = 6)
+		  ' Constructs a CompressedStream from the Source BinaryStream. If the Source's current position is equal
+		  ' to its length then compressed output will be appended, otherwise the Source will be used as
+		  ' input to be decompressed.
+		  
+		  If Source.Length = Source.Position Then 'compress into Source
+		    If Compressor = CompressionType.All Then Compressor = CompressionType.GZip
+		    Me.Constructor(New libarchive.Writers.RawWriter(Source, Compressor, CompressionLevel))
+		    
+		  Else ' decompress from Source
+		    Me.Constructor(New libarchive.Readers.RawReader(Source, Compressor))
+		    
+		  End If
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Sub Constructor(Engine As libarchive.Readers.RawReader)
 		  ' Construct a decompression stream
@@ -26,7 +43,31 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Constructor(Source As MemoryBlock, Compressor As libarchive.CompressionType, CompressionLevel As Integer = 6)
+		  ' Constructs a CompressedStream from the Source MemoryBlock. If the Source's size is zero then
+		  ' compressed output will be appended, otherwise the Source will be used as input
+		  ' to be decompressed.
+		  
+		  If Source.Size = 0 Then 'compress into Source
+		    If Compressor = CompressionType.All Then Compressor = CompressionType.GZip
+		    Me.Constructor(New libarchive.Writers.RawWriter(Source, Compressor, CompressionLevel))
+		    
+		  Else ' decompress from Source
+		    Me.Constructor(New libarchive.Readers.RawReader(Source, Compressor))
+		    
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		 Shared Function Create(Output As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As UInt32 = 6) As libarchive.CompressedStream
+		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor, CompressionLevel)
+		  Return New CompressedStream(writer)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function Create(Output As Writeable, Compressor As libarchive.CompressionType, CompressionLevel As UInt32 = 6) As libarchive.CompressedStream
 		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor, CompressionLevel)
 		  Return New CompressedStream(writer)
 		End Function
@@ -62,6 +103,13 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		 Shared Function Open(Input As FolderItem, Compressor As libarchive.CompressionType) As libarchive.CompressedStream
+		  Dim reader As New libarchive.Readers.RawReader(Input, Compressor)
+		  Return New CompressedStream(reader)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function Open(Input As Readable, Compressor As libarchive.CompressionType) As libarchive.CompressedStream
 		  Dim reader As New libarchive.Readers.RawReader(Input, Compressor)
 		  Return New CompressedStream(reader)
 		End Function
