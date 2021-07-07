@@ -21,6 +21,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h21
 		Private Function CB_Read(ByRef Buffer As Ptr) As UInt32
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If mSource.EOF Then Return ARCHIVE_EOF
 		  mCurrentBuffer = mSource.Read(CHUNK_SIZE)
 		  Buffer = mCurrentBuffer
@@ -39,6 +43,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h21
 		Private Function CB_Seek(Offset As Int64, Whence As Int32) As Int64
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Not mSource IsA BinaryStream Then Return ARCHIVE_FATAL
 		  Dim stream As BinaryStream = BinaryStream(mSource)
 		  Const SEEK_SET = 0
@@ -65,6 +73,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h21
 		Private Function CB_Skip(Request As Int64) As Int64
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Not mSource IsA BinaryStream Then Return 0
 		  Dim stream As BinaryStream = BinaryStream(mSource)
 		  Dim pos As UInt64 = stream.Position
@@ -86,6 +98,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h21
 		Private Function CB_Write(Buffer As Ptr, Length As UInt32) As UInt32
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  Dim data As MemoryBlock = Buffer
 		  Dim mb As MemoryBlock = data.StringValue(0, Length)
 		  mDestination.Write(mb)
@@ -194,6 +210,10 @@ Private Class MemoryStream
 		Private Shared Function ReadCallback(Archive As Ptr, Opaque As Ptr, ByRef Buffer As Ptr) As UInt32
 		  #pragma X86CallingConvention CDecl
 		  #pragma Unused Archive
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Opaque = Nil Or Instances = Nil Then Return -1
 		  Dim w As WeakRef = Instances.Lookup(Opaque, Nil)
 		  If w <> Nil And w.Value IsA MemoryStream Then
@@ -218,6 +238,10 @@ Private Class MemoryStream
 		Private Shared Function SeekCallback(Archive As Ptr, Opaque As Ptr, Offset As Int64, Whence As Int32) As Int64
 		  #pragma X86CallingConvention CDecl
 		  #pragma Unused Archive
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Opaque = Nil Or Instances = Nil Then Return -1
 		  Dim w As WeakRef = Instances.Lookup(Opaque, Nil)
 		  If w <> Nil And w.Value IsA MemoryStream Then
@@ -230,6 +254,10 @@ Private Class MemoryStream
 		Private Shared Function SkipCallback(Archive As Ptr, Opaque As Ptr, Request As Int64) As Int64
 		  #pragma X86CallingConvention CDecl
 		  #pragma Unused Archive
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Opaque = Nil Or Instances = Nil Then Return -1
 		  Dim w As WeakRef = Instances.Lookup(Opaque, Nil)
 		  If w <> Nil And w.Value IsA MemoryStream Then
@@ -254,6 +282,10 @@ Private Class MemoryStream
 		Private Shared Function WriteCallback(Archive As Ptr, Opaque As Ptr, Buffer As Ptr, Length As UInt32) As UInt32
 		  #pragma X86CallingConvention CDecl
 		  #pragma Unused Archive
+		  #pragma StackOverflowChecking Off
+		  #pragma BackgroundTasks Off
+		  #pragma NilObjectChecking Off
+		  
 		  If Opaque = Nil Or Instances = Nil Then Return -1
 		  Dim w As WeakRef = Instances.Lookup(Opaque, Nil)
 		  If w <> Nil And w.Value IsA MemoryStream Then
