@@ -883,6 +883,60 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function CreateArchive(WriteTo As MemoryBlock, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		  ' Create a new archive of the specified archive and compression types and write
+		  ' the output to the specified empty memoryblock. The memoryblock will be enlarged
+		  ' automatically as needed. Returns an instance of ArchiveWriter to which archive
+		  ' entries may be written.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
+		  
+		  
+		  If Archivist = ArchiveType.All Then Archivist = ArchiveType.Raw
+		  If Compressor = CompressionType.All Then Compressor = CompressionType.None
+		  Select Case Archivist
+		  Case ArchiveType.Ar
+		    Return New libarchive.Writers.ARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.CPIO
+		    Return New libarchive.Writers.CPIOWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ISO9660
+		    Return New libarchive.Writers.ISO9660Writer(WriteTo, Compressor)
+		    
+		  Case ArchiveType.MTree
+		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.SevenZip
+		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Shar
+		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.XAR
+		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Zip
+		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ZipSeekable
+		    Return New libarchive.Writers.ZipSeekWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.ZipStreamable
+		    Return New libarchive.Writers.ZipStreamWriter(WriteTo, Compressor)
+		    
+		  Else
+		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
+		  End Select
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function CreateArchive(WriteTo As Writeable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  ' Create a new archive of the specified archive and compression types and write the
 		  ' output to the specified Writeable object. Returns an instance of ArchiveWriter to
