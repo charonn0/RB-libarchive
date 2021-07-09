@@ -73,7 +73,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
-		  If mArchive <> Nil Then mLastError = archive_write_free(mArchive) ' free() calls close()
+		  Me.Close()
+		  If mArchive <> Nil Then mLastError = archive_write_free(mArchive)
 		  mArchive = Nil
 		End Sub
 	#tag EndMethod

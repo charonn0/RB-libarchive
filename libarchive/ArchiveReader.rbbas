@@ -47,9 +47,9 @@ Inherits libarchive.Archive
 		Private Sub Destructor()
 		  ' Free all resources.
 		  
+		  Me.Close()
 		  If mArchive <> Nil Then
-		    Super.Close()
-		    mLastError = archive_read_free(mArchive) ' free() calls close()
+		    mLastError = archive_read_free(mArchive)
 		    If Archives <> Nil And Archives.HasKey(mArchive) Then Archives.Remove(mArchive)
 		    If Archives.Count = 0 Then Archives = Nil
 		  End If
