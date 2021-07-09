@@ -1300,8 +1300,8 @@ Protected Module libarchive
 
 	#tag Method, Flags = &h0
 		Function OpenAsArchive(Extends Archive As FolderItem) As libarchive.ArchiveReader
-		  ' Attempts to open the specified file as an archive. This may fail even on valid
-		  ' archives if libarchive guesses incorrectly.
+		  ' Attempts to open the specified file as an archive by guessing the ArchiveType and
+		  ' CompressionType. This may fail even on valid archives if libarchive guesses incorrectly.
 		  ' Returns an instance of ArchiveReader from which archive entries may be extracted.
 		  '
 		  ' See:
