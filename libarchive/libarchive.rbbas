@@ -47,11 +47,19 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_copy_gname_w Lib libpath (ArchiveEntry As Ptr, GName As WString)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_copy_pathname_w Lib libpath (ArchiveEntry As Ptr, Pathname As WString)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_copy_sourcepath_w Lib libpath (ArchiveEntry As Ptr, Pathname As WString)
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Sub archive_entry_copy_uname_w Lib libpath (ArchiveEntry As Ptr, UName As WString)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -227,10 +235,6 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Sub archive_entry_set_gname_w Lib libpath (ArchiveEntry As Ptr, GName As WString)
-	#tag EndExternalMethod
-
-	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_set_mode Lib libpath (ArchiveEntry As Ptr, Perms As Int32)
 	#tag EndExternalMethod
 
@@ -252,10 +256,6 @@ Protected Module libarchive
 
 	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Sub archive_entry_set_uname_utf8 Lib libpath (ArchiveEntry As Ptr, UName As WString)
-	#tag EndExternalMethod
-
-	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Sub archive_entry_set_uname_w Lib libpath (ArchiveEntry As Ptr, UName As WString)
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21

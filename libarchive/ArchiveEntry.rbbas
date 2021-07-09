@@ -380,7 +380,7 @@ Protected Class ArchiveEntry
 			Set
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
-			    archive_entry_set_gname_w(mEntry, value)
+			    archive_entry_copy_gname_w(mEntry, value)
 			    mGroup = value
 			  End If
 			End Set
@@ -819,7 +819,7 @@ Protected Class ArchiveEntry
 			Set
 			  If mEntry = Nil Then Return
 			  If value <> "" Then
-			    archive_entry_set_uname_w(mEntry, value)
+			    archive_entry_copy_uname_w(mEntry, value)
 			    mUser = value
 			  End If
 			End Set
