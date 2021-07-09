@@ -1,38 +1,13 @@
 #tag Class
 Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
-		Sub Clear()
-		  If mEntry <> Nil Then
-		    mEntry = archive_entry_clear(mEntry)
-		    Me.Constructor(mOwner, mEntry)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub Constructor(FromFile As FolderItem, Optional RelativeRoot As FolderItem)
 		  ' Create a new ArchiveEntry and copy the metadata of the FromFile FolderItem
 		  ' into the entry. RelativeRoot is the root of the directory tree being archived;
 		  ' the PathName property will be the relative path between the root and the entry.
 		  
-		  Me.Constructor()
-		  If RelativeRoot <> Nil Then
-		    Me.PathName = GetRelativePath(RelativeRoot, FromFile)
-		  Else
-		    Me.PathName = FromFile.Name
-		  End If
-		  Me.Length = FromFile.Length
-		  Me.Mode = New Permissions(FromFile.Permissions)
-		  If FromFile.Directory Then
-		    Me.Type = libarchive.EntryType.Directory
-		  ElseIf FromFile.Exists Then
-		    Me.Type = libarchive.EntryType.File
-		  End If
-		  Me.ModificationTime = FromFile.ModificationDate
-		  Me.BirthTime = FromFile.CreationDate
-		  Me.IsADirectory = FromFile.Directory
-		  Me.User = FromFile.Owner
-		  Me.Group = FromFile.Group
+		  Me.Constructor() // Constructor(Optional Owner As libarchive.Archive)
+		  Me.SetMetadata(FromFile, RelativeRoot)
 		End Sub
 	#tag EndMethod
 
@@ -58,7 +33,90 @@ Protected Class ArchiveEntry
 		Protected Sub Constructor(Owner As libarchive.Archive, Entry As Ptr)
 		  mEntry = Entry
 		  mOwner = Owner
+		  GetMetadata()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
+		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
 		  
+		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
+		  If e = Nil Then
+		    mLastError = ERR_INIT_FAILED
+		    Raise New ArchiveException(Me)
+		  End If
+		  Me.Constructor(CloneFrom.mOwner, e) // Constructor(Owner As libarchive.Archive, Entry As Ptr)
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Constructor(CloneFrom As libarchive.ArchiveEntry, RelativeRoot As FolderItem)
+		  ' Clone the CloneFrom entry and modify the pathname according to RelativeRoot
+		  
+		  Me.Constructor(CloneFrom) // Constructor(CloneFrom As libarchive.ArchiveEntry)
+		  Me.PathName = GetRelativePath(RelativeRoot, New FolderItem(PathName))
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub Destructor()
+		  If mEntry <> Nil And mFreeable Then archive_entry_free(mEntry)
+		  mEntry = Nil
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Extract(Output As FolderItem) As Boolean
+		  ' Extract the entry into the specified FolderItem.
+		  
+		  Dim disk As New libarchive.Writers.DiskWriter(Output, 0)
+		  mLastError = archive_read_extract2(mOwner.Handle, Me.Handle, disk.Handle)
+		  disk.Close()
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Extract(Flags As Int32) As Boolean
+		  ' Extract the entry into the current working directory using the specified Flags.
+		  
+		  mLastError = archive_read_extract(mOwner.Handle, Me.Handle, Flags)
+		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ExtractPath(RelativeRoot As FolderItem, CreateMissingDirectories As Boolean) As FolderItem
+		  If RelativeRoot = Nil Or Not RelativeRoot.Directory Then Return Nil
+		  Dim s() As String = Split(Me.PathName, "/")
+		  Dim bound As Integer = UBound(s)
+		  
+		  For i As Integer = 0 To bound - 1
+		    Dim name As String = s(i)
+		    If name = "" Or name = "." Or name = ".." Then Continue
+		    RelativeRoot = RelativeRoot.TrueChild(name)
+		    If RelativeRoot.Exists Then
+		      If Not RelativeRoot.Directory Then Return Nil
+		    ElseIf CreateMissingDirectories Then
+		      RelativeRoot.CreateAsFolder()
+		    Else
+		      Return Nil
+		    End If
+		  Next
+		  
+		  Dim name As String = s(bound)
+		  If name <> "" Then RelativeRoot = RelativeRoot.Child(name)
+		  
+		  Return RelativeRoot
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub GetMetadata()
 		  Dim path As MemoryBlock = archive_entry_pathname_w(mEntry)
 		  If path <> Nil Then mPathName = path.WString(0)
 		  
@@ -118,94 +176,6 @@ Protected Class ArchiveEntry
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
-		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
-		  
-		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
-		  If e = Nil Then
-		    mLastError = ERR_INIT_FAILED
-		    Raise New ArchiveException(Me)
-		  End If
-		  Me.Constructor(CloneFrom.mOwner, e)
-		  
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub Constructor(CloneFrom As libarchive.ArchiveEntry, RelativeRoot As FolderItem)
-		  ' Clone the CloneFrom entry and modify the pathname according to RelativeRoot
-		  
-		  Me.Constructor(CloneFrom)
-		  Me.PathName = GetRelativePath(RelativeRoot, New FolderItem(PathName))
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Shared Function CreateRelativePath(Root As FolderItem, Path As String) As FolderItem
-		  ' Returns a FolderItem corresponding to Root+Path, creating subdirectories as needed
-		  
-		  If Root = Nil Or Not Root.Directory Then Return Nil
-		  Dim s() As String = Split(Path, "/")
-		  Dim bound As Integer = UBound(s)
-		  
-		  For i As Integer = 0 To bound - 1
-		    Dim name As String = s(i)
-		    If name = "" Or name = "." Or name = ".." Then Continue
-		    root = root.TrueChild(name)
-		    If Root.Exists Then
-		      If Not Root.Directory Then
-		        Dim err As New IOException
-		        err.Message = "'" + name + "' is not a directory!"
-		        Raise err
-		      End If
-		    Else
-		      root.CreateAsFolder
-		    End If
-		  Next
-		  
-		  Dim name As String = s(bound)
-		  If name <> "" Then Root = Root.Child(name)
-		  
-		  Return Root
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub Destructor()
-		  If mEntry <> Nil And mFreeable Then archive_entry_free(mEntry)
-		  mEntry = Nil
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function Extract(Output As FolderItem) As Boolean
-		  ' Extract the entry into the specified FolderItem.
-		  
-		  Dim disk As New libarchive.Writers.DiskWriter(Output, 0)
-		  mLastError = archive_read_extract2(mOwner.Handle, Me.Handle, disk.Handle)
-		  disk.Close()
-		  Return mLastError = ARCHIVE_OK
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function Extract(Flags As Int32) As Boolean
-		  ' Extract the entry into the current working directory using the specified Flags.
-		  
-		  mLastError = archive_read_extract(mOwner.Handle, Me.Handle, Flags)
-		  Return mLastError = ARCHIVE_OK
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function ExtractPath(RelativeRoot As FolderItem) As FolderItem
-		  Return CreateRelativePath(RelativeRoot, Me.PathName)
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h21
 		Private Shared Function GetRelativePath(Root As FolderItem, Item As FolderItem) As String
 		  If Root = Nil Or Root.AbsolutePath_ = Item.AbsolutePath_ Then Return Item.Name
@@ -249,6 +219,38 @@ Protected Class ArchiveEntry
 		  
 		  Return mask
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Reset(Optional FromFile As FolderItem, Optional RelativeRoot As FolderItem)
+		  If mEntry <> Nil Then
+		    mEntry = archive_entry_clear(mEntry)
+		    Me.GetMetadata()
+		    If FromFile <> Nil Then Me.SetMetadata(FromFile, RelativeRoot)
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub SetMetadata(FromFile As FolderItem, RelativeRoot As FolderItem)
+		  If RelativeRoot <> Nil Then
+		    Me.PathName = GetRelativePath(RelativeRoot, FromFile)
+		  Else
+		    Me.PathName = FromFile.Name
+		  End If
+		  Me.Length = FromFile.Length
+		  Me.Mode = New Permissions(FromFile.Permissions)
+		  If FromFile.Directory Then
+		    Me.Type = libarchive.EntryType.Directory
+		  ElseIf FromFile.Exists Then
+		    Me.Type = libarchive.EntryType.File
+		  End If
+		  Me.ModificationTime = FromFile.ModificationDate
+		  Me.BirthTime = FromFile.CreationDate
+		  Me.IsADirectory = FromFile.Directory
+		  Me.User = FromFile.Owner
+		  Me.Group = FromFile.Group
+		End Sub
 	#tag EndMethod
 
 
