@@ -1431,7 +1431,6 @@ Protected Module libarchive
 		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
 		  If arc <> Nil Then
 		    WriteArchive(arc, ToArchive, RelativeRoot, Password)
-		    arc.Close()
 		  End If
 		End Sub
 	#tag EndMethod
@@ -1447,7 +1446,6 @@ Protected Module libarchive
 		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
 		  If arc <> Nil Then
 		    WriteArchive(arc, TargetDirectory, Password)
-		    arc.Close()
 		  End If
 		End Sub
 	#tag EndMethod
@@ -1474,8 +1472,7 @@ Protected Module libarchive
 		    End If
 		    Archive.WriteEntry(entry, bs)
 		  Next
-		  
-		  
+		  Archive.Close()
 		End Sub
 	#tag EndMethod
 
@@ -1494,6 +1491,7 @@ Protected Module libarchive
 		    items.Append(TargetDirectory)
 		  End If
 		  WriteArchive(Archive, items, TargetDirectory, Password)
+		  Archive.Close()
 		End Sub
 	#tag EndMethod
 
