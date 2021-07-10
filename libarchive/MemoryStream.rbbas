@@ -143,6 +143,7 @@ Private Class MemoryStream
 		  
 		  mLastError = archive_read_set_callback_data(mArchive.Handle, mArchive.Handle)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
 		  mSource = ReadFrom
 		  
 		  If Instances = Nil Then Instances = New Dictionary
@@ -154,9 +155,6 @@ Private Class MemoryStream
 	#tag Method, Flags = &h0
 		Sub Constructor(Owner As libarchive.ArchiveWriter, WriteTo As Writeable)
 		  mArchive = Owner
-		  If Instances = Nil Then Instances = New Dictionary
-		  Instances.Value(mArchive.Handle) = New WeakRef(Me)
-		  mDestination = WriteTo
 		  
 		  mLastError = archive_write_set_bytes_in_last_block(mArchive.Handle, 1)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
@@ -165,6 +163,10 @@ Private Class MemoryStream
 		    mLastError = archive_write_set_bytes_per_block(mArchive.Handle, 0)
 		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  End If
+		  
+		  If Instances = Nil Then Instances = New Dictionary
+		  Instances.Value(mArchive.Handle) = New WeakRef(Me)
+		  mDestination = WriteTo
 		  
 		  mLastError = archive_write_open2(mArchive.Handle, mArchive.Handle, _
 		  AddressOf WriteOpenCallback, _
