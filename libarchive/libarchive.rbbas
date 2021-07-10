@@ -1329,27 +1329,20 @@ Protected Module libarchive
 		  If Password <> "" Then Archive.Password = Password
 		  Dim ret() As ArchiveEntry
 		  
-		  ' libarchive will extract to the app's working directory, so we
-		  ' need to change the working directory to ExtractTo
-		  Dim path As String
-		  If ExtractTo.Directory Then
-		    path = ExtractTo.AbsolutePath_
-		  Else
-		    path = ExtractTo.Parent.AbsolutePath_
-		  End If
-		  #If TargetWin32 Then
-		    Declare Function SetCurrentDirectoryW Lib "Kernel32" (PathName As WString) As Boolean
-		    Call SetCurrentDirectoryW(path)
-		  #ElseIf TargetMacOS
-		    #pragma Error "IMPLEMENT ME!"
-		  #Else
-		    #pragma Error "IMPLEMENT ME!"
-		  #EndIf
-		  
+		  Dim outstream As BinaryStream
 		  Do
+		    If outstream <> Nil Then outstream.Close()
 		    Dim entry As ArchiveEntry = Archive.CurrentEntry
-		    If entry.Extract(0) Then ret.Append(entry)
-		  Loop Until Not Archive.MoveNext(Nil)
+		    Dim output As FolderItem = entry.ExtractPath(ExtractTo, True)
+		    If entry.IsADirectory Then
+		      output.CreateAsFolder()
+		      outstream = DevNull
+		    Else
+		      outstream = BinaryStream.Create(output, True)
+		    End If
+		    ret.Append(entry)
+		  Loop Until Not Archive.MoveNext(outstream)
+		  If outstream <> Nil Then outstream.Close()
 		  Archive.Close
 		  Return ret
 		  
