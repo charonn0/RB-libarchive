@@ -93,8 +93,7 @@ Private Class MemoryStream
 		  #pragma NilObjectChecking Off
 		  
 		  Dim data As MemoryBlock = Buffer
-		  Dim mb As MemoryBlock = data.StringValue(0, Length)
-		  mDestination.Write(mb)
+		  mDestination.Write(data.StringValue(0, Length))
 		  mUsed = mUsed + Length
 		  Return Length
 		End Function
@@ -148,6 +147,7 @@ Private Class MemoryStream
 		  
 		  If Instances = Nil Then Instances = New Dictionary
 		  Instances.Value(mArchive.Handle) = New WeakRef(Me)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -193,7 +193,7 @@ Private Class MemoryStream
 		    If Instances.Count = 0 Then Instances = Nil
 		    Return 0
 		  End If
-		   Return -1
+		  Return -1
 		  
 		End Function
 	#tag EndMethod
