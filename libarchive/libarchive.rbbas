@@ -1141,7 +1141,7 @@ Protected Module libarchive
 		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
-		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
+		    Return New ArchiveReaderPtr(Archive)
 		    
 		  Case ArchiveType.Ar
 		    Return New libarchive.Readers.ARReader(Archive, Compressor)
@@ -1193,7 +1193,7 @@ Protected Module libarchive
 		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
-		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
+		    Return New ArchiveReaderPtr(Archive)
 		    
 		  Case ArchiveType.Ar
 		    Return New libarchive.Readers.ARReader(Archive, Compressor)
@@ -1245,7 +1245,7 @@ Protected Module libarchive
 		  
 		  Select Case Archivist
 		  Case ArchiveType.All ' detect.
-		    Return New ArchiveReaderPtr(Archive, ArchiveType.All, Compressor)
+		    Return New ArchiveReaderPtr(Archive)
 		    
 		  Case ArchiveType.Ar
 		    Return New libarchive.Readers.ARReader(Archive, Compressor)
@@ -1296,7 +1296,7 @@ Protected Module libarchive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenAsArchive
 		  
 		  
-		  Return New ArchiveReaderPtr(Archive, ArchiveType.All, CompressionType.All)
+		  Return OpenArchive(Archive, ArchiveType.All, CompressionType.All)
 		  
 		End Function
 	#tag EndMethod
