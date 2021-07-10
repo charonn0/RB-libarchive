@@ -872,7 +872,7 @@ Protected Module libarchive
 		  Case ArchiveType.XAR
 		    Return New libarchive.Writers.XARWriter(Archive, Compressor)
 		    
-		  Case ArchiveType.Zip
+		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
 		    Return New libarchive.Writers.ZipWriter(Archive, Compressor)
 		    
 		  Else
@@ -920,14 +920,8 @@ Protected Module libarchive
 		  Case ArchiveType.XAR
 		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
-		  Case ArchiveType.Zip
+		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
 		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
-		    
-		  Case ArchiveType.ZipSeekable
-		    Return New libarchive.Writers.ZipSeekWriter(WriteTo, Compressor)
-		    
-		  Case ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipStreamWriter(WriteTo, Compressor)
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
@@ -973,14 +967,8 @@ Protected Module libarchive
 		  Case ArchiveType.XAR
 		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
-		  Case ArchiveType.Zip
+		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
 		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
-		    
-		  Case ArchiveType.ZipSeekable
-		    Return New libarchive.Writers.ZipSeekWriter(WriteTo, Compressor)
-		    
-		  Case ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipStreamWriter(WriteTo, Compressor)
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)

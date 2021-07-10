@@ -158,7 +158,7 @@ Inherits libarchive.Archive
 		    mLastError = archive_write_set_format_ustar(mArchive)
 		  Case libarchive.ArchiveType.XAR
 		    mLastError = archive_write_set_format_xar(mArchive)
-		  Case libarchive.ArchiveType.Zip
+		  Case libarchive.ArchiveType.Zip, libarchive.ArchiveType.ZipSeekable, libarchive.ArchiveType.ZipStreamable
 		    mLastError = archive_write_set_format_zip(mArchive)
 		  Else
 		    mLastError = ERR_READ_ONLY_FORMAT
