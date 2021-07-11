@@ -21,7 +21,16 @@ This example extracts an archive into a folder. [**More examples**](https://gith
 <sup>1</sup> Some formats are read-only; a few are write-only.
 
 ## Synopsis
-An archive is represented by an instance of `ArchiveReader` or `ArchiveWriter`, or a format-specific subclass of these classes.
+The libarchive API is abstracted over by several object classes:
+
+|Object Class|Comment|
+|------------|-------|
+|[`ArchiveReader`](https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader)|An archive opened for extraction.| 
+|[`ArchiveWriter`](https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter)|An archive opened for archiving.| 
+|[`ArchiveEntry`](https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry)|The metadata of a single entry in an archive.| 
+|[`CompressedStream`](https://github.com/charonn0/RB-libarchive/wiki/libarchive.CompressedStream)|A `BinaryStream` workalike for reading and writing compressed streams.| 
+
+An archive is represented by an instance of `ArchiveReader` or `ArchiveWriter`, or a format-specific subclass of these classes. For most purposes you can use the [OpenArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenArchive), [OpenAsArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.OpenAsArchive), and [ReadArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive) convenience methods to extract an existing archive; and the [CreateArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive), [CreateAsArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateAsArchive), and [WriteArchive](https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive) convenience methods to generate a new archive.
 
 ## How to incorporate libcarchive into your Realbasic/Xojo project
 ### Import the libarchive module
@@ -35,3 +44,4 @@ libarchive is not installed by default on most operating systems, you will need 
 ## Examples
 * [Generic extractor](https://github.com/charonn0/RB-libarchive/wiki/Extractor-Example)
 * [Generic archiver](https://github.com/charonn0/RB-libarchive/wiki/Archiver-Example)
+* [Compressed streams](https://github.com/charonn0/RB-libarchive/wiki/Compressed-Stream-Examples)
