@@ -1348,6 +1348,8 @@ Protected Module libarchive
 		    writer.Close()
 		    
 		  Else
+		    If ExtractTo.Exists And Not ExtractTo.Directory Then Raise New IOException
+		    ExtractTo.CreateAsFolder()
 		    Dim outstream As BinaryStream
 		    Do
 		      If outstream <> Nil Then outstream.Close()
@@ -1355,7 +1357,7 @@ Protected Module libarchive
 		      Dim output As FolderItem = entry.ExtractPath(ExtractTo, True)
 		      If entry.IsADirectory Then
 		        output.CreateAsFolder()
-		        outstream = DevNull
+		        outstream = Nil
 		      Else
 		        outstream = BinaryStream.Create(output, True)
 		      End If
@@ -1483,11 +1485,7 @@ Protected Module libarchive
 		    Dim item As FolderItem = ToArchive(i)
 		    Dim entry As New ArchiveEntry(item, RelativeRoot)
 		    Dim bs As BinaryStream
-		    If item.Directory Then
-		      bs = DevNull
-		    Else
-		      bs = BinaryStream.Open(item)
-		    End If
+		    If Not item.Directory Then bs = BinaryStream.Open(item)
 		    Archive.WriteEntry(entry, bs)
 		  Next
 		  Archive.Close()
@@ -1512,22 +1510,6 @@ Protected Module libarchive
 		  Archive.Close()
 		End Sub
 	#tag EndMethod
-
-
-	#tag ComputedProperty, Flags = &h21
-		#tag Getter
-			Get
-			  Static mDevNull As BinaryStream
-			  If mDevNull = Nil Then
-			    Dim mb As New MemoryBlock(0)
-			    mDevNull = New BinaryStream(mb)
-			    mDevNull.Close()
-			  End If
-			  return mDevNull
-			End Get
-		#tag EndGetter
-		Private DevNull As BinaryStream
-	#tag EndComputedProperty
 
 
 	#tag Constant, Name = ARCHIVE_EOF, Type = Double, Dynamic = False, Default = \"1", Scope = Protected
