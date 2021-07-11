@@ -835,45 +835,45 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		Protected Function CreateArchive(WriteTo As FolderItem, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  ' Create a new archive of the specified archive and compression types in the specified FolderItem.
 		  ' Returns an instance of ArchiveWriter to which archive entries may be written.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
 		  
-		  If Archivist = ArchiveType.All Then Archivist = GuessArchiveType(Archive.Name)
-		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(Archive.Name)
+		  If Archivist = ArchiveType.All Then Archivist = GuessArchiveType(WriteTo.Name)
+		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(WriteTo.Name)
 		  Select Case Archivist
 		  Case ArchiveType.All ' unknown file extension
 		    Return Nil
 		    
 		  Case ArchiveType.Ar
-		    Return New libarchive.Writers.ARWriter(Archive, Compressor)
+		    Return New libarchive.Writers.ARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.CPIO
-		    Return New libarchive.Writers.CPIOWriter(Archive, Compressor)
+		    Return New libarchive.Writers.CPIOWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.ISO9660
-		    Return New libarchive.Writers.ISO9660Writer(Archive, Compressor)
+		    Return New libarchive.Writers.ISO9660Writer(WriteTo, Compressor)
 		    
 		  Case ArchiveType.MTree
-		    Return New libarchive.Writers.MTreeWriter(Archive, Compressor)
+		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.SevenZip
-		    Return New libarchive.Writers.SevenZipWriter(Archive, Compressor)
+		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.Shar
-		    Return New libarchive.Writers.SharWriter(Archive, Compressor)
+		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.TAR, ArchiveType.GnuTar
-		    Return New libarchive.Writers.TARWriter(Archive, Compressor)
+		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.XAR
-		    Return New libarchive.Writers.XARWriter(Archive, Compressor)
+		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipWriter(Archive, Compressor)
+		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
