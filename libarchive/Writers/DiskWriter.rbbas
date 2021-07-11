@@ -113,7 +113,7 @@ Inherits libarchive.ArchiveWriter
 		  Dim stream As CompressedStreamPtr
 		  Try
 		    WriteEntryHeader(Entry)
-		    stream = New CompressedStreamPtr(New RawWriterPtr(Me))
+		    stream = New CompressedStreamPtr(Me)
 		    If Not Source.MoveNext(stream) And Source.LastError <> ARCHIVE_EOF Then
 		      Raise New ArchiveException(Source)
 		    End If

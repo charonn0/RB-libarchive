@@ -183,8 +183,8 @@ Implements Readable,Writeable
 		LastError As Int32
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h1
-		Protected mCompressor As libarchive.Writers.RawWriter
+	#tag Property, Flags = &h21
+		Private mCompressor As libarchive.Writers.RawWriter
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
