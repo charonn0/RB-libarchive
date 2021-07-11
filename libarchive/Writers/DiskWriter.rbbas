@@ -3,9 +3,8 @@ Protected Class DiskWriter
 Inherits libarchive.ArchiveWriter
 	#tag Method, Flags = &h1000
 		Sub Constructor(Output As FolderItem, Flags As Int32 = 0)
-		  // Calling the overridden superclass constructor.
-		  // Constructor() -- From Archive
-		  Super.Constructor()
+		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
+		  
 		  mArchive = archive_write_disk_new()
 		  If mArchive = Nil Then Raise New ArchiveException(ERR_INIT_FAILED)
 		  If Flags = 0 Then
@@ -33,9 +32,6 @@ Inherits libarchive.ArchiveWriter
 		    Raise New ArchiveException(Me)
 		  End If
 		  
-		  ' libarchive will extract to the app's working directory, so we
-		  ' need to change the working directory to ExtractTo
-		  SetWorkingDirectory(mSourceFile)
 		  mIsOpen = True
 		  
 		End Sub
@@ -77,6 +73,7 @@ Inherits libarchive.ArchiveWriter
 		Protected Shared Sub SetWorkingDirectory(CWD As FolderItem)
 		  ' libarchive will extract to the app's working directory, so we
 		  ' need to change the working directory to CWD
+		  If CWD = Nil Then Return
 		  Dim path As String
 		  If CWD.Directory Then
 		    path = CWD.AbsolutePath_
@@ -100,6 +97,10 @@ Inherits libarchive.ArchiveWriter
 
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As libarchive.ArchiveReader)
+		  ' libarchive will extract to the app's working directory, so we
+		  ' need to change the working directory to ExtractTo
+		  SetWorkingDirectory(mSourceFile)
+		  
 		  If Not mIsOpen Then Create()
 		  If mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
