@@ -70,21 +70,12 @@ Protected Class ArchiveEntry
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Extract(Output As FolderItem) As Boolean
+		Function Extract(Output As FolderItem, Optional Flags As Int32) As Boolean
 		  ' Extract the entry into the specified FolderItem.
 		  
-		  Dim disk As New libarchive.Writers.DiskWriter(Output, 0)
+		  Dim disk As New libarchive.Writers.DiskWriter(Output, Flags)
 		  mLastError = archive_read_extract2(mOwner.Handle, Me.Handle, disk.Handle)
 		  disk.Close()
-		  Return mLastError = ARCHIVE_OK
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function Extract(Flags As Int32) As Boolean
-		  ' Extract the entry into the current working directory using the specified Flags.
-		  
-		  mLastError = archive_read_extract(mOwner.Handle, Me.Handle, Flags)
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
