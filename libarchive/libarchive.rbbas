@@ -1449,12 +1449,17 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "")
+		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False)
 		  ' Creates an archive of the specified type and then recursively archives
 		  ' the TargetDirectory parameter.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
+		  
+		  If OutputFile.Exists Then
+		    If Not Overwrite Then Raise New IOException
+		    OutputFile.Delete()
+		  End If
 		  
 		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
 		  If arc <> Nil Then
