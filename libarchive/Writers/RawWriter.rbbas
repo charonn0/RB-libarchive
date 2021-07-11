@@ -1,6 +1,13 @@
 #tag Class
 Protected Class RawWriter
 Inherits libarchive.ArchiveWriter
+	#tag Method, Flags = &h0
+		Sub Close()
+		  Super.WriteEntryFinished()
+		  Super.Close()
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1000
 		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As Int32)
 		  // Calling the overridden superclass constructor.
@@ -56,12 +63,6 @@ Inherits libarchive.ArchiveWriter
 		    WriteEntryHeader(meta)
 		  End If
 		  Super.WriteEntryDataBlock(Block)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub WriteEntryFinished()
-		  Super.WriteEntryFinished()
 		End Sub
 	#tag EndMethod
 
