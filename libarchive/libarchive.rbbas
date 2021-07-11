@@ -835,7 +835,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		Protected Function CreateArchive(Archive As FolderItem, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  ' Create a new archive of the specified archive and compression types in the specified FolderItem.
 		  ' Returns an instance of ArchiveWriter to which archive entries may be written.
 		  '
@@ -883,7 +883,7 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateArchive(WriteTo As MemoryBlock, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		Protected Function CreateArchive(WriteTo As MemoryBlock, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  ' Create a new archive of the specified archive and compression types and write
 		  ' the output to the specified empty memoryblock. The memoryblock will be enlarged
 		  ' automatically as needed. Returns an instance of ArchiveWriter to which archive
@@ -931,7 +931,7 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateArchive(WriteTo As Writeable, Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
+		Protected Function CreateArchive(WriteTo As Writeable, Archivist As libarchive.ArchiveType, Optional Compressor As libarchive.CompressionType) As libarchive.ArchiveWriter
 		  ' Create a new archive of the specified archive and compression types and write the
 		  ' output to the specified Writeable object. Returns an instance of ArchiveWriter to
 		  ' which archive entries may be written.
