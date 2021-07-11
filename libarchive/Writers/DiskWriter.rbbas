@@ -9,22 +9,35 @@ Inherits libarchive.ArchiveWriter
 		  mArchive = archive_write_disk_new()
 		  If mArchive = Nil Then Raise New ArchiveException(ERR_INIT_FAILED)
 		  If Flags = 0 Then
-		    Flags = ARCHIVE_EXTRACT_TIME Or ARCHIVE_EXTRACT_PERM Or ARCHIVE_EXTRACT_ACL Or ARCHIVE_EXTRACT_FFLAGS
+		    Flags = ARCHIVE_EXTRACT_TIME Or ARCHIVE_EXTRACT_PERM Or ARCHIVE_EXTRACT_ACL Or ARCHIVE_EXTRACT_FFLAGS Or ARCHIVE_EXTRACT_XATTR
 		  End If
 		  If Not SetOptions(Flags) Then Raise New ArchiveException(Me)
 		  mSourceFile = Output
-		  Create()
+		  
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h1000
-		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType)
-		  // Calling the overridden superclass constructor.
-		  // Constructor() -- from ArchiveWriter
-		  Super.Constructor()
-		  SetFormat(ArchiveType.Raw)'?
-		  SetFilter(Compressor)
-		  mDestinationStream = WriteTo
+	#tag Method, Flags = &h1
+		Protected Sub Create()
+		  If IsOpen Then
+		    mLastError = ERR_TOO_LATE
+		    Raise New ArchiveException(Me)
+		  End If
+		  If mSourceFile = Nil Then
+		    mLastError = ERR_INVALID_OPERATION
+		    Raise New ArchiveException(Me)
+		  End If
+		  If Not mSourceFile.Exists Then mSourceFile.CreateAsFolder()
+		  If Not mSourceFile.Directory Then
+		    mLastError = ERR_INVALID_OPERATION
+		    Raise New ArchiveException(Me)
+		  End If
+		  
+		  ' libarchive will extract to the app's working directory, so we
+		  ' need to change the working directory to ExtractTo
+		  SetWorkingDirectory(mSourceFile)
+		  mIsOpen = True
+		  
 		End Sub
 	#tag EndMethod
 
@@ -60,35 +73,52 @@ Inherits libarchive.ArchiveWriter
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Shared Sub SetWorkingDirectory(CWD As FolderItem)
+		  ' libarchive will extract to the app's working directory, so we
+		  ' need to change the working directory to CWD
+		  Dim path As String
+		  If CWD.Directory Then
+		    path = CWD.AbsolutePath_
+		  Else
+		    path = CWD.Parent.AbsolutePath_
+		  End If
+		  #If TargetWin32 Then
+		    Declare Function chdir Lib "Kernel32" Alias "SetCurrentDirectoryW" (PathName As WString) As Boolean
+		  #Else
+		    #If targetMacOS Then
+		      ' not sure if this actually works for OS X.
+		      const libc = "System.framework"
+		    #Else
+		      const libc = "libc"
+		    #EndIf
+		    Soft Declare Function chdir Lib libc (Path As CString) As Int32
+		  #EndIf
+		  Call chdir(path)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
-		Sub WriteEntry(Entry As libarchive.ArchiveEntry)
+		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As libarchive.ArchiveReader)
+		  If Not mIsOpen Then Create()
+		  If mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End If
+		  
 		  Try
-		    mLastError = archive_write_header(mArchive, Entry.Handle)
-		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		    
-		    Do
-		      mLastError = archive_write_data(mArchive, Nil, 0)
-		      If mLastError < 0 Then Raise New ArchiveException(Me)
-		    Loop
-		    
+		    WriteEntryHeader(Entry)
+		    Dim raw As New RawWriterPtr(Me)
+		    Dim stream As New CompressedStreamPtr(raw)
+		    If Not Source.MoveNext(stream) And Source.LastError <> ARCHIVE_EOF Then
+		      Raise New ArchiveException(Source)
+		    End If
+		    stream.Close()
 		  Finally
-		    mLastError = archive_write_finish_entry(mArchive)
+		    WriteEntryFinished()
 		  End Try
 		End Sub
 	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
-		  #pragma Unused Source
-		  WriteEntry(Entry)
-		End Sub
-	#tag EndMethod
-
-
-	#tag Note, Name = About this class
-		.
-		writes to the disk instead of to an archive file,
-	#tag EndNote
 
 
 	#tag Constant, Name = ARCHIVE_EXTRACT_ACL, Type = Double, Dynamic = False, Default = \"&h0020", Scope = Public

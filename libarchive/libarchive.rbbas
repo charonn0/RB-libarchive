@@ -1327,24 +1327,44 @@ Protected Module libarchive
 		  
 		  
 		  If Password <> "" Then Archive.Password = Password
-		  Dim ret() As ArchiveEntry
-		  
-		  Dim outstream As BinaryStream
-		  Do
+		  Dim list() As libarchive.ArchiveEntry
+		  If USE_FAST_EXTRACT Then
+		    ' This method extracts the Archive using libarchive's DiskWriter API
+		    ' This can be significantly faster than using Xojo FolderItems to
+		    ' generate directory trees, however it involves changing the app's
+		    ' working directory which is a) a global variable which we don't exclusively
+		    ' control; and b) only changeable in Xojo by using platform-specific
+		    ' declares.
+		    ' Set USE_FAST_EXTRACT to False to fall back on a slower but more portable
+		    ' pure Xojo extraction routine.
+		    
+		    Dim writer As New libarchive.Writers.DiskWriter(ExtractTo)
+		    Do Until Archive.LastError <> 0
+		      Dim entry As libarchive.ArchiveEntry = Archive.CurrentEntry
+		      writer.WriteEntry(entry, Archive)
+		      list.Append(entry)
+		    Loop Until writer.LastError <> 0
+		    Archive.Close()
+		    writer.Close()
+		    
+		  Else
+		    Dim outstream As BinaryStream
+		    Do
+		      If outstream <> Nil Then outstream.Close()
+		      Dim entry As ArchiveEntry = Archive.CurrentEntry
+		      Dim output As FolderItem = entry.ExtractPath(ExtractTo, True)
+		      If entry.IsADirectory Then
+		        output.CreateAsFolder()
+		        outstream = DevNull
+		      Else
+		        outstream = BinaryStream.Create(output, True)
+		      End If
+		      list.Append(entry)
+		    Loop Until Not Archive.MoveNext(outstream)
 		    If outstream <> Nil Then outstream.Close()
-		    Dim entry As ArchiveEntry = Archive.CurrentEntry
-		    Dim output As FolderItem = entry.ExtractPath(ExtractTo, True)
-		    If entry.IsADirectory Then
-		      output.CreateAsFolder()
-		      outstream = DevNull
-		    Else
-		      outstream = BinaryStream.Create(output, True)
-		    End If
-		    ret.Append(entry)
-		  Loop Until Not Archive.MoveNext(outstream)
-		  If outstream <> Nil Then outstream.Close()
-		  Archive.Close
-		  Return ret
+		    Archive.Close
+		  End If
+		  Return list
 		  
 		End Function
 	#tag EndMethod
@@ -1529,6 +1549,9 @@ Protected Module libarchive
 	#tag Constant, Name = ERR_INIT_FAILED, Type = Double, Dynamic = False, Default = \"-102", Scope = Protected
 	#tag EndConstant
 
+	#tag Constant, Name = ERR_INVALID_OPERATION, Type = Double, Dynamic = False, Default = \"-106", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected
 	#tag EndConstant
 
@@ -1680,6 +1703,9 @@ Protected Module libarchive
 		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"libarchive-13.dll"
 		#Tag Instance, Platform = Mac OS, Language = Default, Definition  = \"/usr/local/lib/libarchive.13.dylib"
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"libarchive.so.13"
+	#tag EndConstant
+
+	#tag Constant, Name = USE_FAST_EXTRACT, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
 	#tag EndConstant
 
 
