@@ -12,7 +12,9 @@ Inherits libarchive.ArchiveWriter
 		  End If
 		  If Not SetOptions(Flags) Then Raise New ArchiveException(Me)
 		  mSourceFile = Output
-		  
+		  ' libarchive will extract to the app's working directory, so we
+		  ' need to change the working directory to ExtractTo
+		  SetWorkingDirectory(mSourceFile)
 		End Sub
 	#tag EndMethod
 
@@ -26,6 +28,7 @@ Inherits libarchive.ArchiveWriter
 		    mLastError = ERR_INVALID_OPERATION
 		    Raise New ArchiveException(Me)
 		  End If
+		  
 		  If Not mSourceFile.Exists Then mSourceFile.CreateAsFolder()
 		  If Not mSourceFile.Directory Then
 		    mLastError = ERR_INVALID_OPERATION
