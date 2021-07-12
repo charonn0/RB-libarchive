@@ -75,6 +75,18 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function MoveNext(WriteTo As Int32) As Boolean
+		  ' Reads the currently selected entry into the specified file descriptor and then
+		  ' advances the selection to the next item in the archive, if any.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.MoveNext
+		  
+		  Return ReadEntryData(WriteTo) And ReadEntryHeader()
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function MoveNext(WriteTo As Writeable) As Boolean
 		  ' Reads the currently selected entry into the WriteTo parameter and then advances the
 		  ' selection to the next item in the archive, if any.
