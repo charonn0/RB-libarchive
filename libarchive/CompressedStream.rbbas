@@ -61,6 +61,7 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		 Shared Function Create(Output As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As UInt32 = 6) As libarchive.CompressedStream
+		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(Output.Name)
 		  Dim writer As New libarchive.Writers.RawWriter(Output, Compressor, CompressionLevel)
 		  Return New CompressedStream(writer)
 		End Function
@@ -103,6 +104,7 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		 Shared Function Open(Input As FolderItem, Compressor As libarchive.CompressionType) As libarchive.CompressedStream
+		  If Compressor = CompressionType.All Then Compressor = GuessCompressionType(Input.Name)
 		  Dim reader As New libarchive.Readers.RawReader(Input, Compressor)
 		  Return New CompressedStream(reader)
 		End Function
