@@ -171,7 +171,8 @@ Inherits libarchive.Archive
 		  
 		  If Not mIsOpen Then Open()
 		  If WriteTo = Nil Then Return SkipEntryData()
-		  mLastError = 0
+		  
+		  mLastError = ARCHIVE_OK
 		  
 		  Do Until mLastError <> ARCHIVE_OK
 		    Dim buffer As MemoryBlock
@@ -183,7 +184,7 @@ Inherits libarchive.Archive
 		    End If
 		  Loop
 		  
-		  Return mLastError = ARCHIVE_EOF
+		  Return (mLastError = ARCHIVE_EOF Or mLastError = ARCHIVE_OK)
 		End Function
 	#tag EndMethod
 
