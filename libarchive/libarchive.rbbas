@@ -1006,6 +1006,10 @@ Protected Module libarchive
 		    msg = "It is too late in the process to perform the requested operation."
 		  Case ERR_TOO_EARLY
 		    msg = "It is too early in the process to perform the requested operation."
+		  Case ERR_SIZE_REQUIRED
+		    msg = "The requested operation cannot be performed on an unbounded memory block."
+		  Case ERR_INVALID_OPERATION
+		    msg = "The requested operation is invalid in the current context."
 		  Case ARCHIVE_OK
 		    msg = "Operation succeeded."
 		  Case ARCHIVE_EOF
