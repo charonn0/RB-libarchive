@@ -2,6 +2,11 @@
 Protected Class Archive
 	#tag Method, Flags = &h0
 		Sub Close()
+		  ' Releases all locally held resources. 
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Close
+		  
 		  mIsOpen = False
 		  mSourceBuffer = Nil
 		  mSourceFile = Nil
@@ -12,12 +17,24 @@ Protected Class Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub Constructor()
+		  ' Raises an exception if libarchive is not available at runtime. Subclasses should
+		  ' call this Constructor before doing anything else.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Constructor
+		  
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilterName(Compressor As libarchive.CompressionType)
+		  ' Sets the name of the compression filter. This name is used in subsequent calls to
+		  ' SetFilterOption() (and similar methods) of subclasses.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.SetFilterName
+		  
 		  Select Case Compressor
 		  Case libarchive.CompressionType.BZip2
 		    mFilterName = FILTER_MODULE_BZIP2
@@ -47,6 +64,12 @@ Protected Class Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormatName(ArchiveType As libarchive.ArchiveType)
+		  ' Sets the name of the archive format. This name is used in subsequent calls to 
+		  ' SetFormatOption() (and similar methods) of subclasses.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.SetFormatName
+		  
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
 		    mFormatName = FORMAT_MODULE_7ZIP
@@ -92,6 +115,12 @@ Protected Class Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' The opaque handle of the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Handle
+			  
+			  
 			  return mArchive
 			End Get
 		#tag EndGetter
@@ -101,6 +130,11 @@ Protected Class Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns True if the archive is currently open.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.IsOpen
+			  
 			  return mIsOpen
 			End Get
 		#tag EndGetter
@@ -110,6 +144,11 @@ Protected Class Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the most recent error code for the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.LastError
+			  
 			  return mLastError
 			End Get
 		#tag EndGetter

@@ -121,6 +121,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h0
 		Sub Constructor(Owner As libarchive.ArchiveReader, ReadFrom As Readable)
+		  ' libarchive will invoke the callbacks of this class when reading from the
+		  ' Owner archive, which in turn will read from the ReadFrom parameter until
+		  ' ReadFrom.EOF=True. 
+		  
 		  mArchive = Owner
 		  
 		  mLastError = archive_read_set_open_callback(mArchive.Handle, AddressOf ReadOpenCallback)
@@ -154,6 +158,10 @@ Private Class MemoryStream
 
 	#tag Method, Flags = &h0
 		Sub Constructor(Owner As libarchive.ArchiveWriter, WriteTo As Writeable)
+		  ' libarchive will invoke the callbacks of this class when writing to the
+		  ' Owner archive, which in turn will write to the WriteTo object. The WriteTo
+		  ' object must continue to exist at least until after Owner.Close() returns.
+		  
 		  mArchive = Owner
 		  
 		  mLastError = archive_write_set_bytes_in_last_block(mArchive.Handle, 1)

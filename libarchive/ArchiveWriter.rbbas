@@ -3,6 +3,11 @@ Protected Class ArchiveWriter
 Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
+		  ' Close the archive and free system resources.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Close
+		  
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
 		  If mStream <> Nil Then mUsed = mStream.Used
 		  If mSourceBuffer <> Nil Then mSourceBuffer.Size = mUsed
@@ -12,6 +17,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub Constructor()
+		  ' Constructs a generic ArchiveWriter. Format-specific subclasses call this Constructor.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Constructor
+		  
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- From Archive
 		  Super.Constructor()
@@ -23,6 +33,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub Create()
+		  ' Creates the ArchiveWriter for writing. Format-specific subclasses call this after
+		  ' setting options and features for the archive.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Create
+		  
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -45,6 +61,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub CreateFile(File As FolderItem)
+		  ' Creates an archive in the specified file.
 		  mLastError = archive_write_open_filename_w(mArchive, File.AbsolutePath_)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceFile = File
@@ -55,6 +72,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub CreateMemory(Buffer As MemoryBlock)
+		  ' Creates an archive in the specified MemoryBlock.
+		  
 		  mSourceBuffer = Buffer
 		  Dim stream As New BinaryStream(mSourceBuffer)
 		  CreateStream(stream)
@@ -64,6 +83,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub CreateStream(Stream As Writeable)
+		  ' Creates an archive in the specified Writeable object.
+		  
 		  mStream = New MemoryStream(Me, Stream)
 		  mDestinationStream = Stream
 		  mIsOpen = True
@@ -81,6 +102,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  ' Sets the compression type. Must be called before the archive is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetFilter
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -123,6 +149,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified compression filter. Must be called before the archive
+		  ' is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetFilterOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -134,6 +166,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  ' Sets the archive format. Must be called before the archive is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetFormat
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -171,6 +208,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified archive format. Must be called before the archive is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetFormatOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -182,6 +224,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified compression filter or archive format. Must be called
+		  ' before the archive is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -193,6 +241,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOptions(Options() As String) As Boolean
+		  ' Sets several compression and/or archive options at once. Must be called before the
+		  ' archive is created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetOptions
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -205,6 +259,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
+		  ' Writes the Source stream (until Source.EOF=True) to the archive using metadata of
+		  ' the Entry.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntry
+		  
 		  If Not mIsOpen Then Create()
 		  If mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
@@ -228,6 +288,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryDataBlock(Block As MemoryBlock)
+		  ' Writes bytes to the archive entry. The entry header must have already been written and the
+		  ' entry data cannot have yet been marked as finished.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntryDataBlock
+		  
 		  If Block = Nil Or Block.Size = 0 Then Return
 		  If Not mIsOpen Or Not mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
@@ -241,6 +307,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryFinished()
+		  ' Finishes the archive entry.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntryFinished
+		  
 		  If Not mIsOpen Or Not mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
 		    Return
@@ -252,6 +323,13 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub WriteEntryHeader(Entry As libarchive.ArchiveEntry)
+		  ' Writes an archive header for the entry. Any previous entry must already be finished. After
+		  ' this method returns you may write to the entry using WriteEntryDataBlock() and then finish
+		  ' the entry by calling WriteEntryFinished().
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntryHeader
+		  
 		  If Not mIsOpen Then Create()
 		  If mHeaderWritten Then
 		    mLastError = ERR_TOO_EARLY
@@ -273,6 +351,12 @@ Inherits libarchive.Archive
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Sets the compression level for the archive. This may or may not be meaningful depending
+			  ' on the archive format.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.CompressionLevel
+			  
 			  If SetFilterOption(mFilterName, FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Then
 			    mCompressionLevel = value
 			  End If
@@ -289,7 +373,11 @@ Inherits libarchive.Archive
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Enables or disables encryption on subsequently added entries.
+			  ' Sets the encryption format for the archive. This may or may not be meaningful depending
+			  ' on the archive format.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Encryption
 			  
 			  Dim ok As Boolean
 			  ok = Me.SetFormatOption(mFormatName, FORMAT_OPT_ENCRYPTION, value)
@@ -302,6 +390,11 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the format of the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Format
+			  
 			  Const ARCHIVE_FORMAT_CPIO = &h
 			  Const ARCHIVE_FORMAT_SHAR = &h2
 			  Const ARCHIVE_FORMAT_TAR = &h3
@@ -386,6 +479,13 @@ Inherits libarchive.Archive
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Gets and sets the password to be used in encrypting encrypted entries. Must be
+			  ' set before the archive is created. This may or may not be meaningful depending
+			  ' on the archive format.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Password
+			  
 			  If Not IsOpen And mArchive <> Nil Then
 			    mLastError = archive_write_set_passphrase(mArchive, value)
 			    If mLastError = ARCHIVE_OK Then mPassword = value

@@ -5,6 +5,9 @@ Protected Class ArchiveEntry
 		  ' Create a new ArchiveEntry and copy the metadata of the FromFile FolderItem
 		  ' into the entry. RelativeRoot is the root of the directory tree being archived;
 		  ' the PathName property will be the relative path between the root and the entry.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Constructor
 		  
 		  Me.Constructor() // Constructor(Optional Owner As libarchive.Archive)
 		  Me.SetMetadata(FromFile, RelativeRoot)
@@ -14,6 +17,9 @@ Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
 		Sub Constructor(Optional Owner As libarchive.Archive)
 		  ' Create a new empty ArchiveEntry.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Constructor
 		  
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
 		  If Owner = Nil Then
@@ -31,6 +37,8 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h1
 		Protected Sub Constructor(Owner As libarchive.Archive, Entry As Ptr)
+		  ' Used to construct instances of ArchiveEntry from raw ptrs to entry structs.
+		  
 		  mEntry = Entry
 		  mOwner = Owner
 		  GetMetadata()
@@ -40,6 +48,9 @@ Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
 		Sub Constructor(CloneFrom As libarchive.ArchiveEntry)
 		  ' Create a new ArchiveEntry by duplicating the CloneFrom instance.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Constructor
 		  
 		  Dim e As Ptr = archive_entry_clone(CloneFrom.Handle)
 		  If e = Nil Then
@@ -55,6 +66,9 @@ Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
 		Sub Constructor(CloneFrom As libarchive.ArchiveEntry, RelativeRoot As FolderItem)
 		  ' Clone the CloneFrom entry and modify the pathname according to RelativeRoot
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Constructor
 		  
 		  Me.Constructor(CloneFrom) // Constructor(CloneFrom As libarchive.ArchiveEntry)
 		  Me.PathName = GetRelativePath(RelativeRoot, New FolderItem(PathName))
@@ -72,6 +86,9 @@ Protected Class ArchiveEntry
 	#tag Method, Flags = &h0
 		Function Extract(Output As FolderItem, Optional Flags As Int32) As Boolean
 		  ' Extract the entry into the specified FolderItem.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Extract
 		  
 		  Dim disk As New libarchive.Writers.DiskWriter(Output, Flags)
 		  mLastError = archive_read_extract2(mOwner.Handle, Me.Handle, disk.Handle)
@@ -82,6 +99,15 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h0
 		Function ExtractPath(RelativeRoot As FolderItem, CreateMissingDirectories As Boolean) As FolderItem
+		  ' Generates a FolderItem by concatenating the RelativeRoot path and the PathName property.
+		  ' If CreateMissingDirectories is True then subdirectories are created as needed within
+		  ' RelativeRoot; otherwise a missing subdirectory will cause the operation to fail (return 
+		  ' Nil.) Only parent directories are created; the final name in the path (i.e. the file that
+		  ' will be extracted into) is not created.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.ExtractPath
+		  
 		  If RelativeRoot = Nil Or Not RelativeRoot.Directory Then Return Nil
 		  Dim s() As String = Split(Me.PathName, "/")
 		  Dim bound As Integer = UBound(s)
@@ -108,6 +134,12 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h1
 		Protected Sub GetMetadata()
+		  ' Call this method to populate the various metadata properties (AccessTime, etc.) by
+		  ' querying libarchive.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.GetMetaData
+		  
 		  Dim path As MemoryBlock = archive_entry_pathname_w(mEntry)
 		  If path <> Nil Then mPathName = path.WString(0)
 		  
@@ -214,6 +246,12 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h0
 		Sub Reset(Optional FromFile As FolderItem, Optional RelativeRoot As FolderItem)
+		  ' Resets the metadata of the entry, optionally re-populating it with the FromFile
+		  ' and RelativeRoot parameters.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.Reset
+		  
 		  If mEntry <> Nil Then
 		    mEntry = archive_entry_clear(mEntry)
 		    Me.GetMetadata()
@@ -224,6 +262,13 @@ Protected Class ArchiveEntry
 
 	#tag Method, Flags = &h1
 		Protected Sub SetMetadata(FromFile As FolderItem, RelativeRoot As FolderItem)
+		  ' Call this method to populate the various metadata properties (AccessTime, etc.) by
+		  ' copying the values of FromFile. If RelativeRoot is not Nil then the PathName property
+		  ' will be populated with a relative path, otherwise the PathName will set to FromFile.Name
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveEntry.SetMetaData
+		  
 		  If RelativeRoot <> Nil Then
 		    Me.PathName = GetRelativePath(RelativeRoot, FromFile)
 		  Else

@@ -17,6 +17,9 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub Close()
 		  ' Close the archive and free system resources.
+		  ' 
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Close
 		  
 		  If mIsOpen Then mLastError = archive_read_close(mArchive)
 		  mCurrentEntry = Nil
@@ -27,6 +30,9 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Sub Constructor()
 		  ' Constructs a generic ArchiveReader. Format-specific subclasses call this Constructor.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Constructor
 		  
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- From Archive
@@ -70,12 +76,24 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Function MoveNext(WriteTo As Writeable) As Boolean
+		  ' Reads the currently selected entry into the WriteTo parameter and then advances the
+		  ' selection to the next item in the archive, if any.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.MoveNext
+		  
 		  Return ReadEntryData(WriteTo) And ReadEntryHeader()
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Sub Open()
+		  ' Opens the ArchiveReader for reading. Format-specific subclasses call this after
+		  ' setting options and features for the archive.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Open
+		  
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -98,6 +116,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenFile(File As FolderItem)
+		  ' Opens the specified file as an archive.
+		  
 		  mLastError = archive_read_open_filename_w(mArchive, File.AbsolutePath_, CHUNK_SIZE)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  mSourceFile = File
@@ -108,6 +128,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenMemory(Buffer As MemoryBlock)
+		  ' Opens the specified MemoryBlock as a MemoryStream.
+		  
 		  mSourceBuffer = Buffer
 		  Dim stream As New BinaryStream(mSourceBuffer)
 		  OpenStream(stream)
@@ -116,6 +138,8 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenStream(ReadFrom As Readable)
+		  ' Opens the specified Readable object as a MemoryStream.
+		  
 		  mStream = New MemoryStream(Me, ReadFrom)
 		  mLastError = archive_read_open1(mArchive)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
@@ -126,6 +150,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Int32) As Boolean
+		  ' Reads bytes from the archive and writes them to the specified file descriptor.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryData
+		  
 		  If Not mIsOpen Then Open()
 		  If WriteTo = 0 Then Return SkipEntryData()
 		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
@@ -135,6 +164,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Writeable) As Boolean
+		  ' Reads bytes from the archive and writes them to the specified Writeable stream.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryData
+		  
 		  If Not mIsOpen Then Open()
 		  If WriteTo = Nil Then Return SkipEntryData()
 		  mLastError = 0
@@ -155,6 +189,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
+		  ' Reads bytes from the archive and updates the Block parameter to point to the buffer containing
+		  ' the resulting data.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryDataBlock
+		  
 		  If Not mIsOpen Then Open()
 		  
 		  Dim size As UInt32
@@ -168,6 +208,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(Count As UInt32) As MemoryBlock
+		  ' Reads the requested number of bytes from the archive and copies them into a new MemoryBlock,
+		  ' which is then returned.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryDataBlock
+		  
 		  If Not mIsOpen Then Open()
 		  
 		  Dim buffer As New MemoryBlock(Count)
@@ -182,6 +228,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryHeader() As Boolean
+		  ' Reads the metadata of the next item in the archive.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryHeader
+		  
 		  If Not mIsOpen Then Open()
 		  Dim entry As Ptr
 		  mLastError = archive_read_next_header(mArchive, entry)
@@ -194,6 +245,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFilter(Compressor As libarchive.CompressionType)
+		  ' Sets the compression type. Must be called before the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetFilter
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -239,6 +295,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified compression filter. Must be called before the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetFilterOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -251,6 +312,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Sub SetFormat(ArchiveType As libarchive.ArchiveType)
+		  ' Sets the archive format. Must be called before the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetFormat
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Raise New ArchiveException(Me)
@@ -303,6 +369,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified archive format. Must be called before the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetFormatOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -315,6 +386,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOption(FilterOrFormatModule As String, OptionName As String, OptionValue As String) As Boolean
+		  ' Sets an option for the specified compression filter or archive format. Must be
+		  ' called before the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetOption
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -327,6 +404,12 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SetOptions(Options() As String) As Boolean
+		  ' Sets several compression and/or archive options at once. Must be called before
+		  ' the archive is opened.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SetOptions
+		  
 		  If mIsOpen Then
 		    mLastError = ERR_TOO_LATE
 		    Return False
@@ -340,6 +423,11 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h1
 		Protected Function SkipEntryData() As Boolean
+		  ' Skips the entire entry without reading it.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.SkipEntryData
+		  
 		  If Not mIsOpen Then
 		    mLastError = ERR_TOO_EARLY
 		    Return False
@@ -367,6 +455,11 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the True if libarchive can decrypt this archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CanDecryptData
+			  
 			  If mArchive <> Nil Then
 			    mLastError = archive_read_format_capabilities(mArchive)
 			    Return BitAnd(mLastError, ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA) = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA
@@ -379,6 +472,11 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the True if libarchive can decrypt this archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CanDecryptMetaData
+			  
 			  If mArchive <> Nil Then
 			    mLastError = archive_read_format_capabilities(mArchive)
 			    Return BitAnd(mLastError, ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA) = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA
@@ -391,6 +489,12 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the currently selected entry in the archive. If no entry has been selected
+			  ' yet then the first entry is selected automatically.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CurrentEntry
+			  
 			  If mCurrentEntry = Nil And mArchive <> Nil And Not mIsOpen Then Open()
 			  return mCurrentEntry
 			End Get
@@ -415,6 +519,12 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the format of the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Format
+			  
+			  
 			  Const ARCHIVE_FORMAT_CPIO = &h
 			  Const ARCHIVE_FORMAT_SHAR = &h2
 			  Const ARCHIVE_FORMAT_TAR = &h3
@@ -470,6 +580,11 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the format subtype or variant of the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FormatVariant
+			  
 			  If mArchive = Nil Then Return 0
 			  If mFormatVariant = 0 Then
 			    Dim frmat As Int32 = archive_format(mArchive)
@@ -485,6 +600,11 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the True if libarchive has detected at least one encrypted entry so far.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.HasEncryptedEntries
+			  
 			  If mArchive = Nil Then Return False
 			  
 			  mLastError = archive_read_has_encrypted_entries(mArchive)
@@ -527,6 +647,12 @@ Inherits libarchive.Archive
 		#tag EndGetter
 		#tag Setter
 			Set
+			  ' Sets the password to be used in decrypting encrypted entries. Must be set before
+			  ' the archive is opened.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Password
+			  
 			  If Not IsOpen And mArchive <> Nil Then
 			    Dim mb As MemoryBlock = value + Chr(0)
 			    mLastError = archive_read_add_passphrase(mArchive, mb)
