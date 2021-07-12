@@ -1390,30 +1390,6 @@ Protected Module libarchive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function time_t(d As Date) As Integer
-		  Static epoch As Double = time_t(0).TotalSeconds
-		  Return d.TotalSeconds - epoch
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function time_t(Count As Integer) As Date
-		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
-		  d.TotalSeconds = d.TotalSeconds + Count
-		  Return d
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function time_tn(Count As Int64) As Date
-		  Dim d As New Date(1970, 1, 1, 0, 0, 0, 0.0) 'UNIX epoch
-		  Count = Count / 1000000000
-		  d.TotalSeconds = d.TotalSeconds + Count
-		  Return d
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Function VersionNumber() As Int32
 		  If Not IsAvailable Then Return 0
