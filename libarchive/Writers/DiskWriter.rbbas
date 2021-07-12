@@ -86,11 +86,11 @@ Inherits libarchive.ArchiveWriter
 		  #If TargetWin32 Then
 		    Declare Function chdir Lib "Kernel32" Alias "SetCurrentDirectoryW" (PathName As WString) As Boolean
 		  #Else
-		    #If targetMacOS Then
+		    #If TargetMacOS Then
 		      ' not sure if this actually works for OS X.
-		      const libc = "System.framework"
+		      Const libc = "System.framework"
 		    #Else
-		      const libc = "libc"
+		      Const libc = "libc"
 		    #EndIf
 		    Soft Declare Function chdir Lib libc (Path As CString) As Int32
 		  #EndIf
