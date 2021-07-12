@@ -44,6 +44,7 @@ Class=RawWriter;libarchive/Writers/RawWriter.rbbas;&h3549EFFF;&h5DF5FFF;false
 Class=RAR5Reader;libarchive/Readers/RAR5Reader.rbbas;&h23ECEFFF;&h9E817FF;false
 Class=ZipStreamReader;libarchive/Readers/ZipStreamReader.rbbas;&h1DFA57FF;&h9E817FF;false
 Class=ZipSeekReader;libarchive/Readers/ZipSeekReader.rbbas;&h51139FFF;&h9E817FF;false
+FileTypeSet=CompressionFileTypes;CompressionFileTypes.rbbas;&h3803DFFF;&h0;false
 MajorVersion=1
 MinorVersion=0
 SubVersion=0

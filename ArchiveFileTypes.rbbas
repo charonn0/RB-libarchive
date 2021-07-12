@@ -19,7 +19,7 @@
 
 	#tag FileType
 		CodeName=AllReadable
-		Extension=.tar;tar.gz;tar.bz2;.tgz;.tbz;.zip;.xpi;.odt;.fodt;.ods;.fods;.odp;.fodp;.odg;.fodg;.odf;.3mf;.dwfx;.cddx;.familyx;.fdix;.appv;.semblio;.vsix;.vsdx;.appx;.appxbundle;.cspkg;.xps;.mmzx;.nupkg;.docx;.pptx;.xlsx;.oxps;.aasx;.jtx;.slx;.smpk;.scdoc;.jar;.rar;.rev;.pax;.cpio;.iso;.a;.lib;.ar;.deb;.xar;.pkg;.xip;.lzh;.lha;.cab;.7z
+		Extension=.tar;tar.gz;.tar.bz2;.tgz;.tbz;.zip;.xpi;.odt;.fodt;.ods;.fods;.odp;.fodp;.odg;.fodg;.odf;.3mf;.dwfx;.cddx;.familyx;.fdix;.appv;.semblio;.vsix;.vsdx;.appx;.appxbundle;.cspkg;.xps;.mmzx;.nupkg;.docx;.pptx;.xlsx;.oxps;.aasx;.jtx;.slx;.smpk;.scdoc;.jar;.rar;.rev;.pax;.cpio;.iso;.a;.lib;.ar;.deb;.xar;.pkg;.xip;.lzh;.lha;.cab;.7z
 		Flags=&h0
 		MacCreator=
 		MacType=
@@ -72,6 +72,7 @@
 		MacCreator=
 		MacType=
 		Name=application/x-lzh
+		UTI=public.archive.lha
 	#tag EndFileType
 
 	#tag FileType
@@ -129,6 +130,7 @@
 		MacCreator=
 		MacType=
 		Name=application/x-xar
+		UTI=com.apple.xar-archive
 	#tag EndFileType
 
 	#tag FileType
