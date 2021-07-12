@@ -190,7 +190,6 @@ Private Class MemoryStream
 	#tag Method, Flags = &h21
 		Private Sub Destructor()
 		  Call CB_Close()
-		  ' Call CB_Free()
 		End Sub
 	#tag EndMethod
 
