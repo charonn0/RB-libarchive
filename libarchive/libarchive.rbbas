@@ -1173,7 +1173,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1225,7 +1225,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1277,7 +1277,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR
+		  Case ArchiveType.TAR, ArchiveType.GnuTar
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
