@@ -1066,7 +1066,7 @@ Protected Module libarchive
 		  Case "7z"
 		    Return ArchiveType.SevenZip
 		    
-		  Case "shar", "shar", "uue"
+		  Case "shar"
 		    Return ArchiveType.Shar
 		    
 		  Case "tar", "tgz", "tbz"
@@ -1080,10 +1080,12 @@ Protected Module libarchive
 		    "mmzx", "nupkg", "docx", "pptx", "xlsx", "oxps", "aasx", "jtx", "slx", "smpk", "scdoc", "jar"
 		    Return ArchiveType.Zip
 		    
-		  Case "gz"
+		  Case "gz", "xz", "lz", "uu"
 		    Return GuessArchiveType(Left(Name, Name.Len - 3))
-		  Case "bz2"
+		  Case "bz2", "lz4", "uue", "zst"
 		    Return GuessArchiveType(Left(Name, Name.Len - 4))
+		  Case "lzma", "lzop", "gzip", "zstd"
+		    Return GuessArchiveType(Left(Name, Name.Len - 5))
 		  Else
 		    Return ArchiveType.All
 		  End Select
@@ -1114,11 +1116,11 @@ Protected Module libarchive
 		    Return CompressionType.LZOP
 		  Case "rpm"
 		    Return CompressionType.RPM
-		  Case "uue"
+		  Case "uue", "uu"
 		    Return CompressionType.UUEncoded
 		  Case "xz"
 		    Return CompressionType.XZ
-		  Case "zstd"
+		  Case "zstd", "zst"
 		    Return CompressionType.ZStd
 		  Else
 		    Return CompressionType.All
