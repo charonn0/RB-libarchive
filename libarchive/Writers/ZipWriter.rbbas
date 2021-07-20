@@ -8,7 +8,6 @@ Inherits libarchive.ArchiveWriter
 		  Super.Constructor()
 		  SetFormat(ArchiveType.Zip)
 		  SetFilter(Compressor)
-		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
 		  mSourceFile = File
 		  
 		End Sub
@@ -21,7 +20,6 @@ Inherits libarchive.ArchiveWriter
 		  Super.Constructor()
 		  SetFormat(ArchiveType.Zip)
 		  SetFilter(Compressor)
-		  mLastError = archive_write_zip_set_compression_deflate(mArchive)
 		  mSourceBuffer = Buffer
 		  
 		End Sub
@@ -50,13 +48,14 @@ Inherits libarchive.ArchiveWriter
 			Set
 			  ' Enables or disables compression on subsequently added entries.
 			  
-			  Dim ok As Boolean
+			  
 			  If value Then
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, FORMAT_OPT_COMPRESSION, "deflate")
+			    mLastError = archive_write_zip_set_compression_deflate(mArchive)
 			  Else
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, FORMAT_OPT_COMPRESSION, "")
+			    mLastError = archive_write_zip_set_compression_store(mArchive)
 			  End If
-			  If ok Then mCompressed = value
+			  
+			  If mLastError = 0 Then mCompressed = value
 			End Set
 		#tag EndSetter
 		Compressed As Boolean

@@ -831,6 +831,10 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
+		Private Soft Declare Function archive_write_zip_set_compression_store Lib libpath (Archive As Ptr) As Int32
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h21
 		Private Soft Declare Function archive_zlib_version Lib libpath () As WString
 	#tag EndExternalMethod
 
@@ -873,7 +877,9 @@ Protected Module libarchive
 		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    Dim z As New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    If Compressor = CompressionType.None Then z.Compressed = False
+		    Return z
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
@@ -921,7 +927,9 @@ Protected Module libarchive
 		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    Dim z As New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    If Compressor = CompressionType.None Then z.Compressed = False
+		    Return z
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
@@ -968,7 +976,9 @@ Protected Module libarchive
 		    Return New libarchive.Writers.XARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.Zip, ArchiveType.ZipSeekable, ArchiveType.ZipStreamable
-		    Return New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    Dim z As New libarchive.Writers.ZipWriter(WriteTo, Compressor)
+		    If Compressor = CompressionType.None Then z.Compressed = False
+		    Return z
 		    
 		  Else
 		    Raise New ArchiveException(ERR_READ_ONLY_FORMAT)
