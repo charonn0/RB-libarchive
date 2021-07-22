@@ -46,8 +46,7 @@ Inherits libarchive.ArchiveWriter
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Enables or disables compression on subsequently added entries.
-			  
+			  ' Enables or disables compression on the archive.
 			  
 			  If value Then
 			    mLastError = archive_write_zip_set_compression_deflate(mArchive)
