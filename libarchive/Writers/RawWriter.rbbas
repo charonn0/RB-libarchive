@@ -9,7 +9,7 @@ Inherits libarchive.ArchiveWriter
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As Int32)
+		Sub Constructor(File As FolderItem, Compressor As libarchive.CompressionType, CompressionLevel As Int32 = 6)
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- from ArchiveWriter
 		  Super.Constructor()
@@ -25,7 +25,7 @@ Inherits libarchive.ArchiveWriter
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType, CompressionLevel As Int32)
+		Sub Constructor(Buffer As MemoryBlock, Compressor As libarchive.CompressionType, CompressionLevel As Int32 = 6)
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- from ArchiveWriter
 		  Super.Constructor()
@@ -41,7 +41,7 @@ Inherits libarchive.ArchiveWriter
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
-		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType, CompressionLevel As Int32)
+		Sub Constructor(WriteTo As Writeable, Compressor As libarchive.CompressionType, CompressionLevel As Int32 = 6)
 		  // Calling the overridden superclass constructor.
 		  // Constructor() -- from ArchiveWriter
 		  Super.Constructor()
@@ -69,9 +69,9 @@ Inherits libarchive.ArchiveWriter
 
 	#tag ViewBehavior
 		#tag ViewProperty
-			Name="Encryption"
+			Name="Compressed"
 			Group="Behavior"
-			Type="String"
+			Type="Boolean"
 			InheritedFrom="libarchive.ArchiveWriter"
 		#tag EndViewProperty
 		#tag ViewProperty
