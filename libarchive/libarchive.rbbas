@@ -1525,6 +1525,9 @@ Protected Module libarchive
 	#tag Constant, Name = CHUNK_SIZE, Type = Double, Dynamic = False, Default = \"16777216", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = ERR_INCONCEIVABLE, Type = Double, Dynamic = False, Default = \"-108", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = ERR_INIT_FAILED, Type = Double, Dynamic = False, Default = \"-102", Scope = Protected
 	#tag EndConstant
 

@@ -9,7 +9,6 @@ Inherits libarchive.Archive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Close
 		  
 		  If mIsOpen Then mLastError = archive_write_close(mArchive)
-		  If mStream <> Nil Then mUsed = mStream.Used
 		  If mSourceBuffer <> Nil Then mSourceBuffer.Size = mUsed
 		  Super.Close()
 		End Sub
@@ -84,10 +83,29 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h21
 		Private Sub CreateStream(Stream As Writeable)
 		  ' Creates an archive in the specified Writeable object.
+		  ' libarchive will invoke the callbacks of this class when writing to the
+		  ' Owner archive, which in turn will write to the WriteTo object. The WriteTo
+		  ' object must continue to exist at least until after Owner.Close() returns.
 		  
-		  mStream = New MemoryStream(Me, Stream)
+		  mLastError = archive_write_set_bytes_in_last_block(mArchive, 1)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  If Not USE_BUFFERING Then
+		    mLastError = archive_write_set_bytes_per_block(mArchive, 0)
+		    If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  End If
+		  
+		  If Archives = Nil Then Archives = New Dictionary
+		  Archives.Value(mArchive) = New WeakRef(Me)
 		  mDestinationStream = Stream
-		  mIsOpen = True
+		  
+		  mLastError = archive_write_open2(mArchive, mArchive, _
+		  AddressOf WriteOpenCallback, _
+		  AddressOf WriteCallback, _
+		  AddressOf CloseCallback, _
+		  AddressOf FreeCallback)
+		  
+		  If mLastError <> ARCHIVE_OK Or Not mIsOpen Then Raise New ArchiveException(Me)
 		  
 		End Sub
 	#tag EndMethod
@@ -467,10 +485,6 @@ Inherits libarchive.Archive
 		Private mPassword As String
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private mUsed As UInt32
-	#tag EndProperty
-
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -503,6 +517,9 @@ Inherits libarchive.Archive
 	#tag EndConstant
 
 	#tag Constant, Name = CIPHER_ZIPCRYPT, Type = String, Dynamic = False, Default = \"zipcrypt", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
 	#tag EndConstant
 
 

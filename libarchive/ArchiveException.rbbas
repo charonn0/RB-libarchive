@@ -25,13 +25,6 @@ Inherits RuntimeException
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h1000
-		Sub Constructor(Stream As MemoryStream)
-		  If Stream <> Nil Then Me.Constructor(Stream.LastError)
-		  
-		End Sub
-	#tag EndMethod
-
 
 	#tag ViewBehavior
 		#tag ViewProperty

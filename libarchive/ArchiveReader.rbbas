@@ -151,12 +151,36 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h21
 		Private Sub OpenStream(ReadFrom As Readable)
 		  ' Opens the specified Readable object as a MemoryStream.
+		  ' libarchive will invoke the callbacks of this class when reading from the
+		  ' archive, which in turn will read from the ReadFrom parameter until EOF.
 		  
-		  mStream = New MemoryStream(Me, ReadFrom)
-		  mLastError = archive_read_open1(mArchive)
+		  If Archives = Nil Then Archives = New Dictionary
+		  Archives.Value(mArchive) = New WeakRef(Me)
+		  mSourceStream = ReadFrom
+		  
+		  mLastError = archive_read_set_open_callback(mArchive, AddressOf ReadOpenCallback)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
-		  mIsOpen = True
-		  If Not ReadEntryHeader() Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_read_callback(mArchive, AddressOf ReadCallback)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_seek_callback(mArchive, AddressOf SeekCallback)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_skip_callback(mArchive, AddressOf SkipCallback)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_close_callback(mArchive, AddressOf CloseCallback)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_switch_callback(mArchive, AddressOf SwitchCallback)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_set_callback_data(mArchive, mArchive)
+		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
+		  
+		  mLastError = archive_read_open1(mArchive)
+		  If mLastError <> ARCHIVE_OK Or Not mIsOpen Or Not ReadEntryHeader() Then Raise New ArchiveException(Me)
 		End Sub
 	#tag EndMethod
 
@@ -460,10 +484,6 @@ Inherits libarchive.Archive
 		Event GetPassword(ByRef ArchivePassword As String) As Boolean
 	#tag EndHook
 
-
-	#tag Property, Flags = &h21
-		Private Shared Archives As Dictionary
-	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
