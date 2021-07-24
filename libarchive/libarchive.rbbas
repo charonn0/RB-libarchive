@@ -864,6 +864,9 @@ Protected Module libarchive
 		  Case ArchiveType.MTree
 		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
 		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Writers.RawWriter(WriteTo, Compressor)
+		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
 		    
@@ -898,9 +901,6 @@ Protected Module libarchive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
 		  
-		  
-		  If Archivist = ArchiveType.All Then Archivist = ArchiveType.Raw
-		  If Compressor = CompressionType.All Then Compressor = CompressionType.None
 		  Select Case Archivist
 		  Case ArchiveType.Ar
 		    Return New libarchive.Writers.ARWriter(WriteTo, Compressor)
@@ -913,6 +913,9 @@ Protected Module libarchive
 		    
 		  Case ArchiveType.MTree
 		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Writers.RawWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
@@ -948,8 +951,6 @@ Protected Module libarchive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.CreateArchive
 		  
 		  
-		  If Archivist = ArchiveType.All Then Archivist = ArchiveType.Raw
-		  If Compressor = CompressionType.All Then Compressor = CompressionType.None
 		  Select Case Archivist
 		  Case ArchiveType.Ar
 		    Return New libarchive.Writers.ARWriter(WriteTo, Compressor)
@@ -962,6 +963,9 @@ Protected Module libarchive
 		    
 		  Case ArchiveType.MTree
 		    Return New libarchive.Writers.MTreeWriter(WriteTo, Compressor)
+		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Writers.RawWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Writers.SevenZipWriter(WriteTo, Compressor)
@@ -1180,6 +1184,12 @@ Protected Module libarchive
 		  Case ArchiveType.RAR
 		    Return New libarchive.Readers.RARReader(Archive, Compressor)
 		    
+		  Case ArchiveType.RAR5
+		    Return New libarchive.Readers.RAR5Reader(Archive, Compressor)
+		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Readers.RawReader(Archive, Compressor)
+		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
@@ -1232,6 +1242,12 @@ Protected Module libarchive
 		  Case ArchiveType.RAR
 		    Return New libarchive.Readers.RARReader(Archive, Compressor)
 		    
+		  Case ArchiveType.RAR5
+		    Return New libarchive.Readers.RAR5Reader(Archive, Compressor)
+		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Readers.RawReader(Archive, Compressor)
+		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
@@ -1283,6 +1299,12 @@ Protected Module libarchive
 		    
 		  Case ArchiveType.RAR
 		    Return New libarchive.Readers.RARReader(Archive, Compressor)
+		    
+		  Case ArchiveType.RAR5
+		    Return New libarchive.Readers.RAR5Reader(Archive, Compressor)
+		    
+		  Case ArchiveType.Raw
+		    Return New libarchive.Readers.RawReader(Archive, Compressor)
 		    
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
