@@ -246,6 +246,14 @@ Protected Class Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFilterOption(OptionName As String, OptionValue As String) As Boolean
+		  #pragma Unused OptionName
+		  #pragma Unused OptionValue
+		  Raise New ArchiveException(ERR_INCONCEIVABLE)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Sub SetFormatName(ArchiveType As libarchive.ArchiveType)
 		  ' Sets the name of the archive format. This name is used in subsequent calls to 
@@ -293,6 +301,29 @@ Protected Class Archive
 		    mFormatName = FORMAT_MODULE_ZIP
 		  End Select
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetFormatOption(OptionName As String, OptionValue As String) As Boolean
+		  #pragma Unused OptionName
+		  #pragma Unused OptionValue
+		  Raise New ArchiveException(ERR_INCONCEIVABLE)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOption(OptionName As String, OptionValue As String) As Boolean
+		  #pragma Unused OptionName
+		  #pragma Unused OptionValue
+		  Raise New ArchiveException(ERR_INCONCEIVABLE)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOptions(Options() As String) As Boolean
+		  #pragma Unused Options
+		  Raise New ArchiveException(ERR_INCONCEIVABLE)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -409,6 +440,10 @@ Protected Class Archive
 
 	#tag Property, Flags = &h1
 		Protected mDestinationStream As Writeable
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mFilenameEncoding As TextEncoding
 	#tag EndProperty
 
 	#tag Property, Flags = &h1

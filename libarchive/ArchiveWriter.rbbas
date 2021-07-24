@@ -165,6 +165,12 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFilterOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetFilterOption(OptionName, OptionValue)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
 		  ' Sets an option for the specified compression filter. Must be called before the archive
@@ -224,6 +230,12 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFormatOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetFormatOption(mFormatName, OptionName, OptionValue)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  ' Sets an option for the specified archive format. Must be called before the archive is created.
@@ -237,6 +249,12 @@ Inherits libarchive.Archive
 		  End If
 		  mLastError = archive_write_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetOption("", OptionName, OptionValue)
 		End Function
 	#tag EndMethod
 
@@ -257,8 +275,8 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function SetOptions(Options() As String) As Boolean
+	#tag Method, Flags = &h0
+		Function SetOptions(Options() As String) As Boolean
 		  ' Sets several compression and/or archive options at once. Must be called before the
 		  ' archive is created.
 		  '
@@ -360,6 +378,31 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Sub _SetCompressed(b As Boolean)
+		  #pragma Unused b
+		  Return
+		End Sub
+	#tag EndMethod
+
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mCompressed
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Enables or disables format-specific compression in the archive. This
+			  ' is different from the compression filter, which compresses the archive
+			  ' as a whole.
+			  
+			  _SetCompressed(value)
+			End Set
+		#tag EndSetter
+		Compressed As Boolean
+	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -375,7 +418,11 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.CompressionLevel
 			  
-			  If SetFilterOption(mFilterName, FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Then
+			  If SetOption("", FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Then
+			    ' If  SetOption(mFormatName, FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Or _
+			    ' SetOption(mFilterName, FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) Or _
+			    ' SetOption("", FORMAT_OPT_COMPRESSIONLEVEL, Str(value)) _
+			    ' Then
 			    mCompressionLevel = value
 			  End If
 			End Set
@@ -397,12 +444,49 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Encryption
 			  
-			  Dim ok As Boolean
-			  ok = Me.SetFormatOption(mFormatName, FORMAT_OPT_ENCRYPTION, value)
-			  If ok Then mEncryption = value
+			  If mIsOpen Then
+			    mLastError = ERR_TOO_LATE
+			    Raise New ArchiveException(Me)
+			  End If
+			  
+			  Dim cipher As String
+			  Select Case value
+			  Case EncryptionType.ZipCrypt
+			    cipher = "zipcrypt"
+			  Case EncryptionType.AES128
+			    cipher = "aes128"
+			  Case EncryptionType.AES256
+			    cipher = "aes256"
+			  End Select
+			  If Not SetOption(mFormatName, FORMAT_OPT_ENCRYPTION, cipher) Then Raise New ArchiveException(Me)
+			  mEncryption = value
 			End Set
 		#tag EndSetter
-		Encryption As String
+		Encryption As libarchive.ArchiveWriter.EncryptionType
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mFilenameEncoding = Nil Then mFilenameEncoding = Encodings.UTF8
+			  return mFilenameEncoding
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets the character encoding for file names stored in the archive. This may or may not
+			  ' be meaningful depending on the archive format.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.FilenameEncoding
+			  
+			  If SetOption(mFormatName, FORMAT_OPT_HDRCHARSET, value.internetName) Then
+			    mFilenameEncoding = value
+			  End If
+			  
+			End Set
+		#tag EndSetter
+		FilenameEncoding As TextEncoding
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -465,12 +549,16 @@ Inherits libarchive.Archive
 		Format As libarchive.ArchiveType
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h1
+		Protected mCompressed As Boolean
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private mCompressionLevel As Int32
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mEncryption As String
+		Private mEncryption As libarchive.ArchiveWriter.EncryptionType
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -521,6 +609,14 @@ Inherits libarchive.Archive
 
 	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
 	#tag EndConstant
+
+
+	#tag Enum, Name = EncryptionType, Flags = &h0
+		None
+		  ZipCrypt
+		  AES128
+		AES256
+	#tag EndEnum
 
 
 	#tag ViewBehavior

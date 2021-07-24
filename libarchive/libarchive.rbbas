@@ -791,7 +791,7 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_write_set_format_option Lib libpath (Archive As Ptr, FormatModule As WString, Option As WString, Value As WString) As Int32
+		Private Soft Declare Function archive_write_set_format_option Lib libpath (Archive As Ptr, FormatModule As CString, Option As CString, Value As CString) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
@@ -815,15 +815,15 @@ Protected Module libarchive
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_write_set_option Lib libpath (Archive As Ptr, FilterOrFilterModule As WString, Option As WString, Value As WString) As Int32
+		Private Soft Declare Function archive_write_set_option Lib libpath (Archive As Ptr, FilterOrFilterModule As CString, Option As CString, Value As CString) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_write_set_options Lib libpath (Archive As Ptr, Options As WString) As Int32
+		Private Soft Declare Function archive_write_set_options Lib libpath (Archive As Ptr, Options As CString) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21
-		Private Soft Declare Function archive_write_set_passphrase Lib libpath (Archive As Ptr, Password As WString) As Int32
+		Private Soft Declare Function archive_write_set_passphrase Lib libpath (Archive As Ptr, Password As CString) As Int32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h21

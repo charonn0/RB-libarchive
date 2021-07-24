@@ -36,6 +36,26 @@ Inherits libarchive.ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Sub _SetCompressed(b As Boolean)
+		  ' The zisofs extensions permit each file to be independently compressed using a
+		  ' gzip-compatible compression. This can provide significant size savings, but
+		  ' requires the reading system to have support for these extensions. These extensions
+		  ' are disabled by default. For best results, libarchive tests each file and will
+		  ' store the file uncompressed if the compression does not actually save any space.
+		  ' In particular, files under 2KB will never be compressed. Note that boot image
+		  ' files are never compressed.
+		  
+		  Dim ok As Boolean
+		  If b Then
+		    ok = Me.SetFormatOption(FORMAT_MODULE_ISO9660, "zisofs", "1")
+		  Else
+		    ok = Me.SetFormatOption(FORMAT_MODULE_ISO9660, "!zisofs", "0")
+		  End If
+		  If ok Then mCompressed = b
+		End Sub
+	#tag EndMethod
+
 
 	#tag Note, Name = Options
 		https://github.com/libarchive/libarchive/wiki/FormatISO9660#supported-options
@@ -263,34 +283,6 @@ Inherits libarchive.ArchiveWriter
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mCompressed
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  ' The zisofs extensions permit each file to be independently compressed using a
-			  ' gzip-compatible compression. This can provide significant size savings, but
-			  ' requires the reading system to have support for these extensions. These extensions
-			  ' are disabled by default. For best results, libarchive tests each file and will
-			  ' store the file uncompressed if the compression does not actually save any space.
-			  ' In particular, files under 2KB will never be compressed. Note that boot image
-			  ' files are never compressed.
-			  
-			  Dim ok As Boolean
-			  If value Then
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ISO9660, "zisofs", "")
-			  Else
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ISO9660, "!zisofs", "")
-			  End If
-			  If ok Then mCompressed = value
-			End Set
-		#tag EndSetter
-		Compressed As Boolean
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
 			  return mJoliet
 			End Get
 		#tag EndGetter
@@ -371,10 +363,6 @@ Inherits libarchive.ArchiveWriter
 
 	#tag Property, Flags = &h21
 		Private mBootType As String
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mCompressed As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

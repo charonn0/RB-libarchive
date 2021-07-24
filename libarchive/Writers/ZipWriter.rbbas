@@ -37,31 +37,46 @@ Inherits libarchive.ArchiveWriter
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h1
+		Protected Sub _SetCompressed(b As Boolean)
+		  ' Enables or disables compression on the archive.
+		  
+		  If b Then
+		    mLastError = archive_write_zip_set_compression_deflate(mArchive)
+		  Else
+		    mLastError = archive_write_zip_set_compression_store(mArchive)
+		  End If
+		  
+		  If mLastError = 0 Then mCompressed = b
+		End Sub
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mCompressed
+			  return mFakeCRC
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Enables or disables compression on the archive.
+			  ' Disables calculating the CRC32 checksum of entries. Checksum fields in the archive will
+			  ' be filled with zeroes.
 			  
+			  Dim ok As Boolean
 			  If value Then
-			    mLastError = archive_write_zip_set_compression_deflate(mArchive)
+			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "fakecrc32", "")
 			  Else
-			    mLastError = archive_write_zip_set_compression_store(mArchive)
+			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "!fakecrc32", "")
 			  End If
-			  
-			  If mLastError = 0 Then mCompressed = value
+			  If ok Then mFakeCRC = value
 			End Set
 		#tag EndSetter
-		Compressed As Boolean
+		FakeCRC As Boolean
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
-		Private mCompressed As Boolean = True
+		Private mFakeCRC As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -130,7 +145,7 @@ Inherits libarchive.ArchiveWriter
 
 	#tag ViewBehavior
 		#tag ViewProperty
-			Name="Compressed"
+			Name="FakeCRC"
 			Group="Behavior"
 			Type="Boolean"
 		#tag EndViewProperty

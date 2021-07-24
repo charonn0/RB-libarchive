@@ -330,6 +330,12 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFilterOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetFilterOption(OptionName, OptionValue)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function SetFilterOption(FilterModule As String, OptionName As String, OptionValue As String) As Boolean
 		  ' Sets an option for the specified compression filter. Must be called before the archive is opened.
@@ -404,6 +410,12 @@ Inherits libarchive.Archive
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function SetFormatOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetFormatOption(mFormatName, OptionName, OptionValue)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function SetFormatOption(FormatModule As String, OptionName As String, OptionValue As String) As Boolean
 		  ' Sets an option for the specified archive format. Must be called before the archive is opened.
@@ -418,6 +430,12 @@ Inherits libarchive.Archive
 		  
 		  mLastError = archive_read_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
 		  Return mLastError = ARCHIVE_OK
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SetOption(OptionName As String, OptionValue As String) As Boolean
+		  Return SetOption("", OptionName, OptionValue)
 		End Function
 	#tag EndMethod
 
@@ -439,8 +457,8 @@ Inherits libarchive.Archive
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function SetOptions(Options() As String) As Boolean
+	#tag Method, Flags = &h0
+		Function SetOptions(Options() As String) As Boolean
 		  ' Sets several compression and/or archive options at once. Must be called before
 		  ' the archive is opened.
 		  '
@@ -547,6 +565,30 @@ Inherits libarchive.Archive
 			End Set
 		#tag EndSetter
 		Protected FileDataPosition As UInt64
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mFilenameEncoding = Nil Then mFilenameEncoding = Encodings.UTF8
+			  return mFilenameEncoding
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  ' Sets the character encoding for file names stored in the archive. This may or may not
+			  ' be meaningful depending on the archive format.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FilenameEncoding
+			  
+			  If SetFormatOption(mFormatName, FORMAT_OPT_HDRCHARSET, value.internetName) Then
+			    mFilenameEncoding = value
+			  End If
+			  
+			End Set
+		#tag EndSetter
+		FilenameEncoding As TextEncoding
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
