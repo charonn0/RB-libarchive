@@ -9,6 +9,9 @@ Inherits libarchive.Writers.RawWriter
 
 	#tag Method, Flags = &h1000
 		Sub Constructor(TrueWriter As libarchive.ArchiveWriter)
+		  ' This class allows any kind of ArchiveWriter to be seen as a RawWriter object
+		  ' representing the current entry in the archive.
+		  
 		  mArchive = TrueWriter.Handle
 		  mHeaderWritten = TrueWriter.mHeaderWritten
 		  mIsOpen = TrueWriter.mIsOpen

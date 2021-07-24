@@ -4,6 +4,7 @@ MinIDEVersion=20070100
 Class=App;App.rbbas;&h7794FFF;&h0;false
 BuildSteps=Build Automation;Build Automation.rbbas;&h36DC4FFF;&h0;false
 Module=libarchive;libarchive/libarchive.rbbas;&h43B5AFFF;&h0;false
+Class=RawReaderPtr;libarchive/RawReaderPtr.rbbas;&h672C77FF;&h43B5AFFF;false
 Class=RawWriterPtr;libarchive/RawWriterPtr.rbbas;&h5AF89FFF;&h43B5AFFF;false
 Class=CompressedStreamPtr;libarchive/CompressedStreamPtr.rbbas;&h2EB847FF;&h43B5AFFF;false
 Class=CompressedStream;libarchive/CompressedStream.rbbas;&h67107FFF;&h43B5AFFF;false
