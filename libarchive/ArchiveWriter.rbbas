@@ -248,6 +248,7 @@ Inherits libarchive.Archive
 		    Return False
 		  End If
 		  mLastError = archive_write_set_format_option(mArchive, FormatModule, OptionName, OptionValue)
+		  If mLastError = ARCHIVE_FAILED Then Raise New ArchiveException(Me) ' no such module!
 		  Return mLastError = ARCHIVE_OK
 		End Function
 	#tag EndMethod
@@ -439,7 +440,7 @@ Inherits libarchive.Archive
 		#tag Setter
 			Set
 			  ' Sets the encryption format for the archive. This may or may not be meaningful depending
-			  ' on the archive format.
+			  ' on the archive format. Must be called before the archive is created.
 			  '
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Encryption
