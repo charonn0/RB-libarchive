@@ -150,7 +150,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenStream(ReadFrom As Readable)
-		  ' Opens the specified Readable object as a MemoryStream.
+		  ' Opens the specified Readable object as an archive.
 		  ' libarchive will invoke the callbacks of this class when reading from the
 		  ' archive, which in turn will read from the ReadFrom parameter until EOF.
 		  
