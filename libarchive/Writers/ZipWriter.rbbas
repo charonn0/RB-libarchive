@@ -55,32 +55,30 @@ Inherits libarchive.ArchiveWriter
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mFakeCRC
+			  return mIncludeChecksums
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Disables calculating the CRC32 checksum of entries. Checksum fields in the archive will
-			  ' be filled with zeroes.
+			  ' Enables or disables CRC calculations. When disabled, all CRC fields are set to zero.
+			  ' This should not be used except for testing purposes.
+			  ' 
+			  ' Default: Enabled
 			  
 			  Dim ok As Boolean
 			  If value Then
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "fakecrc32", "")
-			  Else
 			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "!fakecrc32", "")
+			  Else
+			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "fakecrc32", "")
 			  End If
-			  If ok Then mFakeCRC = value
+			  If ok Then mIncludeChecksums = value
 			End Set
 		#tag EndSetter
-		FakeCRC As Boolean
+		IncludeChecksums As Boolean
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
-		Private mFakeCRC As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mVerifyChecksums As Boolean = True
+		Private mIncludeChecksums As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -90,45 +88,24 @@ Inherits libarchive.ArchiveWriter
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return mVerifyChecksums
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  ' Enables or disables CRC32 verification on subsequently added entries.
-			  
-			  Dim ok As Boolean
-			  If value Then
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "!fakecrc32", "")
-			  Else
-			    ok = Me.SetFormatOption(FORMAT_MODULE_ZIP, "fakecrc32", "")
-			  End If
-			  If ok Then mVerifyChecksums = value
-			End Set
-		#tag EndSetter
-		VerifyChecksums As Boolean
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
 			  return mZip64
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  ' Enables or disables Zip64 extensions on subsequently added entries. These extensions
-			  ' provide additional file size information for entries larger than 4 GiB. They also
-			  ' provide extended file offset and archive size information when archives exceed 4 GiB.
-			  ' By default, the Zip writer selectively enables these extensions only as needed. In
-			  ' particular, if the file size is unknown, the Zip writer will include Zip64 extensions
-			  ' to guard against the possibility that the file might be larger than 4 GiB.
+			  ' Forces or disables use of Zip64 extensions. These extensions provide additional file
+			  ' size information for entries larger than 4 GiB. They also provide extended file offset
+			  ' and archive size information when archives exceed 4 GiB.
 			  '
-			  ' Setting this option to True will force the writer to use the Zip64 extensions even
-			  ' for small files that would not otherwise require them. Setting this option to False
-			  ' will force the Zip writer to avoid Zip64 extensions: It will reject files with size
-			  ' greater than 4 GiB, it will reject any new entries once the total archive size reaches
-			  ' 4 GiB, and it will not use Zip64 extensions for files with unknown size.
+			  ' Setting this option to True will force the use of Zip64 extensions even for small files
+			  ' that would not otherwise require them. Setting this option to False will forbid the use
+			  ' Zip64 extensions: It will reject files with size greater than 4 GiB, it will reject any
+			  ' new entries once the total archive size reaches 4 GiB, and it will not use Zip64 extensions
+			  ' for files with unknown size.
+			  ' 
+			  ' Default: Zip64 extensions are selectively used only as needed. In particular, if the file
+			  ' size is unknown, Zip64 extensions are used to guard against the possibility that the file
+			  ' might be larger than 4 GiB.
 			  
 			  Dim ok As Boolean
 			  If value Then
