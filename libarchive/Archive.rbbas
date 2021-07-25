@@ -116,10 +116,7 @@ Protected Class Archive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Close
 		  
-		  mIsOpen = False
-		  mSourceBuffer = Nil
-		  mSourceFile = Nil
-		  mSourceStream = Nil
+		  ' Call CB_Close()
 		End Sub
 	#tag EndMethod
 
@@ -144,12 +141,6 @@ Protected Class Archive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.Constructor
 		  
 		  If Not libarchive.IsAvailable() Then Raise New PlatformNotSupportedException
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub Destructor()
-		  Call CB_Close()
 		End Sub
 	#tag EndMethod
 
