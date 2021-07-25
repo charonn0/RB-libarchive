@@ -1045,17 +1045,6 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub GetChildren(Root As FolderItem, ByRef Results() As FolderItem)
-		  Dim c As Integer = Root.Count
-		  For i As Integer = 1 To c
-		    Dim item As FolderItem = Root.TrueItem(i)
-		    Results.Append(item)
-		    If item.Directory Then GetChildren(item, Results)
-		  Next
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
 		Private Function GuessArchiveType(Name As String) As libarchive.ArchiveType
 		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
 		  Select Case ext
@@ -1514,13 +1503,28 @@ Protected Module libarchive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
 		  
-		  Dim items() As FolderItem
-		  If TargetDirectory.Directory Then
-		    GetChildren(TargetDirectory, items)
-		  Else
-		    items.Append(TargetDirectory)
-		  End If
-		  WriteArchive(Archive, items, TargetDirectory, Password)
+		  If Password <> "" Then Archive.Password = Password
+		  Dim folders() As FolderItem = Array(TargetDirectory)
+		  
+		  Do Until UBound(folders) < 0
+		    Dim dir As FolderItem = folders.Pop
+		    Dim c As Integer = dir.Count
+		    For i As Integer = 1 To c
+		      Dim item As FolderItem = dir.TrueItem(i)
+		      Dim entry As New libarchive.ArchiveEntry(item, TargetDirectory)
+		      Dim bs As BinaryStream
+		      If item.Directory Then
+		        folders.Insert(0, item)
+		      Else
+		        bs = BinaryStream.Open(item)
+		      End If
+		      Try
+		        Archive.WriteEntry(entry, bs)
+		      Finally
+		        If bs <> Nil Then bs.Close()
+		      End Try
+		    Next
+		  Loop
 		  Archive.Close()
 		End Sub
 	#tag EndMethod
