@@ -140,7 +140,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h21
 		Private Sub OpenMemory(Buffer As MemoryBlock)
-		  ' Opens the specified MemoryBlock as a MemoryStream.
+		  ' Opens the specified MemoryBlock as an archive.
 		  
 		  mSourceBuffer = Buffer
 		  Dim stream As New BinaryStream(mSourceBuffer)
@@ -618,35 +618,31 @@ Inherits libarchive.Archive
 			  Const ARCHIVE_FORMAT_RAR_V5 = &h10
 			  
 			  If mArchive = Nil Then Return ArchiveType.All
-			  If mFormatFamily = ArchiveType.All Then
-			    Dim frmat As Int32 = archive_format(mArchive)
-			    Select Case ShiftRight(frmat, 16)
-			    Case ARCHIVE_FORMAT_CPIO
-			      mFormatFamily = ArchiveType.CPIO
-			    Case ARCHIVE_FORMAT_CAB
-			      mFormatFamily = ArchiveType.Cabinet
-			    Case ARCHIVE_FORMAT_ISO9660
-			      mFormatFamily = ArchiveType.ISO9660
-			    Case ARCHIVE_FORMAT_LHA
-			      mFormatFamily = ArchiveType.LHA
-			    Case ARCHIVE_FORMAT_MTREE
-			      mFormatFamily = ArchiveType.MTree
-			    Case ARCHIVE_FORMAT_RAR, ARCHIVE_FORMAT_RAR_V5
-			      mFormatFamily = ArchiveType.RAR
-			    Case ARCHIVE_FORMAT_TAR
-			      mFormatFamily = ArchiveType.TAR
-			    Case ARCHIVE_FORMAT_XAR
-			      mFormatFamily = ArchiveType.XAR
-			    Case ARCHIVE_FORMAT_7ZIP
-			      mFormatFamily = ArchiveType.SevenZip
-			    Case ARCHIVE_FORMAT_ZIP
-			      mFormatFamily = ArchiveType.Zip
-			    Else
-			      mFormatFamily = ArchiveType.All
-			    End Select
-			  End If
-			  
-			  Return mFormatFamily
+			  Dim frmat As Int32 = archive_format(mArchive)
+			  Select Case ShiftRight(frmat, 16)
+			  Case ARCHIVE_FORMAT_CPIO
+			    Return ArchiveType.CPIO
+			  Case ARCHIVE_FORMAT_CAB
+			    Return ArchiveType.Cabinet
+			  Case ARCHIVE_FORMAT_ISO9660
+			    Return ArchiveType.ISO9660
+			  Case ARCHIVE_FORMAT_LHA
+			    Return ArchiveType.LHA
+			  Case ARCHIVE_FORMAT_MTREE
+			    Return ArchiveType.MTree
+			  Case ARCHIVE_FORMAT_RAR, ARCHIVE_FORMAT_RAR_V5
+			    Return ArchiveType.RAR
+			  Case ARCHIVE_FORMAT_TAR
+			    Return ArchiveType.TAR
+			  Case ARCHIVE_FORMAT_XAR
+			    Return ArchiveType.XAR
+			  Case ARCHIVE_FORMAT_7ZIP
+			    Return ArchiveType.SevenZip
+			  Case ARCHIVE_FORMAT_ZIP
+			    Return ArchiveType.Zip
+			  Else
+			    Return ArchiveType.All
+			  End Select
 			End Get
 		#tag EndGetter
 		Format As libarchive.ArchiveType
@@ -655,18 +651,14 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  ' Returns the format subtype or variant of the archive.
+			  ' Returns the format subtype or variant of the archive entry.
 			  '
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FormatVariant
 			  
 			  If mArchive = Nil Then Return 0
-			  If mFormatVariant = 0 Then
-			    Dim frmat As Int32 = archive_format(mArchive)
-			    mFormatVariant = ShiftLeft(frmat, 16)
-			  End If
-			  
-			  Return mFormatVariant
+			  Dim frmat As Int32 = archive_format(mArchive)
+			  Return ShiftLeft(frmat, 16)
 			End Get
 		#tag EndGetter
 		FormatVariant As Int32
@@ -700,14 +692,6 @@ Inherits libarchive.Archive
 
 	#tag Property, Flags = &h21
 		Private mCurrentEntry As libarchive.ArchiveEntry
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mFormatFamily As libarchive.ArchiveType = ArchiveType.All
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mFormatVariant As Int32
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
