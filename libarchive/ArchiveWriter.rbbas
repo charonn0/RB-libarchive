@@ -453,11 +453,11 @@ Inherits libarchive.Archive
 			  Dim cipher As String
 			  Select Case value
 			  Case EncryptionType.ZipCrypt
-			    cipher = "zipcrypt"
+			    cipher = CIPHER_ZIPCRYPT
 			  Case EncryptionType.AES128
-			    cipher = "aes128"
+			    cipher = CIPHER_AES128
 			  Case EncryptionType.AES256
-			    cipher = "aes256"
+			    cipher = CIPHER_AES256
 			  End Select
 			  If Not SetOption(mFormatName, FORMAT_OPT_ENCRYPTION, cipher) Then Raise New ArchiveException(Me)
 			  mEncryption = value
@@ -599,13 +599,13 @@ Inherits libarchive.Archive
 	#tag EndComputedProperty
 
 
-	#tag Constant, Name = CIPHER_AES128, Type = String, Dynamic = False, Default = \"aes128", Scope = Public
+	#tag Constant, Name = CIPHER_AES128, Type = String, Dynamic = False, Default = \"aes128", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = CIPHER_AES256, Type = String, Dynamic = False, Default = \"aes256", Scope = Public
+	#tag Constant, Name = CIPHER_AES256, Type = String, Dynamic = False, Default = \"aes256", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = CIPHER_ZIPCRYPT, Type = String, Dynamic = False, Default = \"zipcrypt", Scope = Public
+	#tag Constant, Name = CIPHER_ZIPCRYPT, Type = String, Dynamic = False, Default = \"zipcrypt", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
@@ -622,9 +622,9 @@ Inherits libarchive.Archive
 
 	#tag ViewBehavior
 		#tag ViewProperty
-			Name="Encryption"
+			Name="Compressed"
 			Group="Behavior"
-			Type="String"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
