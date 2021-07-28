@@ -1699,6 +1699,13 @@ Protected Module libarchive
 		ZStd
 	#tag EndEnum
 
+	#tag Enum, Name = EncryptionType, Type = Integer, Flags = &h1
+		None
+		  ZipCrypt
+		  AES128
+		AES256
+	#tag EndEnum
+
 	#tag Enum, Name = EntryType, Type = Integer, Flags = &h1
 		File
 		  Directory

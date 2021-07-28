@@ -473,7 +473,7 @@ Inherits libarchive.Archive
 			  mEncryption = value
 			End Set
 		#tag EndSetter
-		Encryption As libarchive.ArchiveWriter.EncryptionType
+		Encryption As libarchive.EncryptionType
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -569,7 +569,7 @@ Inherits libarchive.Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mEncryption As libarchive.ArchiveWriter.EncryptionType
+		Private mEncryption As libarchive.EncryptionType
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -620,14 +620,6 @@ Inherits libarchive.Archive
 
 	#tag Constant, Name = USE_BUFFERING, Type = Boolean, Dynamic = False, Default = \"True", Scope = Private
 	#tag EndConstant
-
-
-	#tag Enum, Name = EncryptionType, Flags = &h0
-		None
-		  ZipCrypt
-		  AES128
-		AES256
-	#tag EndEnum
 
 
 	#tag ViewBehavior
