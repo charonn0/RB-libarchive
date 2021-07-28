@@ -1329,7 +1329,7 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
+		Protected Function ReadArchive(ArchiveFile As FolderItem, ExtractTo As FolderItem) As libarchive.ArchiveEntry()
 		  ' Extracts the ArchiveFile into the ExtractTo directory.
 		  ' Returns an array of zero or more ArchiveEntry objects representing the
 		  ' extracted files/directories.
@@ -1338,13 +1338,12 @@ Protected Module libarchive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
 		  
 		  Dim arc As ArchiveReader = ArchiveFile.OpenAsArchive()
-		  Return ReadArchive(arc, ExtractTo, Password)
-		  
+		  Return ReadArchive(arc, ExtractTo)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadArchive(Archive As libarchive.ArchiveReader, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
+		Protected Function ReadArchive(Archive As libarchive.ArchiveReader, ExtractTo As FolderItem) As libarchive.ArchiveEntry()
 		  ' Extracts an already opened ArchiveReader into the ExtractTo directory.
 		  ' Returns an array of zero or more ArchiveEntry objects representing the
 		  ' extracted files/directories.
@@ -1353,7 +1352,6 @@ Protected Module libarchive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
 		  
 		  
-		  If Password <> "" Then Archive.Password = Password
 		  Dim list() As libarchive.ArchiveEntry
 		  If USE_FAST_EXTRACT Then
 		    ' This method extracts the Archive using libarchive's DiskWriter API
@@ -1399,21 +1397,6 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ReadArchive(ArchiveStream As Readable, ExtractTo As FolderItem, Password As String = "") As libarchive.ArchiveEntry()
-		  ' Reads an archive from ArchiveStream and extracts it into the ExtractTo directory.
-		  ' Returns an array of zero or more ArchiveEntry objects representing the
-		  ' extracted files/directories.
-		  '
-		  ' See:
-		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
-		  
-		  Dim arc As ArchiveReader = OpenArchive(ArchiveStream, ArchiveType.All, CompressionType.All)
-		  Return ReadArchive(arc, ExtractTo, Password)
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function VersionNumber() As Int32
 		  If Not IsAvailable Then Return 0
 		  Return archive_version_number()
@@ -1434,54 +1417,13 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, ToArchive() As FolderItem, OutputFile As FolderItem, RelativeRoot As FolderItem, Password As String = "", Overwrite As Boolean = False)
-		  ' Creates an archive of the specified type and then archives the files in the
-		  ' ToArchive() parameter with paths relative to the RelativeRoot parameter.
-		  '
-		  ' See:
-		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
-		  
-		  If OutputFile.Exists Then
-		    If Not Overwrite Then Raise New IOException
-		    OutputFile.Delete()
-		  End If
-		  
-		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
-		  If arc <> Nil Then
-		    WriteArchive(arc, ToArchive, RelativeRoot, Password)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Sub WriteArchive(Archivist As libarchive.ArchiveType, Compressor As libarchive.CompressionType, TargetDirectory As FolderItem, OutputFile As FolderItem, Password As String = "", Overwrite As Boolean = False)
-		  ' Creates an archive of the specified type and then recursively archives
-		  ' the TargetDirectory parameter.
-		  '
-		  ' See:
-		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
-		  
-		  If OutputFile.Exists Then
-		    If Not Overwrite Then Raise New IOException
-		    OutputFile.Delete()
-		  End If
-		  
-		  Dim arc As ArchiveWriter = CreateArchive(OutputFile, Archivist, Compressor)
-		  If arc <> Nil Then
-		    WriteArchive(arc, TargetDirectory, Password)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, ToArchive() As FolderItem, RelativeRoot As FolderItem, Password As String = "")
+		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, ToArchive() As FolderItem, RelativeRoot As FolderItem)
 		  ' Adds the files in the ToArchive() parameter to an existing ArchiveWriter
 		  ' with paths relative to the RelativeRoot parameter.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
 		  
-		  If Password <> "" Then Archive.Password = Password
 		  Dim c As Integer = UBound(ToArchive)
 		  
 		  For i As Integer = 0 To c
@@ -1496,14 +1438,13 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, TargetDirectory As FolderItem, Password As String = "")
+		Protected Sub WriteArchive(Archive As libarchive.ArchiveWriter, TargetDirectory As FolderItem)
 		  ' Creates an archive of the specified type and then recursively archives
 		  ' the TargetDirectory parameter.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
 		  
-		  If Password <> "" Then Archive.Password = Password
 		  Dim folders() As FolderItem = Array(TargetDirectory)
 		  
 		  Do Until UBound(folders) < 0
