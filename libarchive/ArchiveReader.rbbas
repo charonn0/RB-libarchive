@@ -504,7 +504,7 @@ Inherits libarchive.Archive
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event Progress(Item As libarchive.ArchiveEntry, Position As Int64) As Boolean
+		Event Progress(Entry As libarchive.ArchiveEntry, Position As Int64) As Boolean
 	#tag EndHook
 
 
