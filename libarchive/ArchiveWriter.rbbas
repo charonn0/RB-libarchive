@@ -297,7 +297,8 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
 		  ' Writes the Source stream (until Source.EOF=True) to the archive using metadata of
-		  ' the Entry.
+		  ' the Entry. The Progress() event will be raised one or more times if data is read
+		  ' from the Source parameter.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntry
@@ -308,12 +309,16 @@ Inherits libarchive.Archive
 		    Raise New ArchiveException(Me)
 		  End If
 		  
+		  Dim abort As Boolean
 		  Try
 		    WriteEntryHeader(Entry)
 		    If Source <> Nil Then
+		      Dim position As Int64
 		      Do Until Source.EOF
+		        If RaiseEvent Progress(Entry, position) Then Exit Do
 		        Dim block As MemoryBlock = Source.Read(CHUNK_SIZE)
 		        WriteEntryDataBlock(block)
+		        position = position + block.Size
 		      Loop
 		    End If
 		    
@@ -385,6 +390,11 @@ Inherits libarchive.Archive
 		  Return
 		End Sub
 	#tag EndMethod
+
+
+	#tag Hook, Flags = &h0
+		Event Progress(Item As libarchive.ArchiveEntry, Position As Int64) As Boolean
+	#tag EndHook
 
 
 	#tag ComputedProperty, Flags = &h0

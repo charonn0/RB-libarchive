@@ -201,6 +201,7 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryData(WriteTo As Writeable) As Boolean
 		  ' Reads bytes from the archive and writes them to the specified Writeable stream.
+		  ' This method will raise the Progress() event.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryData
@@ -216,7 +217,10 @@ Inherits libarchive.Archive
 		    Dim size As UInt32 = ReadEntryDataBlock(buffer, offset)
 		    If size > 0 Then
 		      WriteTo.Write(buffer.StringValue(0, size))
-		      If RaiseEvent ExtractProgress(CurrentEntry, Me.FileDataPosition) Then Exit Do
+		      If RaiseEvent Progress(CurrentEntry, Me.FileDataPosition) Then
+		        Call SkipEntryData()
+		        Exit Do
+		      End If
 		    End If
 		  Loop
 		  
@@ -227,7 +231,8 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
 		  ' Reads bytes from the archive and updates the Block parameter to point to the buffer containing
-		  ' the resulting data.
+		  ' the resulting data. This awkward arrangement minimizes the need to copy the potentially large
+		  ' buffer. This method will not raise the Progress() event.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryDataBlock
@@ -246,7 +251,7 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(Count As UInt32) As MemoryBlock
 		  ' Reads the requested number of bytes from the archive and copies them into a new MemoryBlock,
-		  ' which is then returned.
+		  ' which is then returned. This method will not raise the Progress() event.
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryDataBlock
@@ -495,11 +500,11 @@ Inherits libarchive.Archive
 
 
 	#tag Hook, Flags = &h0
-		Event ExtractProgress(Item As libarchive.ArchiveEntry, Position As Int64) As Boolean
+		Event GetPassword(ByRef ArchivePassword As String) As Boolean
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event GetPassword(ByRef ArchivePassword As String) As Boolean
+		Event Progress(Item As libarchive.ArchiveEntry, Position As Int64) As Boolean
 	#tag EndHook
 
 
