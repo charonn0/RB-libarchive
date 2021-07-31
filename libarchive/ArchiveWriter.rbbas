@@ -309,7 +309,6 @@ Inherits libarchive.Archive
 		    Raise New ArchiveException(Me)
 		  End If
 		  
-		  Dim abort As Boolean
 		  Try
 		    WriteEntryHeader(Entry)
 		    If Source <> Nil Then

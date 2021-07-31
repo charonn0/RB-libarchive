@@ -210,14 +210,15 @@ Inherits libarchive.Archive
 		  If WriteTo = Nil Then Return SkipEntryData()
 		  
 		  mLastError = ARCHIVE_OK
-		  
+		  Dim pos As Int64
 		  Do Until mLastError <> ARCHIVE_OK
 		    Dim buffer As MemoryBlock
 		    Dim offset As UInt64
 		    Dim size As UInt32 = ReadEntryDataBlock(buffer, offset)
 		    If size > 0 Then
 		      WriteTo.Write(buffer.StringValue(0, size))
-		      If RaiseEvent Progress(CurrentEntry, Me.FileDataPosition) Then
+		      pos = pos + size
+		      If RaiseEvent Progress(CurrentEntry, pos) Then
 		        Call SkipEntryData()
 		        Exit Do
 		      End If
