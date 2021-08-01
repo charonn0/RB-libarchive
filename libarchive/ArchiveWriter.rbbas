@@ -167,7 +167,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Function SetFilterOption(OptionName As String, OptionValue As String) As Boolean
-		  Return SetFilterOption(OptionName, OptionValue)
+		  Return SetFilterOption("", OptionName, OptionValue)
 		End Function
 	#tag EndMethod
 
@@ -232,7 +232,7 @@ Inherits libarchive.Archive
 
 	#tag Method, Flags = &h0
 		Function SetFormatOption(OptionName As String, OptionValue As String) As Boolean
-		  Return SetFormatOption(mFormatName, OptionName, OptionValue)
+		  Return SetFormatOption("", OptionName, OptionValue)
 		End Function
 	#tag EndMethod
 
