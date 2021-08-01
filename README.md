@@ -1,9 +1,7 @@
-## Warning: This project is in its early stages. Expect bugs, incomplete features, and API changes.
-
 ## Introduction
 [libarchive](https://www.libarchive.org/) is a cross-platform multi-format archive and compression library. **RB-libarchive** is a libarchive [binding](http://en.wikipedia.org/wiki/Language_binding) for Realbasic and Xojo ("classic" framework) projects. Library binaries for various platforms are available, or can be built from source. 
 
-The minimum supported libarchive version is x.y.z. The minimum supported Xojo version is RS2010R4.
+The minimum supported libarchive version is 3.3.3. The minimum supported Xojo version is RS2010R4.
 
 ## Example
 This example extracts an archive into a folder. [**More examples**](https://github.com/charonn0/RB-libarchive/wiki#examples).
@@ -15,10 +13,11 @@ This example extracts an archive into a folder. [**More examples**](https://gith
 
 ## Highlights
 * Create and extract any archive format supported by libarchive<sup>1</sup>.
-* Read and write encrypted archives.
+* Read and write encrypted archives<sup>2</sup>.
 * Read and write any compression format supported by libarchive<sup>1</sup>.
+* 64-bit ready.
 
-<sup>1</sup> Some formats are read-only; a few are write-only.
+<sup>1</sup> Some formats are read-only; a few are write-only.<br /><sup>2</sup> Zip archives only.
 
 ## Synopsis
 The libarchive API is abstracted over by several object classes:
