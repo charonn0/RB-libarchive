@@ -442,7 +442,7 @@ Protected Class Archive
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
-		Protected mFormatName As String = "raw"
+		Protected mFormatName As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
