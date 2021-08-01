@@ -281,6 +281,21 @@ Inherits libarchive.Archive
 		  ' Sets several compression and/or archive options at once. Must be called before the
 		  ' archive is created.
 		  '
+		  ' Individual options have one of the following forms:
+		  '   "option=value"
+		  '     The option/value pair will be provided to every module. Modules that do not
+		  '     accept an option with this name will ignore it.
+		  '
+		  '   "option"
+		  '     The option will be provided to every module with a value of “1”.
+		  '
+		  '   "!option"
+		  '      The option will be provided to every module with a NULL value.
+		  '
+		  '   "module:option=value", "module:option", "module:!option"
+		  '      As above, but the corresponding option and value will be provided
+		  '      only to modules whose name matches module.
+		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.SetOptions
 		  
