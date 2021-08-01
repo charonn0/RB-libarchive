@@ -873,7 +873,7 @@ Protected Module libarchive
 		  Case ArchiveType.Shar
 		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -923,7 +923,7 @@ Protected Module libarchive
 		  Case ArchiveType.Shar
 		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -973,7 +973,7 @@ Protected Module libarchive
 		  Case ArchiveType.Shar
 		    Return New libarchive.Writers.SharWriter(WriteTo, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Writers.TARWriter(WriteTo, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1142,7 +1142,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1200,7 +1200,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1258,7 +1258,7 @@ Protected Module libarchive
 		  Case ArchiveType.SevenZip
 		    Return New libarchive.Readers.SevenZipReader(Archive, Compressor)
 		    
-		  Case ArchiveType.TAR, ArchiveType.GnuTar
+		  Case ArchiveType.TAR
 		    Return New libarchive.Readers.TARReader(Archive, Compressor)
 		    
 		  Case ArchiveType.XAR
@@ -1310,7 +1310,6 @@ Protected Module libarchive
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ReadArchive
-		  
 		  
 		  Dim list() As libarchive.ArchiveEntry
 		  If USE_FAST_EXTRACT Then
@@ -1438,6 +1437,99 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = ARCHIVE_FATAL, Type = Double, Dynamic = False, Default = \"-30", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_7ZIP, Type = Double, Dynamic = False, Default = \"&h000E0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_AR, Type = Double, Dynamic = False, Default = \"&h00070000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_AR_BSD, Type = Double, Dynamic = False, Default = \"&h00070002", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_AR_GNU, Type = Double, Dynamic = False, Default = \"&h00070001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CAB, Type = Double, Dynamic = False, Default = \"&h000C0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO, Type = Double, Dynamic = False, Default = \"&h0010000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_AFIO_LARGE, Type = Double, Dynamic = False, Default = \"&h0010006", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_BIN_BE, Type = Double, Dynamic = False, Default = \"&h0010003", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_BIN_LE, Type = Double, Dynamic = False, Default = \"&h0010002", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_POSIX, Type = Double, Dynamic = False, Default = \"&h0010001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_SVR4_CRC, Type = Double, Dynamic = False, Default = \"&h0010005", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_CPIO_SVR4_NOCRC, Type = Double, Dynamic = False, Default = \"&h0010004", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_EMPTY, Type = Double, Dynamic = False, Default = \"&h0060000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_ISO9660, Type = Double, Dynamic = False, Default = \"&h0040000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_ISO9660_ROCKRIDGE, Type = Double, Dynamic = False, Default = \"&h0040001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_LHA, Type = Double, Dynamic = False, Default = \"&h00B0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_MTREE, Type = Double, Dynamic = False, Default = \"&h0080000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_RAR, Type = Double, Dynamic = False, Default = \"&h00D0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_RAR_V5, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_RAW, Type = Double, Dynamic = False, Default = \"&h0090000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_SHAR, Type = Double, Dynamic = False, Default = \"&h0020000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_SHAR_BASE, Type = Double, Dynamic = False, Default = \"&h0020001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_SHAR_DUMP, Type = Double, Dynamic = False, Default = \"&h0020002", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_TAR, Type = Double, Dynamic = False, Default = \"&h0030000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_TAR_GNUTAR, Type = Double, Dynamic = False, Default = \"&h0030004", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_TAR_PAX_INTERCHANGE, Type = Double, Dynamic = False, Default = \"&h0030002", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_TAR_PAX_RESTRICTED, Type = Double, Dynamic = False, Default = \"&h0030003", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_TAR_USTAR, Type = Double, Dynamic = False, Default = \"&h0030001", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_WARC, Type = Double, Dynamic = False, Default = \"&h00F0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_XAR, Type = Double, Dynamic = False, Default = \"&h00A0000", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ARCHIVE_FORMAT_ZIP, Type = Double, Dynamic = False, Default = \"&h0050000", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = ARCHIVE_OK, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
@@ -1619,26 +1711,25 @@ Protected Module libarchive
 
 
 	#tag Enum, Name = ArchiveType, Type = Integer, Flags = &h1
-		All
-		  Ar
-		  Cabinet
-		  CPIO
-		  Empty
-		  GnuTar
-		  ISO9660
-		  LHA
-		  MTree
-		  RAR
-		  RAR5
-		  Raw
-		  SevenZip
-		  Shar
-		  TAR
-		  WArc
-		  XAR
-		  Zip
-		  ZipStreamable
-		ZipSeekable
+		All=0
+		  Ar=&h00070000
+		  Cabinet=&h000C0000
+		  CPIO=&h0010000
+		  Empty=&h0060000
+		  ISO9660=&h0040000
+		  LHA=&h00B0000
+		  MTree=&h0080000
+		  RAR=&h00D0000
+		  RAR5=&h00100000
+		  Raw=&h0090000
+		  SevenZip=&h000E0000
+		  Shar=&h0020000
+		  TAR=&h0030000
+		  WArc=&h00F0000
+		  XAR=&h00A0000
+		  Zip=&h0050000
+		  ZipStreamable=&h0050001
+		ZipSeekable=&h0050002
 	#tag EndEnum
 
 	#tag Enum, Name = CompressionType, Type = Integer, Flags = &h1

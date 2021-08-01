@@ -606,26 +606,9 @@ Inherits libarchive.Archive
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Format
 			  
 			  
-			  Const ARCHIVE_FORMAT_CPIO = &h
-			  Const ARCHIVE_FORMAT_SHAR = &h2
-			  Const ARCHIVE_FORMAT_TAR = &h3
-			  Const ARCHIVE_FORMAT_ISO9660 = &h4
-			  Const ARCHIVE_FORMAT_ZIP = &h5
-			  Const ARCHIVE_FORMAT_EMPTY = &h6
-			  Const ARCHIVE_FORMAT_AR = &h7
-			  Const ARCHIVE_FORMAT_MTREE = &h8
-			  Const ARCHIVE_FORMAT_RAW = &h9
-			  Const ARCHIVE_FORMAT_XAR = &hA
-			  Const ARCHIVE_FORMAT_LHA = &hB
-			  Const ARCHIVE_FORMAT_CAB = &hC
-			  Const ARCHIVE_FORMAT_RAR = &hD
-			  Const ARCHIVE_FORMAT_7ZIP = &hE
-			  Const ARCHIVE_FORMAT_WARC = &hF
-			  Const ARCHIVE_FORMAT_RAR_V5 = &h10
-			  
-			  If mArchive = Nil Then Return ArchiveType.All
 			  Dim frmat As Int32 = archive_format(mArchive)
-			  Select Case ShiftRight(frmat, 16)
+			  frmat = frmat And &hFFFFF00
+			  Select Case frmat
 			  Case ARCHIVE_FORMAT_CPIO
 			    Return ArchiveType.CPIO
 			  Case ARCHIVE_FORMAT_CAB
@@ -662,9 +645,8 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FormatVariant
 			  
-			  If mArchive = Nil Then Return 0
-			  Dim frmat As Int32 = archive_format(mArchive)
-			  Return ShiftLeft(frmat, 16)
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return 0
+			  Return archive_format(mArchive)
 			End Get
 		#tag EndGetter
 		FormatVariant As Int32
@@ -678,7 +660,7 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.HasEncryptedEntries
 			  
-			  If mArchive = Nil Then Return False
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return False
 			  
 			  mLastError = archive_read_has_encrypted_entries(mArchive)
 			  Select Case mLastError
