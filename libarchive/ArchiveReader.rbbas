@@ -82,6 +82,8 @@ Inherits libarchive.Archive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.MoveNext
 		  
+		  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return False
+		  
 		  Return ReadEntryData(WriteTo) And ReadEntryHeader()
 		End Function
 	#tag EndMethod
@@ -94,6 +96,8 @@ Inherits libarchive.Archive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.MoveNext
 		  
+		  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return False
+		  
 		  Return ReadEntryData(WriteTo) And ReadEntryHeader()
 		End Function
 	#tag EndMethod
@@ -105,6 +109,8 @@ Inherits libarchive.Archive
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Open
+		  
+		  If mLastError = ARCHIVE_FATAL Then Raise New ArchiveException(Me)
 		  
 		  If IsOpen Then
 		    mLastError = ERR_TOO_LATE
@@ -517,6 +523,8 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CanDecryptData
 			  
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return False
+			  
 			  If mArchive <> Nil Then
 			    mLastError = archive_read_format_capabilities(mArchive)
 			    Return BitAnd(mLastError, ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA) = ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA
@@ -533,6 +541,8 @@ Inherits libarchive.Archive
 			  '
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CanDecryptMetaData
+			  
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return False
 			  
 			  If mArchive <> Nil Then
 			    mLastError = archive_read_format_capabilities(mArchive)
@@ -552,7 +562,7 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.CurrentEntry
 			  
-			  If mCurrentEntry = Nil And mArchive <> Nil And Not mIsOpen Then Open()
+			  If mCurrentEntry = Nil And Not IsOpen And mLastError <> ARCHIVE_FATAL Then Open()
 			  return mCurrentEntry
 			End Get
 		#tag EndGetter
@@ -562,6 +572,7 @@ Inherits libarchive.Archive
 	#tag ComputedProperty, Flags = &h1
 		#tag Getter
 			Get
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return 0
 			  If mArchive <> Nil Then Return archive_read_header_position(mArchive)
 			End Get
 		#tag EndGetter
@@ -605,6 +616,7 @@ Inherits libarchive.Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.Format
 			  
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return ArchiveType.All
 			  
 			  Dim frmat As Int32 = archive_format(mArchive)
 			  frmat = frmat And &hFFFFF00
