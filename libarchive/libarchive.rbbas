@@ -1005,46 +1005,6 @@ Protected Module libarchive
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function FormatError(ErrorCode As Int32) As String
-		  Dim msg As String
-		  Select Case ErrorCode
-		  Case ERR_INIT_FAILED
-		    msg = "Unknown error while initializing libarchive."
-		  Case ERR_UNSUPPORTED_COMPRESSION
-		    msg = "Unknown or unsupported compressor."
-		  Case ERR_READ_ONLY_FORMAT
-		    msg = "Creating an archive of this type is not supported."
-		  Case ERR_WRITE_ONLY_FORMAT
-		    msg = "Extracting an archive of this type is not supported."
-		  Case ERR_TOO_LATE
-		    msg = "It is too late in the process to perform the requested operation."
-		  Case ERR_TOO_EARLY
-		    msg = "It is too early in the process to perform the requested operation."
-		  Case ERR_SIZE_REQUIRED
-		    msg = "The requested operation cannot be performed on an unbounded memory block."
-		  Case ERR_INVALID_OPERATION
-		    msg = "The requested operation is invalid in the current context."
-		  Case ARCHIVE_OK
-		    msg = "Operation succeeded."
-		  Case ARCHIVE_EOF
-		    msg = "No further data to read."
-		  Case ARCHIVE_FAILED
-		    msg = "The operation failed but it may be possible to continue."
-		  Case ARCHIVE_FATAL
-		    msg = "The operation failed and it is not possible to continue."
-		  Case ARCHIVE_RETRY
-		    msg = "The operation failed but it may succeed if retried."
-		  Case ARCHIVE_WARN
-		    msg = "The operation was partially successful."
-		  Else
-		    msg = "Unknown error number: " + Str(ErrorCode, "-000")
-		  End Select
-		  
-		  Return msg
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
 		Private Function GuessArchiveType(Name As String) As libarchive.ArchiveType
 		  Dim ext As String = NthField(Name, ".", CountFields(Name, "."))
 		  Select Case ext
