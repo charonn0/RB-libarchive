@@ -253,6 +253,7 @@ Protected Class Archive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.Archive.SetFormatName
 		  
+		  mFormatFamily = ArchiveType
 		  Select Case ArchiveType
 		  Case libarchive.ArchiveType.SevenZip
 		    mFormatName = FORMAT_MODULE_7ZIP
@@ -381,6 +382,62 @@ Protected Class Archive
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  ' Returns the format of the archive.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.Format
+			  
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return mFormatFamily
+			  
+			  Dim frmat As Int32 = archive_format(mArchive)
+			  frmat = frmat And &hFFFFF00
+			  Select Case frmat
+			  Case ARCHIVE_FORMAT_CPIO
+			    Return ArchiveType.CPIO
+			  Case ARCHIVE_FORMAT_CAB
+			    Return ArchiveType.Cabinet
+			  Case ARCHIVE_FORMAT_ISO9660
+			    Return ArchiveType.ISO9660
+			  Case ARCHIVE_FORMAT_LHA
+			    Return ArchiveType.LHA
+			  Case ARCHIVE_FORMAT_MTREE
+			    Return ArchiveType.MTree
+			  Case ARCHIVE_FORMAT_RAR, ARCHIVE_FORMAT_RAR_V5
+			    Return ArchiveType.RAR
+			  Case ARCHIVE_FORMAT_TAR
+			    Return ArchiveType.TAR
+			  Case ARCHIVE_FORMAT_XAR
+			    Return ArchiveType.XAR
+			  Case ARCHIVE_FORMAT_7ZIP
+			    Return ArchiveType.SevenZip
+			  Case ARCHIVE_FORMAT_ZIP
+			    Return ArchiveType.Zip
+			  Else
+			    Return ArchiveType.All
+			  End Select
+			End Get
+		#tag EndGetter
+		Format As libarchive.ArchiveType
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  ' Returns the format subtype or variant of the archive entry.
+			  '
+			  ' See:
+			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FormatVariant
+			  
+			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return 0
+			  Return archive_format(mArchive)
+			End Get
+		#tag EndGetter
+		FormatVariant As Int32
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  ' The opaque handle of the archive.
 			  '
 			  ' See:
@@ -439,6 +496,10 @@ Protected Class Archive
 
 	#tag Property, Flags = &h1
 		Protected mFilterName As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h1
+		Protected mFormatFamily As libarchive.ArchiveType = ArchiveType.All
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
