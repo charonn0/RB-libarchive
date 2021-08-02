@@ -38,7 +38,7 @@ An archive is represented by an instance of `ArchiveReader` or `ArchiveWriter`, 
 3. Copy the libarchive module into your project and save.
 
 ### Ensure the libarchive shared library is installed
-libarchive is not installed by default on most operating systems, you will need to ship all the necessary DLLs/SOlibs/dylibs with your application. RB-libarchive will raise a PlatformNotSupportedException when used if all required DLLs/SOs/DyLibs are not available at runtime. 
+libarchive is not installed by default on most operating systems, you will need to ship all the necessary DLLs/SOlibs/dylibs with your application. [You can download 32-bit and 64-bit DLLs for Windows here](https://www.boredomsoft.org/hosted/libarchiveDLLs.zip). RB-libarchive will raise a PlatformNotSupportedException when used if all required DLLs/SOs/DyLibs are not available at runtime. 
 
 ## Examples
 * [Generic extractor](https://github.com/charonn0/RB-libarchive/wiki/Extractor-Example)
