@@ -308,6 +308,18 @@ Inherits libarchive.Archive
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Contents As MemoryBlock)
+		  ' Writes the Contents to the archive using the metadata of the Entry. The Progress()
+		  ' event will be raised one or more times.
+		  '
+		  ' See:
+		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntry
+		  
+		  WriteEntry(Entry, New BinaryStream(Contents))
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub WriteEntry(Entry As libarchive.ArchiveEntry, Source As Readable)
 		  ' Writes the Source stream (until Source.EOF=True) to the archive using metadata of
 		  ' the Entry. The Progress() event will be raised one or more times if data is read
