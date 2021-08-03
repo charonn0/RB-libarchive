@@ -315,7 +315,19 @@ Inherits libarchive.Archive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveWriter.WriteEntry
 		  
-		  WriteEntry(Entry, New BinaryStream(Contents))
+		  If Not mIsOpen Then Create()
+		  If mHeaderWritten Then
+		    mLastError = ERR_TOO_EARLY
+		    Raise New ArchiveException(Me)
+		  End If
+		  
+		  If RaiseEvent Progress(Entry, 0) Then Return
+		  Try
+		    WriteEntryHeader(Entry)
+		    If Contents <> Nil Then WriteEntryDataBlock(Contents)
+		  Finally
+		    WriteEntryFinished()
+		  End Try
 		End Sub
 	#tag EndMethod
 
