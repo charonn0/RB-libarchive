@@ -1348,7 +1348,7 @@ Protected Module libarchive
 		      list.Append(entry)
 		    Loop Until Not Archive.MoveNext(outstream)
 		    If outstream <> Nil Then outstream.Close()
-		    Archive.Close
+		    Archive.Close()
 		  End If
 		  Return list
 		  
