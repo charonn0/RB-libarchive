@@ -198,7 +198,7 @@ Inherits libarchive.Archive
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryData
 		  
 		  If Not mIsOpen Then Open()
-		  If WriteTo = 0 Then Return SkipEntryData()
+		  If WriteTo = 0 Or RaiseEvent Progress(CurrentEntry, 0) Then Return SkipEntryData()
 		  mLastError = archive_read_data_into_fd(mArchive, WriteTo)
 		  Return mLastError = ARCHIVE_EOF
 		End Function
@@ -216,19 +216,16 @@ Inherits libarchive.Archive
 		  If WriteTo = Nil Then Return SkipEntryData()
 		  
 		  mLastError = ARCHIVE_OK
-		  Dim pos As Int64
+		  Dim pos As UInt64
+		  Dim buffer As MemoryBlock
+		  Dim size As UInt32
 		  Do Until mLastError <> ARCHIVE_OK
-		    Dim buffer As MemoryBlock
-		    Dim offset As UInt64
-		    Dim size As UInt32 = ReadEntryDataBlock(buffer, offset)
-		    If size > 0 Then
-		      WriteTo.Write(buffer.StringValue(0, size))
-		      pos = pos + size
-		      If RaiseEvent Progress(CurrentEntry, pos) Then
-		        Call SkipEntryData()
-		        Exit Do
-		      End If
+		    If RaiseEvent Progress(CurrentEntry, pos) Then
+		      Call SkipEntryData()
+		      Exit Do
 		    End If
+		    size = ReadEntryDataBlock(buffer, pos)
+		    If size > 0 Then WriteTo.Write(buffer.StringValue(0, size))
 		  Loop
 		  
 		  Return (mLastError = ARCHIVE_EOF Or mLastError = ARCHIVE_OK)
@@ -238,8 +235,13 @@ Inherits libarchive.Archive
 	#tag Method, Flags = &h1
 		Protected Function ReadEntryDataBlock(ByRef Block As MemoryBlock, ByRef Offset As UInt64) As UInt32
 		  ' Reads bytes from the archive and updates the Block parameter to point to the buffer containing
-		  ' the resulting data. This awkward arrangement minimizes the need to copy the potentially large
-		  ' buffer. This method will not raise the Progress() event.
+		  ' the resulting data. The size of the buffer is returned. This awkward arrangement minimizes the
+		  ' need to copy the potentially large buffer. This method will not raise the Progress() event.
+		  '
+		  ' The Offset parameter will be updated to reflect the offset within the output file at which the
+		  ' data should be written. Usually this will be equal to the number of bytes read so far, but in
+		  ' certain cases (e.g. sparse files) it won't.
+		  '
 		  '
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.ReadEntryDataBlock
@@ -526,7 +528,7 @@ Inherits libarchive.Archive
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event Progress(Entry As libarchive.ArchiveEntry, Position As Int64) As Boolean
+		Event Progress(Entry As libarchive.ArchiveEntry, Position As UInt64) As Boolean
 	#tag EndHook
 
 
