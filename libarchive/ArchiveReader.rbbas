@@ -1,19 +1,6 @@
 #tag Class
 Protected Class ArchiveReader
 Inherits libarchive.Archive
-	#tag Method, Flags = &h21
-		Private Shared Function archive_passphrase_callback(Archive As Ptr, Opaque As Ptr) As CString
-		  #pragma Unused Archive
-		  If Opaque = Nil Or Archives = Nil Then Return Nil
-		  Dim w As WeakRef = Archives.Lookup(Opaque, Nil)
-		  If w <> Nil And w.Value IsA ArchiveReader Then
-		    Dim newpass As String
-		    If Not ArchiveReader(w.Value).GetPassword(newpass) Then Return Nil
-		    Return newpass
-		  End If
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
 		Sub Close()
 		  ' Close the archive and free system resources.
@@ -43,7 +30,7 @@ Inherits libarchive.Archive
 		  
 		  If Archives = Nil Then Archives = New Dictionary
 		  Archives.Value(mArchive) = New WeakRef(Me)
-		  mLastError = archive_read_set_passphrase_callback(mArchive, mArchive, AddressOf archive_passphrase_callback)
+		  mLastError = archive_read_set_passphrase_callback(mArchive, mArchive, AddressOf GetPasswordCallback)
 		  If mLastError <> ARCHIVE_OK Then Raise New ArchiveException(Me)
 		  
 		End Sub
@@ -70,6 +57,19 @@ Inherits libarchive.Archive
 		    Return True
 		  Else
 		    Return RaiseEvent GetPassword(ArchivePassword)
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Shared Function GetPasswordCallback(Archive As Ptr, Opaque As Ptr) As CString
+		  #pragma Unused Archive
+		  If Opaque = Nil Or Archives = Nil Then Return Nil
+		  Dim w As WeakRef = Archives.Lookup(Opaque, Nil)
+		  If w <> Nil And w.Value IsA ArchiveReader Then
+		    Dim newpass As String
+		    If Not ArchiveReader(w.Value).GetPassword(newpass) Then Return Nil
+		    Return newpass
 		  End If
 		End Function
 	#tag EndMethod
