@@ -14,7 +14,7 @@ Inherits RuntimeException
 		    Me.Constructor(Archive.LastError)
 		    If Archive.Handle <> Nil Then
 		      Dim mb As MemoryBlock = archive_error_string(Archive.Handle)
-		      If mb <> Nil Then Me.Message = Me.Message + " (" + mb.CString(0) + ")"
+		      If mb <> Nil Then Me.Message = Me.Message + " " + mb.CString(0) + "."
 		    End If
 		  End If
 		End Sub
