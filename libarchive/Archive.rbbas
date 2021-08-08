@@ -428,8 +428,10 @@ Protected Class Archive
 			  ' See:
 			  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.ArchiveReader.FormatVariant
 			  
-			  If mArchive = Nil Or mLastError = ARCHIVE_FATAL Or Not mIsOpen Then Return 0
-			  Return archive_format(mArchive)
+			  Dim v As Int32
+			  If mArchive <> Nil And mLastError <> ARCHIVE_FATAL And mIsOpen Then v = archive_format(mArchive)
+			  If v = 0 Then v = CType(mFormatFamily, Int32)
+			  Return v
 			End Get
 		#tag EndGetter
 		FormatVariant As Int32
