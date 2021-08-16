@@ -48,6 +48,8 @@ Inherits RuntimeException
 		    Return "The requested operation is invalid in the current context."
 		  Case ERR_INCONCEIVABLE
 		    Return "A pure virtual function was called."
+		  Case ERR_NOT_FOUND
+		    Return "The target file or directory does not exist."
 		  Case ARCHIVE_OK
 		    Return "Operation succeeded."
 		  Case ARCHIVE_EOF
@@ -87,6 +89,8 @@ Inherits RuntimeException
 		    Return "ERR_INVALID_OPERATION"
 		  Case ERR_INCONCEIVABLE
 		    Return "ERR_INCONCEIVABLE"
+		  Case ERR_NOT_FOUND
+		    Return "ERR_NOT_FOUND"
 		  Case ARCHIVE_OK
 		    Return "ARCHIVE_OK"
 		  Case ARCHIVE_EOF

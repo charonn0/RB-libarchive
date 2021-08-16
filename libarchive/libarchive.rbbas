@@ -1404,6 +1404,7 @@ Protected Module libarchive
 		  ' See:
 		  ' https://github.com/charonn0/RB-libarchive/wiki/libarchive.WriteArchive
 		  
+		  If Not TargetDirectory.Exists Then Raise New ArchiveException(ERR_NOT_FOUND)
 		  Dim folders() As FolderItem = Array(TargetDirectory)
 		  
 		  Do Until UBound(folders) < 0
@@ -1551,6 +1552,9 @@ Protected Module libarchive
 	#tag EndConstant
 
 	#tag Constant, Name = ERR_INVALID_OPERATION, Type = Double, Dynamic = False, Default = \"-106", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = ERR_NOT_FOUND, Type = Double, Dynamic = False, Default = \"-109", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = ERR_READ_ONLY_FORMAT, Type = Double, Dynamic = False, Default = \"-101", Scope = Protected

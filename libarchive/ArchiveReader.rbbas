@@ -240,7 +240,7 @@ Inherits libarchive.Archive
 		  '
 		  ' The Offset parameter will be updated to reflect the offset within the output file at which the
 		  ' data should be written. Usually this will be equal to the number of bytes read so far, but in
-		  ' certain cases (e.g. sparse files) it won't.
+		  ' certain cases (e.g. sparse files) it won't be.
 		  '
 		  '
 		  ' See:
