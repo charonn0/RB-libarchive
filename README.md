@@ -5,7 +5,7 @@ The minimum supported libarchive version is 3.3.3. The minimum supported Xojo ve
 
 ## Example
 This example extracts an archive into a folder. [**More examples**](https://github.com/charonn0/RB-libarchive/wiki#examples).
-```xojo
+```realbasic
   Dim src As FolderItem = GetOpenFolderItem("")
   Dim dst As FolderItem = SelectFolder()
   Dim lst() As libarchive.ArchiveEntry = libarchive.ReadArchive(src, dst)
