@@ -162,8 +162,6 @@ Inherits libarchive.Archive
 		  ' libarchive will invoke the callbacks of this class when reading from the
 		  ' archive, which in turn will read from the ReadFrom parameter until EOF.
 		  
-		  If Archives = Nil Then Archives = New Dictionary
-		  Archives.Value(mArchive) = New WeakRef(Me)
 		  mSourceStream = ReadFrom
 		  
 		  mLastError = archive_read_set_open_callback(mArchive, AddressOf ReadOpenCallback)
