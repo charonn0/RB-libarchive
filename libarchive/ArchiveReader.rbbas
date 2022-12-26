@@ -43,8 +43,10 @@ Inherits libarchive.Archive
 		  Me.Close()
 		  If mArchive <> Nil Then
 		    mLastError = archive_read_free(mArchive)
-		    If Archives <> Nil And Archives.HasKey(mArchive) Then Archives.Remove(mArchive)
-		    If Archives.Count = 0 Then Archives = Nil
+		    If Archives <> Nil Then
+		      If Archives.HasKey(mArchive) Then Archives.Remove(mArchive)
+		      If Archives.Count = 0 Then Archives = Nil
+		    End If
 		  End If
 		  mArchive = Nil
 		End Sub
