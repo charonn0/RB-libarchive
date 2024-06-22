@@ -19,6 +19,9 @@ This example extracts an archive into a folder. [**More examples**](https://gith
 
 <sup>1</sup> Some formats are read-only; a few are write-only.<br /><sup>2</sup> Zip archives only.
 
+## Become a sponsor
+If you use this code in a commercial project, or just want to show your appreciation, please consider sponsoring me through GitHub. https://github.com/sponsors/charonn0
+
 ## Synopsis
 The libarchive API is abstracted over by several object classes:
 
